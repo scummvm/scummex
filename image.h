@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.h,v 1.11 2003/09/24 23:04:06 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.h,v 1.12 2003/09/25 15:26:26 yoshizf Exp $
  *
  */
 
@@ -49,6 +49,9 @@ private:
 	int _width;
 	int _height;
 	int _imageWindowId;
+	byte _decomp_shr;
+	byte _decomp_mask;
+	int _vertStripNextInc;
 	Resource *_resource;
 	Codec37Decoder _codec37;
 	Codec47Decoder _codec47;
@@ -72,10 +75,18 @@ public:
 	void decode_vert_transp(uint16 height, uint8 compr, File& _input);
 	void decode2(uint16 height, uint8 compr, File& _input);
 	void decode2transp(uint16 height, uint8 compr, File& _inpuit);
-	void GetStrip( uint8 pos, File& _input);
+	void GetStrip(byte *dst, const byte *src, int numLinesToProcess);
 	void decodeCodec44(byte *dst, const byte *src, uint32 length);
 	void decodeCodec1(byte *dst, byte *src, int height);
-	void decodeEGA(byte *dst, const byte *src, int width, int height);
+	void decodeStripEGA(byte *dst, const byte *src, int height);
+	void unkDecodeA(byte *dst, const byte *src, int height);
+	void unkDecodeB(byte *dst, const byte *src, int height);
+	void unkDecodeC(byte *dst, const byte *src, int height);
+	void unkDecode7(byte *dst, const byte *src, int height);
+	void unkDecode8(byte *dst, const byte *src, int height);
+	void unkDecode9(byte *dst, const byte *src, int height);
+	void unkDecode10(byte *dst, const byte *src, int height);
+	void unkDecode11(byte *dst, const byte *src, int height);
 };
 
 #endif

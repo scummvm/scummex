@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.17 2003/09/24 23:04:05 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.18 2003/09/25 15:26:26 yoshizf Exp $
  *
  */
 
@@ -291,6 +291,7 @@ int Image::drawSmushFrame(BlockTable *_blockTable, int id, File& _input) {
 int Image::drawBG(File& _input, BlockTable *_blockTable, int id, int newWindow, int imageWindowId)
 {
 	int RMHDindex, CLUTindex, SMAPindex, TRNSindex, version;
+	int32 blockSize;
 	byte *dst, *dstorg, *src;
 	
 	if (_blockTable[id].blockTypeID == BM) {
@@ -345,39 +346,53 @@ int Image::drawBG(File& _input, BlockTable *_blockTable, int id, int newWindow, 
 		SMAPindex = id;
 	}
 
+	blockSize = _blockTable[SMAPindex].blockSize;
+
 	if (_blockTable[id].blockTypeID == IMAG) {
+		version = 8;
 		SMAPindex = _resource->findBlock(1, _blockTable, SMAPindex, "OFFS", NULL);
+		blockSize = _blockTable[SMAPindex-1].blockSize - 8;
+		
 	}
 
 	_offsets = new uint32[_width/8];
 	
 	_input.seek(_blockTable[SMAPindex].offset + 8, SEEK_SET);
 
-	if (version > 3) {
-		for (int x = 0; x < _width/8; x++) 
-			_offsets[x] = _input.readUint32LE() + _blockTable[SMAPindex].offset;
-
+	if (version > 4) {
+		for (int x = 0; x < _width/8; x++)  
+			_offsets[x] = _input.readUint32LE();
+	} else if (version == 4) {
 		for (int x = 0; x < _width/8; x++) {
-			offset = x*8;
-			GetStrip(x, _input);
+			_input.seek(2, SEEK_CUR);
+			_offsets[x] = _input.readUint16LE() + 6;
 		}
 	} else {
-		_offsets[0] = _input.readUint16LE();
-		_input.seek(_offsets[0] - 4, SEEK_CUR);
-		dstorg = dst = (byte *)malloc(_width * _height);
-		src = (byte *)malloc(_blockTable[SMAPindex].blockSize - _offsets[0] - 12);
-		_input.read(src, _blockTable[SMAPindex].blockSize - _offsets[0] - 12);
-		decodeEGA(dst, src, _width, _height);
-		free(src);
-		for (int y=0; y<_height; y++) {
-			for (int x=0; x<_width; x++) {
-				int color = *dst++;
-				_gui->PutPixel(_imageWindowId, x, y, _rgbTable[color].red, _rgbTable[color].green, _rgbTable[color].blue);
-			}
-		}
-		free(dstorg);
+		for (int x = 0; x < _width/8; x++) 
+			_offsets[x] = _input.readUint16LE() + 6;
 	}
 
+	_input.seek(_blockTable[SMAPindex].offset, SEEK_SET);
+	dstorg = dst = (byte *)malloc(_width * _height);
+	src = (byte *)malloc(blockSize);
+	_input.read(src, blockSize);
+	
+	for (int x = 0; x < _width/8; x++) {
+		if (version < 4)
+			decodeStripEGA(dst + (8 * x), src + _offsets[x], _height);
+		else
+			GetStrip(dst + (8 * x), src + _offsets[x], _height);
+	}
+	free(src);
+	
+	for (int y=0; y<_height; y++) {
+		for (int x=0; x<_width; x++) {
+			int color = *dst++;
+			_gui->PutPixel(_imageWindowId, x, y, _rgbTable[color].red, _rgbTable[color].green, _rgbTable[color].blue);
+		}
+	}
+	free(dstorg);
+		
 	if (newWindow) {
 		_gui->DrawImage(_imageWindowId);
 	} else {
@@ -390,6 +405,7 @@ int Image::drawBG(File& _input, BlockTable *_blockTable, int id, int newWindow, 
 int Image::drawObject(File& _input, BlockTable *_blockTable, int id)
 {
 	int RMHDindex, CLUTindex, SMAPindex, TRNSindex;
+	byte *dst, *dstorg, *src;
 
 	RMHDindex = _resource->findBlock(1, _blockTable, id, "IMHD", NULL);
 	
@@ -418,400 +434,120 @@ int Image::drawObject(File& _input, BlockTable *_blockTable, int id)
 	
 	_input.seek(_blockTable[SMAPindex].offset + 8, SEEK_SET);
 	for (int x = 0; x < _width/8; x++) 
-		_offsets[x] = _input.readUint32LE() + _blockTable[SMAPindex].offset;
+		_offsets[x] = _input.readUint32LE();
 
-	for (int x = 0; x < _width/8; x++)
-	{
-		offset = x*8;
-
-		GetStrip(x, _input);
+	_input.seek(_blockTable[SMAPindex].offset, SEEK_SET);
+	dstorg = dst = (byte *)malloc(_width * _height);
+	src = (byte *)malloc(_blockTable[SMAPindex].blockSize);
+	_input.read(src, _blockTable[SMAPindex].blockSize);
+	
+	for (int x = 0; x < _width/8; x++) {
+		GetStrip(dst + (8 * x), src + _offsets[x], _height);
 	}
+	free(src);
+	
+	for (int y=0; y<_height; y++) {
+		for (int x=0; x<_width; x++) {
+			int color = *dst++;
+			_gui->PutPixel(_imageWindowId, x, y, _rgbTable[color].red, _rgbTable[color].green, _rgbTable[color].blue);
+		}
+	}
+	free(dstorg);
 	
 	_gui->DrawImage(_imageWindowId);
 	return 0;
 }
 
-void Image::GetStrip( uint8 pos, File& _input)
+void Image::GetStrip(byte *dst, const byte *src, int numLinesToProcess)
 {
-	uint8 compr_method, parameter;
 	bool horiz;	
 		
-	_input.seek(_offsets[pos], SEEK_SET);
-	
-	/* Initializes bit stream */
-	_input.getbit(0);
-					
-	/* and parameter.					 */
-	compr_method = _input.readByte();	
-	parameter = (compr_method % 10);
+	byte code = *src++;
+	_decomp_shr = (code % 10);
+	_decomp_mask = 0xFF >> (8 - _decomp_shr);
 				
-	horiz = 1 - ((compr_method / 10) & 1);
+	horiz = 1 - ((code / 10) & 1);
+	_vertStripNextInc = _height * _width - 1;
 	
-	switch (compr_method / 10) 
+	switch (code) 
 	{
-		case 0:
-			/* Uncompressed */
-			decode_uncompressed(_height, _input);
-			break;
-					
 		case 1:
-	 	case 2:
-	 	case 3:
-	 	case 4:	 
-	 	
-			/* 1st compression method */
-			if (horiz)
-				decode_horiz(_height, parameter, _input);
-			else 
-				decode_vert(_height, parameter, _input);
+			unkDecode7(dst, src, numLinesToProcess);
 			break;
-	 
+		
+		case 2:
+			unkDecode8(dst, src, numLinesToProcess);
+			break;
+
+		case 3:
+			unkDecode9(dst, src, numLinesToProcess);
+			break;
+		
+		case 4:
+			unkDecode10(dst, src, numLinesToProcess);
+			break;
+
+		case 7:
+			unkDecode11(dst, src, numLinesToProcess);
+			break;
+
+		case 10:
+			decodeStripEGA(dst, src, numLinesToProcess);
+			break;
+		
+		case 14:
+		case 15:
+		case 16:
+		case 17:
+		case 18:
+		case 34:
+		case 35:
+		case 36:
+		case 37:
+		case 38:
+			unkDecodeC(dst, src, numLinesToProcess);
+			break;
+
+		case 24:
+		case 25:
+		case 26:
+		case 27:
+		case 28:
+		case 44:
+		case 45:
+		case 46:
+		case 47:
+		case 48:
+			unkDecodeB(dst, src, numLinesToProcess);
+			break;
+		
+		case 64:
+		case 65:
+		case 66:
+		case 67:
+		case 68:
+		case 84:
+		case 85:
+		case 86:
+		case 87:
+		case 88:
+		case 104:
+		case 105:
+		case 106:
+		case 107:
+		case 108:
+		case 124:
+		case 125:
+		case 126:
+		case 127:
+		case 128:
+			unkDecodeA(dst, src, numLinesToProcess);
+			break;
+		
 		default:
-			/* 2nd compression method */
-			if ((compr_method >= 0x54) && (compr_method <= 0x60))
-				decode2transp(_height, parameter, _input); 
-			else
-				decode2(_height, parameter, _input);
-			break;
+			printf("Unknown codec: %d!\n", code);
 	}
 	
-}
-
-/* Decoding Functions */
-
-void Image::decode_uncompressed(uint16 height, File& _input)
-{
-	uint8 index = 0;
-	for (uint16 y = 0; y < height; y++) 
-	{
-		for (uint8 x = 0; x < 8; x++)
-		{
-			index = _input.readByte();
-			_gui->PutPixel(_imageWindowId, x + offset, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
-		}
-	 }
-}
-
-void Image::decode2(uint16 height, uint8 parameter, File& _input)
-{	
-	uint8 index = 0;
-		
-	for (uint16 y = 0; y < height; y++) 
-		{
-			uint8 x = 0;
-			if (y == 0) 
-			{ 
-				index = _input.readByte();
-				_gui->PutPixel(_imageWindowId, 0 + offset, 0, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
-				x++; 
-			}	
-			while ( x < 8 ) 
-			{				
-				if (_input.getbit(1) == 0) 
-					_gui->PutPixel(_imageWindowId, x++ + offset, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
-				else 
-				{
-					if (_input.getbit(1) == 0) 
-					{
-						index = 0;
-						for (uint8 cx = 0; cx < parameter; cx++) 
-							index += (_input.getbit(1) << cx);
-						_gui->PutPixel(_imageWindowId, x++ + offset, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
-					}
-					else
-					{						
-						uint8 command = 0;
-						for (uint8 val = 0; val < 3; val++) 
-							command += (_input.getbit(1) << val);				
-					
-						if (command == 4) 
-						{
-						 	uint8 run = 0;
-						 	for (uint8 bits = 0; bits < 8; bits++) 
-						 		run += (_input.getbit(1) << bits);	 					 	
-						 	for (uint8 c = 0; c < run; c++) 
-						 	{
-						 		if (x > 7)
-						 		{
-						 			x = 0;
-						 			y++;
-						 		} 
-						 		_gui->PutPixel(_imageWindowId, x++ + offset, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);						 		
-						 	}
-						}
-						else 
-						{
-						 	index += command - 4;
-							_gui->PutPixel(_imageWindowId, x++ + offset, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
-						}							
-					}
-				} 
-			}
-		}
-}
-
-void Image::decode2transp(uint16 height, uint8 parameter, File& _input)
-{
-	uint8 index = 0;
-		
-	for (uint16 y = 0; y < height; y++) 
-		{
-			uint8 x = 0;
-			if (y == 0) 
-			{ 
-				index = _input.readByte();
-				if (index != _transp)
-					_gui->PutPixel(_imageWindowId, 0 + offset, 0, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue); 
-				x++;
-			}	
-			while ( x < 8 ) 
-			{										
-				if (_input.getbit(1) == 0) 
-					_gui->PutPixel(_imageWindowId, x++ + offset, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
-				else 
-					if (_input.getbit(1) == 0) 
-					{
-						index = 0;
-						for (uint8 cx = 0; cx < parameter; cx++) 
-							index += (_input.getbit(1) << cx);
-						if (index != _transp)
-							_gui->PutPixel(_imageWindowId, x + offset, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue); 
-						x++;
-					}
-					else
-					{						
-						uint8 command = 0;
-						for (uint8 val = 0; val < 3; val++) 
-							command += (_input.getbit(1) << val);				
-						if (command < 4) 
-						{
-							index -= 4-command;
-							if (index != _transp)
-								_gui->PutPixel(_imageWindowId, x + offset, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue); 
-							x++;
-						}
-						else if (command == 4) 
-						{
-						 	uint8 run = 0;
-						 	for (uint8 bits = 0; bits < 8; bits++) 
-						 		run += (_input.getbit(1) << bits);									 	 					 	
-						 	for (uint8 c = 0; c < run; c++) 
-						 	{	
-						 		if (x == 8) 
-								{ 
-									x = 0; 
-									y++; 
-								}
-								if (index != _transp)
-									_gui->PutPixel(_imageWindowId, x + offset, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue); 
-								x++;
-						 		
-						 	}
-						}
-						else 
-						{
-						 	index += command-4;
-							if (index != _transp)
-								_gui->PutPixel(_imageWindowId, x + offset, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue); 
-							x++;
-						}							
-					}
-				} 
-		}
-}
-
-void Image::decode_horiz(uint16 height, uint8 parameter, File& _input)
-{	
-	uint8 index = 0;
-	int subt = 1;
-		
-	for (uint16 y = 0; y < height; y++ ) 
-	{
-		for (uint8 x = 0 ; x < 8; x++) 
-		{
-			if ((y == 0) && (x == 0)) 
-			{
-				index = _input.readByte();
-				_gui->PutPixel(_imageWindowId, 0 + offset, 0, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue); 
-				x++;
-			}				
-			if (_input.getbit(1) == 0) 
-				_gui->PutPixel(_imageWindowId, x + offset, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
-			else 
-			{
-				if (_input.getbit(1) == 0) 
-				{
-					index = 0;
-				 	for (uint8 cx = 0; cx < parameter; cx++)
-						index += (_input.getbit(1) << cx );
-					subt = 1;
-				 	_gui->PutPixel(_imageWindowId, x + offset, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
-				}
-				else
-				{	
-				 	if (_input.getbit(1) == 0) 
-				 	{						 
-						index -= subt;
-						_gui->PutPixel(_imageWindowId, x + offset, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
-					}	
-					else
-					{
-						subt =- subt;
-						index -= subt;
-						_gui->PutPixel(_imageWindowId, x + offset, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
-					}
-				} 
-			} 
-		} 
-	}
-}
-
-void Image::decode_vert(uint16 height, uint8 parameter, File& _input)
-{
-	uint8 index = 0;
-	int8 subt = 1;
-		
-	for (uint16 y = 0; y < 8; y++ ) 
-	{
-		for (uint16 x = 0 ; x < height; x++) 
-		{
-			if ((y == 0) && (x == 0)) 
-			{
-				index = _input.readByte();
-				_gui->PutPixel(_imageWindowId, 0 + offset, 0, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue); 
-				x++;
-			}				
-			if (_input.getbit(1) == 0) 
-				_gui->PutPixel(_imageWindowId, y + offset, x, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
-			else 
-			{
-				if (_input.getbit(1) == 0) 
-				{
-					index = 0;
-				 	for (uint8 cx = 0; cx < parameter; cx++) 
-						index += (_input.getbit(1) << cx );
-					subt = 1;
-				 	_gui->PutPixel(_imageWindowId, y + offset, x, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
-				}
-				else
-				{	
-				 	if (_input.getbit(1) == 0) 
-				 	{						 
-						index -= subt;
-						_gui->PutPixel(_imageWindowId, y + offset, x, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
-					}	
-					else
-					{
-						subt =- subt;
-						index -= subt;
-						_gui->PutPixel(_imageWindowId, y + offset, x, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
-					}
-				} 
-			} 
-		} 
-	}
-}
-
-void Image::decode_horiz_transp(uint16 height, uint8 parameter, File& _input)
-{
-	uint8 index = 0;
-	int8 subt = 1;
-		
-	for (uint16 y = 0; y < height; y++ ) 
-	{
-		for (uint8 x = 0 ; x < 8; x++) 
-		{
-			if ((y == 0) && (x == 0)) 
-			{
-				index = _input.readByte();
-				if (index != _transp)
-					_gui->PutPixel(_imageWindowId, 0 + offset, 0, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue); 
-				x++;
-			}				
-			if (_input.getbit(1) == 0) 
-				if (index != _transp)
-					_gui->PutPixel(_imageWindowId, x + offset, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
-			else 
-			{
-				if (_input.getbit(1) == 0) 
-				{
-					index = 0;
-				 	for (uint8 cx = 0; cx < parameter; cx++) 
-						index += (_input.getbit(1) << cx );
-					subt = 1;
-				 	if (index != _transp)
-				 		_gui->PutPixel(_imageWindowId, x + offset, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
-				}
-				else
-				{	
-				 	if (_input.getbit(1) == 0) 
-				 	{						 
-						index -= subt;
-						if (index != _transp)
-							_gui->PutPixel(_imageWindowId, x + offset, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
-					}	
-					else
-					{
-						subt =- subt;
-						index -= subt;
-						if (index != _transp)
-							_gui->PutPixel(_imageWindowId, x + offset, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
-					}
-				} 
-			} 
-		} 
-	}
-}
-
-void Image::decode_vert_transp(uint16 height, uint8 parameter, File& _input)	
-{
-	uint8 index = 0;
-	int8 subt = 1;
-		
-	for (uint16 y = 0; y < 8; y++ ) 
-	{
-		for (uint8 x = 0 ; x < height; x++) 
-		{
-			if ((y == 0) && (x == 0)) 
-			{
-				index = _input.readByte();
-				if (index != _transp)
-					_gui->PutPixel(_imageWindowId, 0 + offset, 0, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue); 
-				x++;
-			}				
-			if (_input.getbit(1) == 0) 
-				if (index != _transp)
-					_gui->PutPixel(_imageWindowId, y + offset, x, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
-			else 
-			{
-				if (_input.getbit(1) == 0) 
-				{
-					index = 0;
-				 	for (uint8 cx = 0; cx < parameter; cx++) 
-						index += (_input.getbit(1) << cx );
-					subt = 1;
-				 	if (index != _transp)
-				 		_gui->PutPixel(_imageWindowId, y + offset, x, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
-				}
-				else
-				{	
-				 	if (_input.getbit(1) == 0) 
-				 	{						 
-						index -= subt;
-						if (index != _transp)
-							_gui->PutPixel(_imageWindowId, y + offset, x, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
-					}	
-					else
-					{
-						subt =- subt;
-						index -= subt;
-						if (index != _transp)
-							_gui->PutPixel(_imageWindowId, y + offset, x, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
-					}
-				} 
-			} 
-		} 
-	}
 }
 
 void Image::decodeCodec44(byte *dst, const byte *src, uint32 length) {
@@ -876,11 +612,11 @@ void Image::decodeCodec1(byte *dst, byte *src, int height) {
 	}
 }
 
-void Image::decodeEGA(byte *dst, const byte *src, int width, int height) {
+void Image::decodeStripEGA(byte *dst, const byte *src, int height) {
 	byte color = 0;
 	int run = 0, x = 0, y = 0, z;
 
-	while (x < width) {
+	while (x < 8) {
 		color = *src++;
 		
 		if (color & 0x80) {
@@ -893,7 +629,7 @@ void Image::decodeEGA(byte *dst, const byte *src, int width, int height) {
 					run = *src++;
 				}
 				for (z = 0; z < run; z++) {
-					*(dst + y * width + x) = (z&1) ? color & 0xf : color >> 4;
+					*(dst + y * _width + x) = (z&1) ? color & 0xf : color >> 4;
 
 					y++;
 					if (y >= height) {
@@ -907,7 +643,7 @@ void Image::decodeEGA(byte *dst, const byte *src, int width, int height) {
 				}
 
 				for (z = 0; z < run; z++) {
-					*(dst + y * width + x) = *(dst + y * width + x - 1);
+					*(dst + y * _width + x) = *(dst + y * _width + x - 1);
 
 					y++;
 					if (y >= height) {
@@ -923,7 +659,7 @@ void Image::decodeEGA(byte *dst, const byte *src, int width, int height) {
 			}
 			
 			for (z = 0; z < run; z++) {
-				*(dst + y * width + x) = color & 0xf;
+				*(dst + y * _width + x) = color & 0xf;
 
 				y++;
 				if (y >= height) {
@@ -933,4 +669,301 @@ void Image::decodeEGA(byte *dst, const byte *src, int width, int height) {
 			}
 		}
 	}
+}
+
+#define READ_BIT (cl--, bit = bits&1, bits>>=1,bit)
+#define FILL_BITS do {												\
+										if (cl <= 8) {						\
+											bits |= (*src++ << cl);	\
+											cl += 8;								\
+										}													\
+									} while (0)
+
+void Image::unkDecodeA(byte *dst, const byte *src, int height) {
+	byte color = *src++;
+	uint bits = *src++;
+	byte cl = 8;
+	byte bit;
+	byte incm, reps;
+
+	do {
+		int x = 8;
+		do {
+			FILL_BITS;
+			*dst++ = color;
+
+		againPos:
+			if (!READ_BIT) {
+			} else if (!READ_BIT) {
+				FILL_BITS;
+				color = bits & _decomp_mask;
+				bits >>= _decomp_shr;
+				cl -= _decomp_shr;
+			} else {
+				incm = (bits & 7) - 4;
+				cl -= 3;
+				bits >>= 3;
+				if (incm) {
+					color = (byte)((color+incm)&0xFF);
+				} else {
+					FILL_BITS;
+					reps = bits & 0xFF;
+					do {
+						if (!--x) {
+							x = 8;
+							dst += _width - 8;
+							if (!--height)
+								return;
+						}
+						*dst++ = color;
+					} while (--reps);
+					bits >>= 8;
+					bits |= (*src++) << (cl - 8);
+					goto againPos;
+				}
+			}
+		} while (--x);
+		dst += _width - 8;
+	} while (--height);
+}
+
+void Image::unkDecodeB(byte *dst, const byte *src, int height) {
+	byte color = *src++;
+	uint bits = *src++;
+	byte cl = 8;
+	byte bit;
+	int8 inc = -1;
+
+	do {
+		int x = 8;
+		do {
+			FILL_BITS;
+			*dst++ = color;
+			if (!READ_BIT) {
+			} else if (!READ_BIT) {
+				FILL_BITS;
+				color = bits & _decomp_mask;
+				bits >>= _decomp_shr;
+				cl -= _decomp_shr;
+				inc = -1;
+			} else if (!READ_BIT) {
+				color += inc;
+			} else {
+				inc = -inc;
+				color += inc;
+			}
+		} while (--x);
+		dst += _width - 8;
+	} while (--height);
+}
+
+void Image::unkDecodeC(byte *dst, const byte *src, int height) {
+	byte color = *src++;
+	uint bits = *src++;
+	byte cl = 8;
+	byte bit;
+	int8 inc = -1;
+
+	int x = 8;
+	do {
+		int h = height;
+		do {
+			FILL_BITS;
+			*dst = color;
+			dst += _width;
+			if (!READ_BIT) {
+			} else if (!READ_BIT) {
+				FILL_BITS;
+				color = bits & _decomp_mask;
+				bits >>= _decomp_shr;
+				cl -= _decomp_shr;
+				inc = -1;
+			} else if (!READ_BIT) {
+				color += inc;
+			} else {
+				inc = -inc;
+				color += inc;
+			}
+		} while (--h);
+		dst -= _vertStripNextInc;
+	} while (--x);
+}
+
+#undef READ_BIT
+#undef FILL_BITS
+
+/* Ender - Zak256/Indy256 decoders */
+#define READ_256BIT                        \
+		do {                               \
+			if ((mask <<= 1) == 256) {     \
+				buffer = *src++;           \
+				mask = 1;                  \
+			}                              \
+			bits = ((buffer & mask) != 0); \
+		} while (0)
+
+#define NEXT_ROW                           \
+		do {                               \
+			dst += _width;      \
+			if (--h == 0) {                \
+				if (!--x)                  \
+					return;                \
+				dst -= _vertStripNextInc;  \
+				h = height;                \
+			}                              \
+		} while (0)
+
+void Image::unkDecode7(byte *dst, const byte *src, int height) {
+	uint h = height;
+
+	//if (_vm->_features & GF_OLD256) {
+		int x = 8;
+		for (;;) {
+			*dst = *src++;
+			NEXT_ROW;
+		}
+		return;
+	//}
+
+	do {
+#if defined(SCUMM_NEED_ALIGNMENT)
+		memcpy(dst, src, 8);
+#else
+		((uint32 *)dst)[0] = ((const uint32 *)src)[0];
+		((uint32 *)dst)[1] = ((const uint32 *)src)[1];
+#endif
+		dst += _width;
+		src += 8;
+	} while (--height);
+}
+
+void Image::unkDecode8(byte *dst, const byte *src, int height) {
+	uint h = height;
+
+	int x = 8;
+	for (;;) {
+		uint run = (*src++) + 1;
+		byte color = *src++;
+
+		do {
+			*dst = color;
+			NEXT_ROW;
+		} while (--run);
+	}
+}
+
+void Image::unkDecode9(byte *dst, const byte *src, int height) {
+	unsigned char c, bits, color, run;
+	int i, j;
+	uint buffer = 0, mask = 128;
+	int h = height;
+	i = j = run = 0;
+
+	int x = 8;
+	for (;;) {
+		c = 0;
+		for (i = 0; i < 4; i++) {
+			READ_256BIT;
+			c += (bits << i);
+		}
+
+		switch (c >> 2) {
+		case 0:
+			color = 0;
+			for (i = 0; i < 4; i++) {
+				READ_256BIT;
+				color += bits << i;
+			}
+			for (i = 0; i < ((c & 3) + 2); i++) {
+				*dst = (run * 16 + color);
+				NEXT_ROW;
+			}
+			break;
+
+		case 1:
+			for (i = 0; i < ((c & 3) + 1); i++) {
+				color = 0;
+				for (j = 0; j < 4; j++) {
+					READ_256BIT;
+					color += bits << j;
+				}
+				*dst = (run * 16 + color);
+				NEXT_ROW;
+			}
+			break;
+
+		case 2:
+			run = 0;
+			for (i = 0; i < 4; i++) {
+				READ_256BIT;
+				run += bits << i;
+			}
+			break;
+		}
+	}
+}
+
+void Image::unkDecode10(byte *dst, const byte *src, int height) {
+	int i;
+	unsigned char local_palette[256], numcolors = *src++;
+	uint h = height;
+
+	for (i = 0; i < numcolors; i++)
+		local_palette[i] = *src++;
+
+	int x = 8;
+
+	for (;;) {
+		byte color = *src++;
+		if (color < numcolors) {
+			*dst = local_palette[color];
+			NEXT_ROW;
+		} else {
+			uint run = color - numcolors + 1;
+			color = *src++;
+			do {
+				*dst = color;
+				NEXT_ROW;
+			} while (--run);
+		}
+	}
+}
+
+void Image::unkDecode11(byte *dst, const byte *src, int height) {
+	int bits, i;
+	uint buffer = 0, mask = 128;
+	unsigned char inc = 1, color = *src++;
+	int x = 8;
+	do {
+		int h = height;
+		do {
+			*dst = color;
+			dst += _width;
+			for (i = 0; i < 3; i++) {
+				READ_256BIT;
+				if (!bits)
+					break;
+			}
+			switch (i) {
+			case 1:
+				inc = -inc;
+				color -= inc;
+				break;
+
+			case 2:
+				color -= inc;
+				break;
+
+			case 3:
+				color = 0;
+				inc = 1;
+				for (i = 0; i < 8; i++) {
+					READ_256BIT;
+					color += bits << i;
+				}
+				break;
+			}
+		} while (--h);
+		dst -= _vertStripNextInc;
+	} while (--x);
 }
