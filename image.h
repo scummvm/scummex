@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.h,v 1.8 2003/09/23 00:47:23 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.h,v 1.9 2003/09/24 11:49:30 yoshizf Exp $
  *
  */
 
@@ -48,6 +48,7 @@ private:
 	uint32 *_offsets;
 	int _width;
 	int _height;
+	int _imageWindowId;
 	Resource *_resource;
 	Codec37Decoder _codec37;
 	Codec47Decoder _codec47;
@@ -58,10 +59,10 @@ public:
 	Image();
 	~Image();
 	int drawPalette(BlockTable *_blockTable, int id, File& _input);
-	int drawBG(File& _input, BlockTable *_blockTable, int id);
+	int drawBG(File& _input, BlockTable *_blockTable, int id, int newWindow = 1, int imageWindowId = 0);
 	int drawObject(File& _input, BlockTable *_blockTable, int id);
 	int drawSmushFrame(BlockTable *_blockTable, int id, File& _input);
-	int drawBoxes(BlockTable *_blockTable, int id, File& _input, int newWindow = 1);
+	int drawBoxes(BlockTable *_blockTable, int id, File& _input, int newWindow = 1, int imageWindowId = 0);
 	void decode_uncompressed(uint16 height, File& _input);
 	void decode_horiz(uint16 height, uint8 compr, File& _input);
 	void decode_vert(uint16 height, uint8 compr, File& _input);

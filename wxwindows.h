@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.h,v 1.10 2003/09/23 13:40:54 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.h,v 1.11 2003/09/24 11:49:30 yoshizf Exp $
  *
  */
 
@@ -104,12 +104,17 @@ protected:
 
 class ImageWindow : public wxFrame {
 public:
-	wxStaticBitmap *_sbmp;
-
-	ImageWindow(MainWindow *parent, const wxString& title, const wxPoint& pos, const wxSize& size, byte flags);
+	ImageWindow(MainWindow *parent, int imgWindowId, const wxString& title, const wxPoint& pos, const wxSize& size, int blockId, byte flags);
 	void DrawImage();
+	void PutPixel(int x, int y, int red, int green, int blue);
+	void UpdateImage();
 
 protected:
+	wxStaticBitmap *_sbmp;
+	wxImage *_image;
+	int _blockId;
+	int _boxesDisplayed;
+
 	void OnQuit(wxCommandEvent& event);
 
 	void SaveImage(wxEvent& event);
@@ -131,7 +136,7 @@ protected:
 class GUI_wxWindows : public wxApp {
 private:
 	MainWindow *_mainWindow;
-	ImageWindow *_imageWindow;
+	ImageWindow *_imageWindow[10];
 
 public:
 	GUI_wxWindows();
@@ -140,13 +145,13 @@ public:
 	void EnableToolbarTool(int tool);
 	void DisableToolbarTool(int tool);
 	void AppendText(char *text);
-	void DrawImage();
-	void UpdateImage();
+	void DrawImage(int imgWindowId);
+	void UpdateImage(int imgWindowId);
 	void DisplayHelp();
 	void SetTitle(char *title);
 	void DisplayViewer(char *title, int width, int height, char *text);
-	void PutPixel(int x, int y, int red, int green, int blue);
-	void DisplayImage(char* title, int width, int height, byte flags = FLAG_NONE);
+	void PutPixel(int imgWindowId, int x, int y, int red, int green, int blue);
+	int DisplayImage(char* title, int width, int height, int blockID, byte flags = FLAG_NONE);
 	void DisplayDialog(char *message, char *title);
 	virtual bool OnInit();
 	void add_tree_elements(char *itemName, int blockid, int level, int type);

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.21 2003/09/23 13:40:54 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.22 2003/09/24 11:49:30 yoshizf Exp $
  *
  */
 
@@ -26,17 +26,16 @@
 #include "icons.h"
 
 ScummEX *g_scummex = 0;
-wxImage *image = 0;
 wxTextCtrl *hexdata = 0;
 wxToolBar *ToolBar = 0;
 
 GUI_wxWindows *_gui = 0;
-
+int imageWindowId;
 
 IMPLEMENT_APP(GUI_wxWindows)
 
 GUI_wxWindows::GUI_wxWindows()
-	: _mainWindow(0), _imageWindow(0) {
+	: _mainWindow(0) {
 	g_scummex = new ScummEX();
 	_gui = this; // FIXME - ugly quick workaround for previously broken code
 }
@@ -124,22 +123,22 @@ int GUI_wxWindows::getScummVersionDialog() {
 	return 0;
 }
 
-void GUI_wxWindows::PutPixel(int x, int y, int red, int green, int blue) {
-	image->SetRGB(x, y, (unsigned char) red, (unsigned char) green, (unsigned char) blue);
+void GUI_wxWindows::PutPixel(int imgWindowId, int x, int y, int red, int green, int blue) {
+	_imageWindow[imgWindowId]->PutPixel(x, y, red, green, blue);
 }
 
-void GUI_wxWindows::DisplayImage(char* title, int width, int height, byte flags) {
-	_imageWindow = new ImageWindow(_mainWindow, title, wxPoint(-1,-1), wxSize(width, height), flags);
+int GUI_wxWindows::DisplayImage(char* title, int width, int height, int blockId, byte flags) {
+	_imageWindow[imageWindowId] = new ImageWindow(_mainWindow, imageWindowId + 150, title, wxPoint(-1,-1), wxSize(width, height), blockId, flags);
+	imageWindowId++;
+	return imageWindowId - 1;
 }
 
-void GUI_wxWindows::DrawImage() {
-	_imageWindow->DrawImage();
+void GUI_wxWindows::DrawImage(int imgWindowId) {
+	_imageWindow[imgWindowId]->DrawImage();
 }
 
-void GUI_wxWindows::UpdateImage() {
-	wxBitmap bitmap = wxBitmap(image);
-	_imageWindow->_sbmp->SetBitmap(bitmap);
-	_imageWindow->Refresh();
+void GUI_wxWindows::UpdateImage(int imgWindowId) {
+	_imageWindow[imgWindowId]->UpdateImage();
 }
 
 BEGIN_EVENT_TABLE(ImageWindow, wxFrame)
@@ -149,11 +148,13 @@ BEGIN_EVENT_TABLE(ImageWindow, wxFrame)
 	EVT_MENU(ID_Boxes, ImageWindow::boxesDrawOverlay)
 END_EVENT_TABLE()
 
-ImageWindow::ImageWindow(MainWindow *parent, const wxString& title, const wxPoint& pos, const wxSize& size, byte flags)
-	: wxFrame(parent,ID_ImageWindow,title,pos,size, wxDEFAULT_FRAME_STYLE & (wxMINIMIZE_BOX | wxSYSTEM_MENU | wxCAPTION))
+ImageWindow::ImageWindow(MainWindow *parent, int imgWindowId, const wxString& title, const wxPoint& pos, const wxSize& size, int blockId, byte flags)
+	: wxFrame(parent, imgWindowId, title, pos, size, wxDEFAULT_FRAME_STYLE & (wxMINIMIZE_BOX | wxSYSTEM_MENU | wxCAPTION))
 {
 	wxMenuBar *menuBar = new wxMenuBar;
 	wxMenu *menuFile = new wxMenu;
+	_blockId = blockId;
+	_boxesDisplayed = 0;
 	
 	wxMenuItem *BMPItem = new wxMenuItem(menuFile, ID_BMP, "Save to BMP...", "Save image to .BMP", wxITEM_NORMAL, NULL );
 	wxBitmap SaveIcon = wxBitmap(save_icon);
@@ -166,18 +167,18 @@ ImageWindow::ImageWindow(MainWindow *parent, const wxString& title, const wxPoin
 
 	if (flags & IMAGE_BOXES) {
 		wxMenu *menuView = new wxMenu;
-		wxMenuItem *BoxesItem = new wxMenuItem(menuView, ID_Boxes, "Display Boxes", "Display Boxes", wxITEM_NORMAL, NULL );
+		wxMenuItem *BoxesItem = new wxMenuItem(menuView, ID_Boxes, "Display Boxes", "Display Boxes", wxITEM_CHECK, NULL );
 		menuView->Append(BoxesItem);
 		menuBar->Append(menuView,"View");
 	}
 	
 	SetMenuBar(menuBar);
 	SetClientSize(size.GetWidth(), size.GetHeight());
-	image = new wxImage(size.GetWidth(), size.GetHeight());
+	_image = new wxImage(size.GetWidth(), size.GetHeight());
 }
 
 void ImageWindow::DrawImage() {
-	wxBitmap bitmap = wxBitmap(image);
+	wxBitmap bitmap = wxBitmap(_image);
 		
 	wxBoxSizer *vertSizer = new wxBoxSizer( wxVERTICAL );
 
@@ -190,7 +191,8 @@ void ImageWindow::DrawImage() {
 
 void ImageWindow::OnQuit(wxCommandEvent& WXUNUSED(event))
 {
-	delete image;
+	delete _image;
+	imageWindowId--;
 	Destroy();
 }
 
@@ -200,18 +202,29 @@ void ImageWindow::SaveImage(wxEvent& event) {
 		wxSAVE);
 	if (dialog->ShowModal() == wxID_OK) {
 		const char *filename = (const char*)dialog->GetPath();
-		image->SaveFile(filename, wxBITMAP_TYPE_BMP);
+		_image->SaveFile(filename, wxBITMAP_TYPE_BMP);
 	}
 }
 
 void ImageWindow::boxesDrawOverlay(wxEvent& event) {
-// FIXME: need to pass the current block ID here. I could add a hack to do
-// that, however, the truth is that ImageWindow and Image are not quite nice
-// anyway... We probably should just rewrite them in a cleaner fashion.
-// Also it feels odd to reuse a single ImageWindow for everything, after all
-// one may want to compare multiple palettes/rooms etc. side-by-side.
-// 
-//	g_scummex->boxesDrawOverlay();
+	int windowId = this->GetId() - 150;
+	if (!_boxesDisplayed) {
+		_boxesDisplayed = 1;
+		g_scummex->boxesDrawOverlay(windowId, _blockId);
+	} else {
+		_boxesDisplayed = 0;
+		g_scummex->bgReDraw(windowId, _blockId);
+	}
+}
+
+void ImageWindow::PutPixel(int x, int y, int red, int green, int blue) {
+	_image->SetRGB(x, y, (unsigned char) red, (unsigned char) green, (unsigned char) blue);
+}
+
+void ImageWindow::UpdateImage() {
+	wxBitmap bitmap = wxBitmap(_image);
+	_sbmp->SetBitmap(bitmap);
+	Refresh();
 }
 
 void GUI_wxWindows::DisplayViewer(char *title, int width, int height, char *text) {
@@ -276,9 +289,9 @@ void MainWindow::SetButton(int blocktype) {
 	switch(blocktype) {
 		case cus2: // iMUSE
 			SpecButton1->SetLabel("Play");
-			SpecButton2->SetLabel("Decompress to WAV...");
+			SpecButton2->SetLabel("Dump to WAV...");
 			SpecButton1->Show(TRUE);
-			SpecButton1->Enable(FALSE); // FIXME Mixer not working anymore?
+			//SpecButton1->Enable(FALSE); // FIXME Mixer not working anymore?
 			SpecButton2->Show(TRUE);
 			Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
 				(wxObjectEventFunction) &MainWindow::iMUSEPlay );
@@ -295,11 +308,11 @@ void MainWindow::SetButton(int blocktype) {
 
 		case Crea:
 			SpecButton1->SetLabel("Play");
-			SpecButton2->SetLabel("Decompress to WAV...");
+			SpecButton2->SetLabel("Dump to WAV...");
 			SpecButton1->Show(TRUE);
-			SpecButton1->Enable(FALSE); // FIXME Mixer not working anymore?
+			//SpecButton1->Enable(FALSE); // FIXME Mixer not working anymore?
 			SpecButton2->Show(TRUE);
-			SpecButton2->Enable(FALSE);
+			//SpecButton2->Enable(FALSE);
 			Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
 				(wxObjectEventFunction) &MainWindow::SOUPlay );
 			Connect( ID_SpecButton2, wxEVT_COMMAND_BUTTON_CLICKED,

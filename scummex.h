@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.h,v 1.13 2003/09/23 12:26:09 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.h,v 1.14 2003/09/24 11:49:30 yoshizf Exp $
  *
  */
 
@@ -65,7 +65,8 @@ public:
 	void SmushFrameDraw(int blockid);
 	void objectDraw(int blockid);
 	void boxesDraw(int blockid);
-	void boxesDrawOverlay(int blockid);
+	void boxesDrawOverlay(int imageWindowId, int blockid);
+	void bgReDraw(int imageWindowId, int blockid);
 	
 	const BlockTable &getBlockTable(int blockid) const { return _blockTable[blockid]; }
 	
