@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.3 2003/09/18 20:50:56 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.4 2003/09/19 01:36:40 fingolfin Exp $
  *
  */
 
@@ -25,9 +25,10 @@
 #include "scummex.h"
 #include "icons.h"
 
-wxTreeItemId iter0, iter1, iter2, iter3, iter4, iter5, iter6, iter7, iter8, itemid;
+wxTreeItemId iter[9], itemid;
 wxTreeCtrl *tree;
-wxStaticText *TypeLabel, *OffsetLabel, *SizeLabel, *DescriptionLabel, *SpecLabel1, *SpecLabel2, *SpecLabel3, *SpecLabel4, *SpecLabel5, *SpecLabel6;
+wxStaticText *TypeLabel, *OffsetLabel, *SizeLabel, *DescriptionLabel;
+wxStaticText *SpecLabel[6];
 wxButton *SpecButton1, *SpecButton2;
 MainWindow *frame;
 ImageWindow *imageFrame;
@@ -319,31 +320,8 @@ void GUI_wxWindows::SetButton(int blocktype) {
 
 void GUI_wxWindows::add_tree_elements(char *itemName, int blockid, int level, int type) {
 
-	if (level == 1) {
-		itemid = iter1 = tree->AppendItem(iter0, itemName, -1, -1, new TreeItemData(blockid, type));
-	}
-
-	if (level == 2) {
-		itemid = iter2 = tree->AppendItem(iter1, itemName, -1, -1, new TreeItemData(blockid, type));
-	}
-	if (level == 3) {
-		itemid = iter3 = tree->AppendItem(iter2, itemName, -1, -1, new TreeItemData(blockid, type));
-	}
-	if (level == 4) {
-		itemid = iter4 = tree->AppendItem(iter3, itemName, -1, -1, new TreeItemData(blockid, type));
-	}
-	if (level == 5) {
-		itemid = iter5 = tree->AppendItem(iter4, itemName, -1, -1, new TreeItemData(blockid, type));
-	}
-	if (level == 6) {
-		itemid = iter6 = tree->AppendItem(iter5, itemName, -1, -1, new TreeItemData(blockid, type));
-	}
-	if (level == 7) {
-		itemid = iter7 = tree->AppendItem(iter6, itemName, -1, -1, new TreeItemData(blockid, type));
-	}
-	if (level == 8) {
-		itemid = iter8 = tree->AppendItem(iter7, itemName, -1, -1, new TreeItemData(blockid, type));
-	}
+	assert(level <= 8);
+	itemid = iter[level] = tree->AppendItem(iter[level-1], itemName, -1, -1, new TreeItemData(blockid, type));
 
 	if (blocksInfo[type].iconid != 0) {
 		tree->SetItemImage(itemid, blocksInfo[type].iconid);
@@ -378,27 +356,27 @@ void GUI_wxWindows::updateLabel(char *label, char *title, uint32 text) {
 	}
 	if (strstr(label, "SpecLabel1")) {
 		sprintf(buf, "%s:    \t\t %d", title, text);
-		SpecLabel1->SetLabel(buf);
+		SpecLabel[0]->SetLabel(buf);
 	}
 	if (strstr(label, "SpecLabel2")) {
 		sprintf(buf, "%s:    \t\t %d", title, text);
-		SpecLabel2->SetLabel(buf);
+		SpecLabel[1]->SetLabel(buf);
 	}
 	if (strstr(label, "SpecLabel3")) {
 		sprintf(buf, "%s:    \t\t %d", title, text);
-		SpecLabel3->SetLabel(buf);
+		SpecLabel[2]->SetLabel(buf);
 	}
 	if (strstr(label, "SpecLabel4")) {
 		sprintf(buf, "%s:    \t\t %d", title, text);
-		SpecLabel4->SetLabel(buf);
+		SpecLabel[3]->SetLabel(buf);
 	}
 	if (strstr(label, "SpecLabel5")) {
 		sprintf(buf, "%s:    \t\t %d", title, text);
-		SpecLabel5->SetLabel(buf);
+		SpecLabel[4]->SetLabel(buf);
 	}
 	if (strstr(label, "SpecLabel6")) {
 		sprintf(buf, "%s:    \t\t %d", title, text);
-		SpecLabel6->SetLabel(buf);
+		SpecLabel[5]->SetLabel(buf);
 	}
 
 }
@@ -556,7 +534,7 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 			4
 			);
 
-	iter0 = tree->AddRoot("", -1, -1, NULL);
+	iter[0] = tree->AddRoot("", -1, -1, NULL);
 	
 	wxBoxSizer *InfosSizer = new wxBoxSizer( wxVERTICAL );
 
@@ -656,43 +634,20 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 			0
 			);
 	
-	SpecLabel1 = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE, "SpecLabel1");
-	SpecLabel2 = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE, "SpecLabel2");
-	SpecLabel3 = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE, "SpecLabel3");
-	SpecLabel4 = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE, "SpecLabel4");
-	SpecLabel5 = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE, "SpecLabel5");
-	SpecLabel6 = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE, "SpecLabel6");
+	SpecLabel[0] = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE, "SpecLabel1");
+	SpecLabel[1] = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE, "SpecLabel2");
+	SpecLabel[2] = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE, "SpecLabel3");
+	SpecLabel[3] = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE, "SpecLabel4");
+	SpecLabel[4] = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE, "SpecLabel5");
+	SpecLabel[5] = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE, "SpecLabel6");
 	
-	SpecInfosSizer->Add(SpecLabel1,
-			0,
-			wxALL|wxEXPAND,
-			1
-			);
-	SpecInfosSizer->Add(SpecLabel2,
-			0,
-			wxALL|wxEXPAND,
-			1
-			);
-	SpecInfosSizer->Add(SpecLabel3,
-			0,
-			wxALL|wxEXPAND,
-			1
-			);
-	SpecInfosSizer->Add(SpecLabel4,
-			0,
-			wxALL|wxEXPAND,
-			1
-			);
-	SpecInfosSizer->Add(SpecLabel5,
-			0,
-			wxALL|wxEXPAND,
-			1
-			);
-	SpecInfosSizer->Add(SpecLabel6,
-			0,
-			wxALL|wxEXPAND,
-			1
-			);
+	for (int i = 0; i < 6; i++) {
+		SpecInfosSizer->Add(SpecLabel[i],
+				0,
+				wxALL|wxEXPAND,
+				1
+				);
+	}
 
 	HtmlHelp = new wxHtmlHelpController(wxHF_DEFAULT_STYLE & wxHF_CONTENTS);
 
@@ -820,7 +775,7 @@ void MainWindow::OnOpen(wxCommandEvent& WXUNUSED(event))
         wxOPEN);
 	if (dialog->ShowModal() == wxID_OK) {
 		file = (const char*)dialog->GetPath();
-		tree->DeleteChildren(iter0);
+		tree->DeleteChildren(iter[0]);
 		_scummex->getFileType(file);
 	}
 }
@@ -831,12 +786,8 @@ void MainWindow::OnSelChanged(wxTreeEvent& event) {
 	itemid = event.GetItem();
 	TreeItemData *item = (TreeItemData *)tree->GetItemData(itemid);
 
-	SpecLabel1->SetLabel("");
-	SpecLabel2->SetLabel("");
-	SpecLabel3->SetLabel("");
-	SpecLabel4->SetLabel("");
-	SpecLabel5->SetLabel("");
-	SpecLabel6->SetLabel("");
+	for (int i = 0; i < 6; i++)
+		SpecLabel[i]->SetLabel("");
 	SpecButton1->Show(FALSE);
 	SpecButton2->Show(FALSE);
 	ToolBar->EnableTool(ID_Dump, TRUE);
