@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.8 2003/09/19 19:57:07 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.9 2003/09/21 00:45:16 yoshizf Exp $
  *
  */
 
@@ -62,13 +62,9 @@ void ScummEX::getFileType(const char *filename) {
 		case MKID('RNAM'):
 		case MKID('LECF'):
 		case MKID('ANIM'):
-			_input.seek(0, SEEK_SET);
-			_resource->searchBlocks(_blockTable, _input);
-			return;
-			
 		case MKID('SOU '):
 			_input.seek(0, SEEK_SET);
-			_sound->parseSOU(_blockTable, _input);
+			_resource->searchBlocks(_blockTable, _input);
 			return;
 
 	}

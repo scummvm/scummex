@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/Attic/sound.cpp,v 1.3 2003/09/18 22:13:12 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/Attic/sound.cpp,v 1.4 2003/09/21 00:45:16 yoshizf Exp $
  *
  */
 
@@ -104,119 +104,6 @@ Sound::Sound() {
 
 Sound::~Sound() {
 	delete _mixer;
-}
-
-void Sound::parseSOU(BlockTable *_blockTable, File& _input) {
-
-	int index = 0, level = 1, block_type;
-	uint size = 0;
-	int rate, comp, real_rate;
-	byte work[8];
-	char ident[8];
-	int filesize, curpos = 0;
-	
-	enum {
-		SOUND_HEADER_SIZE = 26,
-		SOUND_HEADER_BIG_SIZE = 26 + 8
-	};
-
-	filesize = _input.size();
-	
-	// SOU block
-	_input.read(_blockTable[index].blockName, 3);
-	_blockTable[index].blockName[3] = '\0';
-	_input.seek(5, SEEK_CUR);
-	strcpy(_blockTable[index].blockType, _blockTable[index].blockName);
-	_blockTable[index].blockTypeID = _resource->getBlockType(_blockTable[index].blockName);
-	strcpy(_blockTable[index].blockDescription, blocksInfo[_blockTable[index].blockTypeID].description);
-	_blockTable[index].blockSize = filesize;
-	_blockTable[index].offset = 0;
-
-	_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
-	index++;
-	level++;
-	
-	while (curpos < filesize) {
-		// VCTL block
-		while (memcmp(ident, "VCTL", 4)) {
-			_input.read(ident, 4);
-		}
-		sprintf(_blockTable[index].blockName, "VCTL");
-		strcpy(_blockTable[index].blockType, _blockTable[index].blockName);
-		_blockTable[index].blockTypeID = _resource->getBlockType(_blockTable[index].blockName);
-		strcpy(_blockTable[index].blockDescription, blocksInfo[_blockTable[index].blockTypeID].description);
-		_blockTable[index].offset = _input.pos() - 4;
-
-		int ret = 0;
-		int count = 4;
-		while (count > 0) {
-			int c = _input.readByte();
-			ret <<= 8;
-			ret |= c;
-			count--;
-		}
-		_blockTable[index].blockSize = ret;
-
-		_input.seek(_blockTable[index].blockSize-8, SEEK_CUR);
-		_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
-		index++;
-	
-		// Crea or VTLK block
-		if (_input.read(ident, 8) != 8)
-			return;
-
-		_blockTable[index].offset = _input.pos() - 8;
-
-		if (!memcmp(ident, "VTLK", 4)) {
-			sprintf(_blockTable[index].blockName, "VTLK");
-			_input.seek(SOUND_HEADER_BIG_SIZE - 8, SEEK_CUR);
-		} else if (!memcmp(ident, "Creative", 8)) {
-			sprintf(_blockTable[index].blockName, "Crea");
-			_input.seek(SOUND_HEADER_SIZE - 8, SEEK_CUR);
-		} else {
-			printf("parseSOU: invalid header at pos: %d\n", _input.pos() - 8);
-			return;
-		}
-		
-		_blockTable[index].blockTypeID = _resource->getBlockType(_blockTable[index].blockName);
-		strcpy(_blockTable[index].blockDescription, blocksInfo[_blockTable[index].blockTypeID].description);
-		strcpy(_blockTable[index].blockType, _blockTable[index].blockName);
-	
-		block_type = _input.readByte();
-		if (block_type != 1) {
-			printf("Expecting block_type == 1, got %d\n", block_type);
-			return;
-		}
-		
-		_input.read(work, 3);
-
-		size = (work[0] | (work[1] << 8) | (work[2] << 16)) - 2;
-		size += 28;
-		_blockTable[index].blockSize = size;
-		rate = _input.readByte();
-		comp = _input.readByte();
-	
-		if (comp != 0) {
-			printf("Unsupported compression type %d\n", comp);
-			return;
-		}
-		
-		if (rate == 0xa5 || rate == 0xa6) {
-			_blockTable[index].variables = 11025;
-		} else if (rate == 0xd2 || rate == 0xd3) {
-			_blockTable[index].variables = 22050;
-		} else {
-			_blockTable[index].variables = 1000000L / (256L - rate);
-		}
-
-		_input.seek(_blockTable[index].blockSize + _blockTable[index].offset + 5, SEEK_SET);
-	
-		curpos = _input.pos();
-	
-		_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
-		index++;
-	}
-	
 }
 
 int Sound::playSOU(BlockTable *_blockTable, File& _input, int index, File& _output, int save)

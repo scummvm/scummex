@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/Attic/sound.h,v 1.2 2003/09/18 19:37:14 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/Attic/sound.h,v 1.3 2003/09/21 00:45:16 yoshizf Exp $
  *
  */
 
@@ -49,7 +49,6 @@ public:
 	~Sound();
 	int playiMUSE(File& _input, BlockTable *_blockTable, int index, File& _output, int save = 0);
 	int playSOU(BlockTable *_blockTable, File& _input, int index, File& _output, int save = 0);
-	void parseSOU(BlockTable *_blockTable, File& _input);
 
 };
 

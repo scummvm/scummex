@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.7 2003/09/20 23:59:07 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.8 2003/09/21 00:45:16 yoshizf Exp $
  *
  */
 
@@ -675,10 +675,11 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 		case SOU:
 			_blockTable[index].blockSize = _input.readUint32BE();
 			if (_blockTable[index].blockSize == 0) {
-				stopflag = 1;
+				_blockTable[index].blockSize = 8;
+				_input.seek(_blockTable[index].offset + _blockTable[index].blockSize, SEEK_SET);
 				_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
 				index++;
-				break;
+				return index;
 			}
 			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
 			bufindex = index;
