@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.26 2003/09/27 15:55:45 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.27 2003/09/28 09:31:11 fingolfin Exp $
  *
  */
 
@@ -622,25 +622,25 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 
 	SetThemeEnabled(true);
 	
-	ToolBar = CreateToolBar(wxTB_FLAT, -1, "toolBar");
+	ToolBar = CreateToolBar();
 	
 	ToolBar->SetToolBitmapSize(wxSize(16, 16));
 	
-	ToolBar->AddTool(wxID_OPEN, "Open...", OpenIcon, wxNullBitmap, wxITEM_NORMAL, "Open...", "Open resource file", NULL);
-	ToolBar->AddTool(wxID_CLOSE, "Close", CloseIcon, wxNullBitmap, wxITEM_NORMAL, "Close", "Close resource file", NULL);
+	ToolBar->AddTool(wxID_OPEN, OpenIcon, "Open...", "Open resource file");
+	ToolBar->AddTool(wxID_CLOSE, CloseIcon, "Close", "Close resource file");
 	ToolBar->EnableTool(wxID_CLOSE, FALSE);
-	ToolBar->AddTool(ID_FileInfo, "File Info", FileIcon, wxNullBitmap, wxITEM_NORMAL, "File Info", "Show File Info", NULL);
+	ToolBar->AddTool(ID_FileInfo, FileIcon, "File Info", "Show File Info");
 	ToolBar->EnableTool(ID_FileInfo, FALSE);
-	ToolBar->AddTool(wxID_EXIT, "Exit", ExitIcon, wxNullBitmap, wxITEM_NORMAL, "Exit", "Exit ScummEX", NULL);
+	ToolBar->AddTool(wxID_EXIT, ExitIcon, "Exit", "Exit ScummEX");
 	ToolBar->AddSeparator();
-	ToolBar->AddTool(ID_Dump, "File Dump", SaveIcon, wxNullBitmap, wxITEM_NORMAL, "File Dump", "Dump block to disk", NULL);
+	ToolBar->AddTool(ID_Dump, SaveIcon, "File Dump", "Dump block to disk");
 	ToolBar->EnableTool(ID_Dump, FALSE);
-	ToolBar->AddTool(ID_View, "Hex Viewer...", HexIcon, wxNullBitmap, wxITEM_NORMAL, "Hex Viewer...", "View block as hex", NULL);
+	ToolBar->AddTool(ID_View, HexIcon, "Hex Viewer...", "View block as hex");
 	ToolBar->EnableTool(ID_View, FALSE);
-	ToolBar->AddTool(Button_Options, "Options...", OptionsIcon, wxNullBitmap, wxITEM_NORMAL, "Options...", "Options", NULL);
+	ToolBar->AddTool(Button_Options, OptionsIcon, "Options...", "Options");
 	ToolBar->EnableTool(Button_Options, FALSE);
 	ToolBar->AddSeparator();
-	ToolBar->AddTool(wxID_HELP, "Help", HelpIcon, wxNullBitmap, wxITEM_NORMAL, "Help", "View help", NULL);
+	ToolBar->AddTool(wxID_HELP, HelpIcon, "Help", "View help");
 	ToolBar->Realize();
 	
 	panel = new wxPanel(this, -1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, "panel");
