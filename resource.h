@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.h,v 1.13 2003/09/28 21:49:25 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.h,v 1.14 2003/09/29 09:43:18 khalek Exp $
  *
  */
 
@@ -185,8 +185,20 @@ const struct blockInfo blocksInfo[] = {
 	{119, "AUhd", "", 0, "", 31},
 	{120, "WVhd", "", 0, "", 31},
 	{121, "AUdt", "", 0, "", 31},
-	{122, "WVdt", "", 0, "", 31}
+	{122, "WVdt", "", 0, "", 31},
+	{123, "TLKB", "", 0, "", 47},
+	{124, "TALK", "", 0, "", 47},
+	{125, "HSHD", "", 0, "", 47},
+	{126, "DIRI", "", 0, "", 47},
+	{127, "DIRR", "", 0, "", 47},
+	{128, "DIRN", "", 0, "", 47},
+	{129, "DIRC", "", 0, "", 47},
+	{130, "DIRM", "", 0, "", 47},
+	{131, "DLFL", "", 0, "", 47},
+	{132, "DIRS", "", 0, "", 47}
 };
+
+const int numBlocks = 133;
 
 const struct blockInfo oldBlocksInfo[] = {
 	{200, "0R", "Directory of Rooms", 0, "", 18},

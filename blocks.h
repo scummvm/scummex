@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/blocks.h,v 1.8 2003/09/28 21:49:25 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/blocks.h,v 1.9 2003/09/29 09:43:18 khalek Exp $
  *
  */
 
@@ -143,7 +143,18 @@ enum {
 	AUhd,
 	WVhd,
 	AUdt,
-	WVdt
+	WVdt,
+	TLKB,
+	TALK,
+	HSHD,
+	DIRI,
+	DIRR,
+	DIRN,
+	DIRC,
+	DIRF,
+	DIRM,
+	DLFL,
+	DIRS
 };
 
 enum {
