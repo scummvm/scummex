@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.h,v 1.19 2003/10/01 00:17:16 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.h,v 1.20 2004/01/30 02:07:51 sev Exp $
  *
  */
 
@@ -210,10 +210,11 @@ const struct blockInfo blocksInfo[] = {
 	{144, "CNVS", "", 0, "", 47},
 	{145, "POLD", "", 0, "", 47},
 	{146, "LSC2", "", 0, "", 47},
-	{147, "FMUS", "Music header?", 0, "", 47}
+	{147, "FMUS", "Music header?", 0, "", 47},
+	{148, "SKIP", "SMUSH Skip", 0, "", 47}
 };
 
-const int numBlocks = 148;
+const int numBlocks = 149;
 
 const struct blockInfo oldBlocksInfo[] = {
 	{200, "0R", "Directory of Rooms", 0, "", 18},

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.27 2003/10/01 10:06:11 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.28 2004/01/30 02:07:51 sev Exp $
  *
  */
 
@@ -93,7 +93,7 @@ int Resource::searchBlocks(BlockTable *_blockTable, File& _input, int index, int
 			_blockTable[index].blockName[4] = '\0';
 			strcpy(_blockTable[index].blockType, _blockTable[index].blockName);
 			_blockTable[index].offset = _input.pos() - 4;
-			//printf("block: %s offset: %d\n", _blockTable[index].blockName, _blockTable[index].offset);
+			//printf("block: %s offset: %x\n", _blockTable[index].blockName, _blockTable[index].offset);
 			_blockTable[index].blockTypeID = getBlockType(_blockTable[index].blockName);
 			if (_blockTable[index].blockTypeID != -1) {
 				index = parseBlocks(_blockTable[index].blockName, _blockTable, _input, index, level);
@@ -630,14 +630,15 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 			_input.read(_blockTable[index+1].blockName, 4);
 			_blockTable[index+1].blockName[4] = '\0';
 			_blockTable[index+1].blockTypeID = getBlockType(_blockTable[index+1].blockName);
-			if (_blockTable[index+1].blockTypeID != -1) {
-				_input.seek(-4, SEEK_CUR);
-			} else {
-				_blockTable[bufindex].blockSize += 1;
-				_input.seek(-3, SEEK_CUR);
-			}
+			//if (_blockTable[index+1].blockTypeID != -1) {
+			//	_input.seek(-4, SEEK_CUR);
+			//} else {
+			//	_blockTable[bufindex].blockSize += 1;
+			//	_input.seek(-3, SEEK_CUR);
+			//}
+			_input.seek(_blockTable[bufindex].offset + _blockTable[bufindex].blockSize, SEEK_SET);
 			break;
-			
+
 		case FRME:
 		case SAUD:
 			_blockTable[index].blockSize = _input.readUint32BE() + 8;
@@ -767,7 +768,7 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 			break;
 
 		default:
-			_blockTable[index].blockSize = _input.readUint32BE();
+			_blockTable[index].blockSize = _input.readUint32BE() + 8;
 			_input.seek(_blockTable[index].offset + _blockTable[index].blockSize, SEEK_SET);
 			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
 			index++;
