@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.5 2003/09/19 01:36:40 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.6 2003/09/19 11:15:05 yoshizf Exp $
  *
  */
 
@@ -267,7 +267,7 @@ void ScummEX::bgDraw()
 void ScummEX::objectDraw()
 {
 	_image = new Image();
-	_image->drawObject(_input, _blockTable, block_id, _input);
+	_image->drawObject(_input, _blockTable, block_id);
 }
 
 void ScummEX::FileInfo() {

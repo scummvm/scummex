@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.2 2003/09/18 19:37:14 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.3 2003/09/19 11:15:05 yoshizf Exp $
  *
  */
 
@@ -131,7 +131,7 @@ int Image::drawBG(File& _input, BlockTable *_blockTable, int id, char* filename)
 	return 0;
 }
 
-int Image::drawObject(File& _input, BlockTable *_blockTable, int id, File& _output, int save)
+int Image::drawObject(File& _input, BlockTable *_blockTable, int id)
 {
 	int RMHDindex, CLUTindex, SMAPindex, TRNSindex;
 
