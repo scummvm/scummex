@@ -1,6 +1,6 @@
-/* ScummVM - Scumm Interpreter
- * Copyright (C) 2001  Ludvig Strigeus
- * Copyright (C) 2001-2003 The ScummVM project
+/* ScummEX - Viewer for Scumm data files
+ * Copyright (C) 2003 Adrien Mercier
+ * Copyright (C) 2003 The ScummVM project
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/stdafx.h,v 1.1 2003/09/18 16:26:58 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/stdafx.h,v 1.2 2003/09/18 19:37:14 fingolfin Exp $
  *
  */
 
