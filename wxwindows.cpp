@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.20 2003/09/23 12:26:09 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.21 2003/09/23 13:40:54 yoshizf Exp $
  *
  */
 
@@ -914,13 +914,16 @@ void MainWindow::OnHelp(wxCommandEvent& WXUNUSED(event)) {
 
 void MainWindow::OnOpen(wxCommandEvent& WXUNUSED(event))
 {
-	wxFileDialog *dialog = new wxFileDialog(this, "Please select an input file.", "", "",
+	wxFileDialog *dialog = new wxFileDialog(this, "Please select an input file.", _filepath, "",
 		"All Supported Files|*|"
 		"Main Resource Files|*.001;*.la1;*.la2;*.lab;*.lfl;*.lec;*.sm1|"
 		"Directory Files|*.000;*.la0;*.lfl;*.sm0",
 		wxOPEN);
 	if (dialog->ShowModal() == wxID_OK) {
 		_filename = (const char*)dialog->GetPath();
+		_file = wxFileName(_filename);
+	
+		_filepath = _file.GetPath();
 		tree->DeleteChildren(iter[0]);
 		g_scummex->loadFile(_filename);
 	}
@@ -1237,10 +1240,9 @@ void MainWindow::FileInfoDialog(int size, int encbyte) {
 	char msg[512];
 	const char *fname;
 	const char *fpath;
-	wxFileName *filename = new wxFileName(_filename);
 	
-	fname = filename->GetFullName();
-	fpath = filename->GetFullPath();
+	fname = _file.GetFullName();
+	fpath = _file.GetFullPath();
 	sprintf(msg, "Filename: \t\t %s\n", fname);
 	sprintf(buf, "Full Path: \t\t %s\n", fpath);
 	strcat(msg, buf);

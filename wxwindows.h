@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.h,v 1.9 2003/09/23 12:26:09 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.h,v 1.10 2003/09/23 13:40:54 yoshizf Exp $
  *
  */
 
@@ -59,8 +59,10 @@ private:
 	wxButton *SpecButton1, *SpecButton2;
 	wxTreeItemId iter[11];
 	wxTreeCtrl *tree;
+	wxFileName _file;
 
 	const char *_filename;
+	wxString _filepath;
 
 	uint32 _blockId;
 

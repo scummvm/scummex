@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.21 2003/09/23 12:26:09 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.22 2003/09/23 13:40:54 yoshizf Exp $
  *
  */
 
@@ -41,6 +41,7 @@ void ScummEX::loadFile(const char *filename) {
 	uint32 tag;
 	_encbyte = 0;
 	char buf[256];
+	_scummVersion = 0;
 	
 	if (_input.isOpen()) {
 		_input.close();
@@ -118,7 +119,8 @@ void ScummEX::loadFile(const char *filename) {
 void ScummEX::Descumm(int blockid) {
 	
 	_input.seek(_blockTable[blockid].offset, SEEK_SET);
-	_scummVersion = _gui->getScummVersionDialog();
+	if (_scummVersion == 0)
+		_scummVersion = _gui->getScummVersionDialog();
 	if (_scummVersion != 0) {
 		DeScumm(_input, _blockTable[blockid].blockSize, _scummVersion);
 	}
