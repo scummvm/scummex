@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.25 2003/09/30 12:28:33 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.26 2003/09/30 12:36:20 yoshizf Exp $
  *
  */
 
@@ -901,7 +901,7 @@ int Resource::getOldBlockType(char *tag) {
 			return oldBlocksInfo[i].id;
 		}
 	}
-	printf("Unknown block: %s\n", tag);
+	//printf("Unknown block: %s\n", tag);
 	return -1;
 }
 
