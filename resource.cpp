@@ -200,14 +200,6 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 			index++;
 			break;
 
-		case LECF:
-			_blockTable[index].blockSize = _input.readUint32BE();
-			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
-			index++;
-			level++;
-			index = searchBlocks(_blockTable, _input, index, level, _blockTable[index-1].blockSize + _blockTable[index-1].offset);
-			break;
-
 		case LOFF:
 			_blockTable[index].blockSize = _input.readUint32BE();
 			numFiles = _input.readByte();
@@ -220,25 +212,6 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 	
 			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
 			index++;
-			break;
-		
-		case LFLF:
-			blockSize = _input.readUint32BE();
-			_blockTable[index].blockSize = blockSize;
-			blockOffset = _blockTable[index].offset;
-			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
-			index++;
-			level++;
-			index = searchBlocks(_blockTable, _input, index, level, blockSize + blockOffset);
-			_input.seek(blockSize + blockOffset, SEEK_SET);
-			break;
-
-		case ROOM:
-			_blockTable[index].blockSize = _input.readUint32BE();
-			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
-			index++;
-			level++;
-			index = searchBlocks(_blockTable, _input, index, level, _blockTable[index-1].blockSize + _blockTable[index-1].offset);
 			break;
 			
 		case RMHD:
@@ -272,24 +245,6 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 			index++;
 			break;
 
-		case CYCL:
-		case EPAL:
-		case BOXD:
-		case BOXM:
-			_blockTable[index].blockSize = _input.readUint32BE();
-			_input.seek(_blockTable[index].offset + _blockTable[index].blockSize, SEEK_SET);
-			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
-			index++;
-			break;
-
-		case OBCD:
-			_blockTable[index].blockSize = _input.readUint32BE();
-			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
-			index++;
-			level++;
-			index = searchBlocks(_blockTable, _input, index, level, _blockTable[index-1].blockSize + _blockTable[index-1].offset);
-			break;
-
 		case OBNA:
 			_blockTable[index].blockSize = _input.readUint32BE();
 			while (1) {
@@ -301,14 +256,6 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
 			index++;
 			break;
-
-		case CDHD:
-		case VERB:
-			_blockTable[index].blockSize = _input.readUint32BE();
-			_input.seek(_blockTable[index].offset + _blockTable[index].blockSize, SEEK_SET);
-			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
-			index++;
-			break;			
 
 		case DROO:
 		case DSCR:
@@ -349,24 +296,6 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 			index++;
 			break;
 
-		case PALS:
-			_blockTable[index].blockSize = _input.readUint32BE();
-			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
-			index++;
-			level++;
-			index = searchBlocks(_blockTable, _input, index, level, _blockTable[index-1].blockSize + _blockTable[index-1].offset);
-			break;
-			
-		case WRAP:
-			_blockTable[index].blockSize = _input.readUint32BE();
-			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
-			bufindex = index;
-			index++;
-			level++;
-			index = searchBlocks(_blockTable, _input, index, level, _blockTable[index-1].blockSize + _blockTable[index-1].offset);
-			_input.seek(_blockTable[bufindex].offset + _blockTable[bufindex].blockSize, SEEK_SET);
-			break;
-		
 		case OFFS:
 			_blockTable[index].blockSize = _input.readUint32BE();
 			for (uint32 j=0; j < ((_blockTable[index].blockSize-8) / 4); j++) {
@@ -377,41 +306,12 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 			index++;
 			break;
 
-		case RMIM:
-			_blockTable[index].blockSize = _input.readUint32BE();
-			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
-			bufindex = index;
-			index++;
-			level++;
-			index = searchBlocks(_blockTable, _input, index, level, _blockTable[index-1].blockSize + _blockTable[index-1].offset);
-			_input.seek(_blockTable[bufindex].offset + _blockTable[bufindex].blockSize, SEEK_SET);
-			break;
-
 		case RMIH:
 			_blockTable[index].blockSize = _input.readUint32BE();
 			int numZBuffer;
 			numZBuffer = _input.readUint16LE();
 			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
 			index++;
-			break;
-
-		case 34: // IM00
-		case 60:
-		case 61:
-		case 62:
-		case 63:
-		case 64:
-		case 65:
-		case 66:
-		case 67:
-		case 68:
-			_blockTable[index].blockSize = _input.readUint32BE();
-			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
-			bufindex = index;
-			index++;
-			level++;
-			index = searchBlocks(_blockTable, _input, index, level, _blockTable[index-1].blockSize + _blockTable[index-1].offset);
-			_input.seek(_blockTable[bufindex].offset + _blockTable[bufindex].blockSize, SEEK_SET);
 			break;
 
 		case SMAP:
@@ -426,13 +326,6 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 			_input.seek(_blockTable[bufindex].offset + _blockTable[bufindex].blockSize, SEEK_SET);
 			break;
 
-		case SCAL:
-			_blockTable[index].blockSize = _input.readUint32BE();
-			_input.seek(_blockTable[index].offset + _blockTable[index].blockSize, SEEK_SET);
-			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
-			index++;
-			break;
-
 		case AARY:
 			_blockTable[index].blockSize = _input.readUint32BE();
 			_blockTable[index].numFiles = _input.readUint16LE();
@@ -440,47 +333,14 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
 			index++;
 			break;
-			
-		case ANAM:
-			_blockTable[index].blockSize = _input.readUint32BE();
-			_input.seek(_blockTable[index].offset + _blockTable[index].blockSize, SEEK_SET);
-			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
-			index++;
-			break;
-			
+
 		case SOUN:
 			_blockTable[index].blockSize = _input.readUint32BE();
 			_input.seek(_blockTable[index].offset + _blockTable[index].blockSize, SEEK_SET);
 			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
 			index++;
 			break;
-
-		case EXCD:
-		case ENCD:
-		case NLSC:
-			_blockTable[index].blockSize = _input.readUint32BE();
-			_input.seek(_blockTable[index].offset + _blockTable[index].blockSize, SEEK_SET);
-			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
-			index++;
-			break;
-
-		case SCRP:
-			_blockTable[index].blockSize = _input.readUint32BE();
-			_input.seek(_blockTable[index].offset + _blockTable[index].blockSize, SEEK_SET);
-			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
-			index++;
-			break;
-		
-		case OBIM:
-			_blockTable[index].blockSize = _input.readUint32BE();
-			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
-			bufindex = index;
-			index++;
-			level++;
-			index = searchBlocks(_blockTable, _input, index, level, _blockTable[index-1].blockSize + _blockTable[index-1].offset);
-			_input.seek(_blockTable[bufindex].offset + _blockTable[bufindex].blockSize, SEEK_SET);
-			break;
-
+			
 		case IMHD:
 			_blockTable[index].blockSize = _input.readUint32BE();
 			_blockTable[index].width = _input.readUint32LE();
@@ -538,14 +398,6 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 		case iMUS:
 			number = _input.readUint32BE(); // dwDecompSize
 			_blockTable[index].blockSize = 9;
-			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
-			index++;
-			level++;
-			index = searchBlocks(_blockTable, _input, index, level, _blockTable[index-1].blockSize + _blockTable[index-1].offset);
-			break;
-
-		case MAP:
-			_blockTable[index].blockSize = _input.readUint32BE();
 			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
 			index++;
 			level++;
@@ -694,7 +546,6 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 			
 			break;
 			
-			
 		case LABN:
 			_input.readUint32LE();
 			numFiles = _input.readUint32LE();
@@ -768,6 +619,25 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 		case RMSC:
 		case AKOS:
 		case ANIM:
+		case LECF:
+		case LFLF:
+		case ROOM:
+		case OBCD:
+		case MAP:
+		case IM00:
+		case IM01:
+		case IM02:
+		case IM03:
+		case IM04:
+		case IM05:
+		case IM06:
+		case IM07:
+		case IM08:
+		case IM09:
+		case RMIM:
+		case PALS:
+		case WRAP:
+		case OBIM:
 			_blockTable[index].blockSize = _input.readUint32BE();
 			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
 			bufindex = index;
