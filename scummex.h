@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.h,v 1.9 2003/09/22 18:25:16 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.h,v 1.10 2003/09/22 23:43:29 fingolfin Exp $
  *
  */
 
@@ -30,6 +30,12 @@
 
 class ScummEX {
 private:
+	File _input;
+	File _output;
+	uint32 _blockId;
+		
+	struct BlockTable _blockTable[60000];
+	
 	byte _encbyte;
 	
 	Image *_image;
@@ -38,9 +44,6 @@ private:
 	GUI_wxWindows *_gui;
 
 public:
-	/*File _input;
-	File _output;
-	uint32 _blockId;*/
 	int _scummVersion;
 
 	ScummEX();

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.17 2003/09/22 19:47:58 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.18 2003/09/22 23:43:29 fingolfin Exp $
  *
  */
 
@@ -24,14 +24,6 @@
 #include "file.h"
 #include "scummex.h"
 #include "descumm.h"
-
-File _input;
-File _output;
-uint32 _blockId;
-	
-struct RoomTable _roomTable[200];
-
-struct BlockTable _blockTable[60000];
 
 ScummEX::ScummEX() {
     _image = new Image();
@@ -45,8 +37,6 @@ void ScummEX::getFileType(const char *filename) {
 	char buf[256];
 	
 	if (_input.isOpen()) {
-		free(_roomTable);
-		free(_blockTable);
 		_input.close();
 	}
 		
