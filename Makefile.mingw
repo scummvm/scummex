@@ -4,7 +4,7 @@ SRC=.
 
 ### Modify these paths
 SDL_CFLAGS=-I$(SRC)/sdl/include
-SDL_LIBS=-L$(SRC)/sdl/lib -lSDLmain -lSDL -lSDL_mixer
+SDL_LIBS=-L$(SRC)/sdl/lib -lSDLmain -lSDL
 
 WX_CFLAGS= -I/usr/local/include `wxmsw-2.4-config --cxxflags`
 WX_LIBS=`wxmsw-2.4-config --libs`
@@ -79,4 +79,3 @@ dist:   install
 	cp help/*.html $(SCUMMEXPATH)/help
 	cp help/help.* $(SCUMMEXPATH)/help
 	cp SDL/lib/SDL.dll $(SCUMMEXPATH)
-	cp SDL/lib/SDL_Mixer.dll $(SCUMMEXPATH)
