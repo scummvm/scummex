@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.11 2003/09/21 18:33:04 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.12 2003/09/22 08:31:59 yoshizf Exp $
  *
  */
 
@@ -689,13 +689,22 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 			break;
 
 		case IACT:
-			_blockTable[index].blockSize = _input.readUint32BE() + 9;
+			_blockTable[index].blockSize = _input.readUint32BE() + 8;
 			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
 			bufindex = index;
 			index++;
 			level++;
 			index = searchBlocks(_blockTable, _input, index, level, _blockTable[index-1].blockSize + _blockTable[index-1].offset);
 			_input.seek(_blockTable[bufindex].offset + _blockTable[bufindex].blockSize, SEEK_SET);
+			_input.read(_blockTable[index+1].blockName, 4);
+			_blockTable[index+1].blockName[4] = '\0';
+			_blockTable[index+1].blockTypeID = getBlockType(_blockTable[index+1].blockName);
+			if (_blockTable[index+1].blockTypeID != -1) {
+				_input.seek(-4, SEEK_CUR);
+			} else {
+				_blockTable[bufindex].blockSize += 1;
+				_input.seek(-3, SEEK_CUR);
+			}
 			break;
 			
 		case FRME:
