@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.h,v 1.6 2003/09/21 23:50:28 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.h,v 1.7 2003/09/22 19:47:58 yoshizf Exp $
  *
  */
 
@@ -148,10 +148,10 @@ const struct blockInfo blocksInfo[] = {
 	{83, "BOMP", ""},
 	{84, "IMAG", "", 0, "", 25},
 	{85, "AKOS", ""},
-	{86, "ZP04", ""},
+	{86, "ZP04", "", 0, "", 52},
 	{87, "RMSC", "", 1, "help/specRMSC.html", 57},
 	{88, "BSTR", "", 0, "", 42},
-	{89, "ZPLN", ""},
+	{89, "ZPLN", "", 0, "", 52},
 	{90, "AKHD", ""},
 	{91, "AKPL", ""},
 	{92, "RGBS", ""},
@@ -220,7 +220,7 @@ public:
 	int searchOldBlocks(BlockTable *_blockTable, File& _input, int index = 0, int level = 1, int size = 0);
 	int parseBlocks(char *blockName, BlockTable *_blockTable, File& _input, int index, int level);
 	int parseOldBlocks(char *blockName, BlockTable *_blockTable, File& _input, int index, int level);
-	int findBlock(int direction, BlockTable * _blockTable, File& _input, int id, ...);
+	int findBlock(int direction, BlockTable * _blockTable, int id, ...);
 };
 
 #endif

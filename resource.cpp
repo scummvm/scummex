@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.13 2003/09/22 15:23:56 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.14 2003/09/22 19:47:58 yoshizf Exp $
  *
  */
 
@@ -26,90 +26,6 @@
 #include "scummex.h"
 
 int v8 = 0;
-
-/*void parseV5Index(BlockTable *_blockTable, RoomTable *_roomTable, File& _input, int fileType) {
-	int i = 0, index = 0, rooms = 0;
-
-	// MAXS block
-	if (rooms < 1)
-		fileType = 2;
-
-	if (fileType == 1) {
-		_input.read(_blockTable[index].blockName, 4);
-		_blockTable[index].blockName[4] = '\0';
-		strcpy(_blockTable[index].blockType, _blockTable[index].blockName);
-		_blockTable[index].blockTypeID = getBlockType(_blockTable[index].blockName);
-		strcpy(_blockTable[index].blockDescription, blocksInfo[_blockTable[index].blockTypeID].description);
-
-		_blockTable[index].blockSize = _input.readUint32BE();
-		_blockTable[index].offset = _input.pos() - 8;
-		_blockTable[index].variables = _input.readUint16LE();
-		_input.readUint16LE();
-		_blockTable[index].bitVariables = _input.readUint16LE();
-		_blockTable[index].localObjects = _input.readUint16LE();
-		_blockTable[index].arrays = _input.readUint16LE();
-		_blockTable[index].characters = _input.readUint16LE();
-		_input.readUint16LE();
-		_input.readUint16LE();
-		_blockTable[index].invObjects = _input.readUint16LE();
-		index++;
-	}
-
-	if (fileType == 2) {
-		_input.read(_blockTable[index].blockName, 4);
-		_blockTable[index].blockName[4] = '\0';
-		strcpy(_blockTable[index].blockType, _blockTable[index].blockName);
-		_blockTable[index].blockTypeID = getBlockType(_blockTable[index].blockName);
-		strcpy(_blockTable[index].blockDescription, blocksInfo[_blockTable[index].blockTypeID].description);
-		_blockTable[index].blockSize = _input.readUint32BE();
-		_blockTable[index].offset = _input.pos() - 8;
-		_blockTable[index].variables = _input.readUint16LE();
-		_input.readUint16LE();
-		_blockTable[index].bitVariables = _input.readUint16LE();
-		_blockTable[index].localObjects = _input.readUint16LE();
-		_blockTable[index].arrays = _input.readUint16LE();
-		_input.readUint16LE();
-		_input.readUint16LE();
-		_input.readUint16LE();
-		_blockTable[index].invObjects = _input.readUint16LE();
-		_input.readUint16LE();
-		_input.readUint16LE();
-		_input.readUint16LE();
-		_blockTable[index].characters = _input.readUint16LE();
-		_input.readUint16LE();
-		_input.readUint16LE();
-		index++;
-	}
-
-	if (fileType == 3) {
-		_input.read(_blockTable[index].blockName, 4);
-		_blockTable[index].blockName[4] = '\0';
-		strcpy(_blockTable[index].blockType, _blockTable[index].blockName);
-		_blockTable[index].blockTypeID = getBlockType(_blockTable[index].blockName);
-		strcpy(_blockTable[index].blockDescription, blocksInfo[_blockTable[index].blockTypeID].description);
-		_blockTable[index].blockSize = _input.readUint32BE();
-		_blockTable[index].offset = _input.pos() - 8;
-		_input.seek(50 + 50, SEEK_CUR);
-		_blockTable[index].variables = _input.readUint16LE();
-		_blockTable[index].bitVariables = _input.readUint16LE();
-		_input.readUint16LE();
-		_input.readUint16LE();
-		_blockTable[index].localObjects = _input.readUint16LE();
-		_input.readUint16LE();
-		_input.readUint16LE();
-		_input.readUint16LE();
-		_blockTable[index].invObjects = _input.readUint16LE();
-		_blockTable[index].arrays = _input.readUint16LE();
-		_input.readUint16LE();
-		_input.readUint16LE();
-		_input.readUint16LE();
-		_blockTable[index].characters = _input.readUint16LE();
-		_input.readUint16LE();
-		index++;
-	}
-
-}
-*/
 
 Resource::Resource() {
 	stopflag = 0;
@@ -654,6 +570,7 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 		case WRAP:
 		case OBIM:
 		case SOUN:
+		case ZPLN:
 			_blockTable[index].blockSize = _input.readUint32BE();
 			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
 			bufindex = index;
@@ -951,7 +868,7 @@ int Resource::getOldBlockType(char *tag) {
 	return -1;
 }
 
-int Resource::findBlock(int direction, BlockTable * _blockTable, File& _input, int id, ...)
+int Resource::findBlock(int direction, BlockTable * _blockTable, int id, ...)
 {
 	va_list arg_ptr;
 	char *test;

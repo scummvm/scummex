@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.13 2003/09/22 18:25:16 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.14 2003/09/22 19:47:59 yoshizf Exp $
  *
  */
 
@@ -379,6 +379,7 @@ void GUI_wxWindows::SetButton(int blocktype) {
 		
 		case BM:
 		case RMIM:
+		case IMAG:
 			SpecButton1->SetLabel("View Image");
 			SpecButton1->Show(TRUE);
 			SpecButton1->Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
@@ -1112,6 +1113,8 @@ void MainWindow::OnSelChanged(wxTreeEvent& event) {
 		case ZP01:
 		case ZP02:
 		case ZP03:
+		case ZP04:
+		case ZPLN:
 			bigIconBitmap = wxBitmap(xpm_52_big);
 			break;
 			
