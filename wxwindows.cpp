@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.33 2003/09/30 08:46:12 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.34 2003/09/30 11:41:28 yoshizf Exp $
  *
  */
 
@@ -309,6 +309,14 @@ void MainWindow::SetButton(int blocktype) {
 			break;
 
 		case OBIM:
+			if (g_scummex->getBlockTable(_blockId+3).blockTypeID == 35) {
+				SpecButton1->SetLabel("View Object");
+				SpecButton1->Show(TRUE);
+				Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
+					(wxObjectEventFunction) &MainWindow::objectDraw );
+			}
+			break;
+
 		case IM01:
 		case IM02:
 		case IM03:
@@ -324,10 +332,13 @@ void MainWindow::SetButton(int blocktype) {
 		case IM0D:
 		case IM0E:
 		case IM0F:
+		case OI:
+		if (g_scummex->getBlockTable(_blockId).blockSize > 8) {
 			SpecButton1->SetLabel("View Object");
 			SpecButton1->Show(TRUE);
 			Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
 				(wxObjectEventFunction) &MainWindow::objectDraw );
+		}
 			break;
 
 		case Crea:
@@ -479,91 +490,44 @@ void MainWindow::updateLabels(int blockid) {
 			updateLabel(_SpecLabel[0], "Number of items:", block.numFiles);
 			break;
 
-		case cus2:
-			SetButton(block.blockTypeID);
-			break;
-			
 		case COMP:
 			updateLabel(_SpecLabel[0], "Number of samples:", block.numFiles);
 			break;
 
-		case CLUT:
-		case APAL:
-		case PA:
-		case NPAL:
-		case AHDR:
-		case RGBS:
-			SetButton(block.blockTypeID);
-			break;
-
-		case RMIM:
-		case BM:
-		case IMAG:
-			SetButton(block.blockTypeID);
-			break;
-
-		case OBIM:
-			if (g_scummex->getBlockTable(blockid+3).blockTypeID == 35) {
-				SetButton(block.blockTypeID);
-			}
-			break;
-
-		case IM01:
-		case IM02:
-		case IM03:
-		case IM04:
-		case IM05:
-		case IM06:
-		case IM07:
-		case IM08:
-		case IM09:
-		case IM0A:
-		case IM0B:
-		case IM0C:
-		case IM0D:
-		case IM0E:
-		case IM0F:
-			SetButton(block.blockTypeID);
-			break;
-
 		case IMHD:
-			updateLabel(_SpecLabel[0], "Room Width:", block.width);
-			updateLabel(_SpecLabel[1], "Room Height:", block.height);
+			updateLabel(_SpecLabel[0], "Object Width:", block.width);
+			updateLabel(_SpecLabel[1], "Object Height:", block.height);
 			updateLabel(_SpecLabel[2], "Number of Images:", block.numFiles);
 			break;
 			
 		case Crea:
 		case AUdt:
 			updateLabel(_SpecLabel[0], "Sample Rate:", block.variables);
-			SetButton(block.blockTypeID);
-			break;
-
-		case LSCR:
-		case SCRP:
-		case ENCD:
-		case EXCD:
-		case VERB:
-		case LS:
-		case SC:
-		case EN:
-		case EX:
-		case OC:
-			SetButton(block.blockTypeID);
 			break;
 
 		case FOBJ:
 			updateLabel(_SpecLabel[0], "Frame Width:", block.width);
 			updateLabel(_SpecLabel[1], "Frame Height:", block.height);
 			updateLabel(_SpecLabel[2], "Codec:", block.variables);
-			SetButton(block.blockTypeID);
 			break;
 
 		case BOXD:
 		case BX:
 			updateLabel(_SpecLabel[0], "No. of Boxes:", block.numFiles);
-			SetButton(block.blockTypeID);
 			break;
+
+		case OI:
+			updateLabel(_SpecLabel[0], "Object ID:", block.numFiles);
+			break;
+
+		case OC:
+			updateLabel(_SpecLabel[0], "Object ID:", block.numFiles);
+			updateLabel(_SpecLabel[1], "Object Width:", block.width);
+			updateLabel(_SpecLabel[2], "Object Height:", block.height);
+			break;
+
 	}
+	SetButton(block.blockTypeID);
 }
 
 BEGIN_EVENT_TABLE(MainWindow, wxFrame)

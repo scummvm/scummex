@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.23 2003/09/29 10:58:20 khalek Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.24 2003/09/30 11:41:28 yoshizf Exp $
  *
  */
 
@@ -849,7 +849,25 @@ int Resource::parseOldBlocks(char *blockName, BlockTable *_blockTable, File& _in
 			_input.seek(_blockTable[index].blockSize + _blockTable[index].offset, SEEK_SET);
 			index++;
 			break;
-		
+
+		case OI:
+			_blockTable[index].numFiles = _input.readUint16LE(); // Object ID
+			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
+			_input.seek(_blockTable[index].blockSize + _blockTable[index].offset, SEEK_SET);
+			index++;
+			break;
+			
+		case OC:
+			_blockTable[index].numFiles = _input.readUint16LE(); // Object ID
+			_input.seek(3, SEEK_CUR);
+			_blockTable[index].width = _input.readByte() * 8;
+			_input.seek(5, SEEK_CUR);
+			_blockTable[index].height = _input.readByte() & 0xF8;
+			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
+			_input.seek(_blockTable[index].blockSize + _blockTable[index].offset, SEEK_SET);
+			index++;
+			break;
+
 		default:
 			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
 			_input.seek(_blockTable[index].blockSize + _blockTable[index].offset, SEEK_SET);
