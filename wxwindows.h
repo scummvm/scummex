@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.h,v 1.4 2003/09/22 15:23:57 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.h,v 1.5 2003/09/22 18:25:16 yoshizf Exp $
  *
  */
 
@@ -39,6 +39,11 @@
 #include "blocks.h"
 #include "scummsys.h"
 
+enum {
+	FLAG_NONE = 1 << 0,
+	IMAGE_BOXES = 1 << 1
+};
+	
 class MainWindow : public wxFrame {
 private:
 	wxHtmlHelpController *HtmlHelp;
@@ -64,7 +69,7 @@ public:
 
 	void DrawImage();
 	void OnQuit(wxCommandEvent& event);
-	ImageWindow(const wxString& title, const wxPoint& pos, const wxSize& size);
+	ImageWindow(const wxString& title, const wxPoint& pos, const wxSize& size, byte flags);
 };
 
 class ViewerWindow : public wxFrame {
@@ -92,7 +97,7 @@ public:
 	void SaveImage();
 	void DisplayViewer(char *title, int width, int height, char *text);
 	void PutPixel(int x, int y, int red, int green, int blue);
-	void DisplayImage(char* title, int width, int height);
+	void DisplayImage(char* title, int width, int height, byte flags = FLAG_NONE);
 	void SetButton(int blocktype);
 	void DisplayDialog(char *message, char *title);
 	void updateLabel(char *label, char *title, uint32 text);
@@ -131,6 +136,7 @@ enum
 	ID_ImageWindow,
 	ID_ViewerWindow,
 	ID_BMP,
+	ID_Boxes,
 	Tree
 };
 

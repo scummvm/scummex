@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.12 2003/09/22 15:23:57 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.13 2003/09/22 18:25:16 yoshizf Exp $
  *
  */
 
@@ -212,13 +212,15 @@ void GUI_wxWindows::SaveImage() {
 	}
 }
 
-void GUI_wxWindows::DisplayImage(char* title, int width, int height) {
-	imageFrame = new ImageWindow(title, wxPoint(-1,-1), wxSize(width, height));
+void GUI_wxWindows::DisplayImage(char* title, int width, int height, byte flags) {
+	imageFrame = new ImageWindow(title, wxPoint(-1,-1), wxSize(width, height), flags);
 
 	imageFrame->Connect( Viewer_Quit, wxEVT_COMMAND_MENU_SELECTED,
 		(wxObjectEventFunction) &ImageWindow::OnQuit );
 	imageFrame->Connect( ID_BMP, wxEVT_COMMAND_MENU_SELECTED,
 		(wxObjectEventFunction) &GUI_wxWindows::SaveImage );
+	imageFrame->Connect( ID_Boxes, wxEVT_COMMAND_MENU_SELECTED,
+		(wxObjectEventFunction) &ScummEX::boxesDrawOverlay );
 	imageFrame->Connect( ID_ImageWindow, wxEVT_CLOSE_WINDOW,
 		(wxObjectEventFunction) &ImageWindow::OnQuit );
 }
@@ -233,7 +235,7 @@ void GUI_wxWindows::UpdateImage() {
 	imageFrame->Refresh();
 }
 
-ImageWindow::ImageWindow(const wxString& title, const wxPoint& pos, const wxSize& size)
+ImageWindow::ImageWindow(const wxString& title, const wxPoint& pos, const wxSize& size, byte flags)
 	: wxFrame(frame,ID_ImageWindow,title,pos,size, wxDEFAULT_FRAME_STYLE & (wxMINIMIZE_BOX | wxSYSTEM_MENU | wxCAPTION))
 {
 	wxMenuBar *menuBar = new wxMenuBar;
@@ -247,6 +249,14 @@ ImageWindow::ImageWindow(const wxString& title, const wxPoint& pos, const wxSize
 	menuFile->Append(Viewer_Quit,"Close");
 	
 	menuBar->Append(menuFile,"&File");
+
+	if (flags & IMAGE_BOXES) {
+		wxMenu *menuView = new wxMenu;
+		wxMenuItem *BoxesItem = new wxMenuItem(menuView, ID_Boxes, "Display Boxes", "Display Boxes", wxITEM_NORMAL, NULL );
+		menuView->Append(BoxesItem);
+		menuBar->Append(menuView,"View");
+	}
+	
 	SetMenuBar(menuBar);
 	SetClientSize(size.GetWidth(), size.GetHeight());
 	image = new wxImage(size.GetWidth(), size.GetHeight());

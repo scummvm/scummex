@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.h,v 1.6 2003/09/22 15:23:56 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.h,v 1.7 2003/09/22 18:25:16 yoshizf Exp $
  *
  */
 
@@ -59,7 +59,7 @@ public:
 	Image();
 	~Image();
 	int drawPalette(BlockTable *_blockTable, int id, File& _input);
-	int drawBG(File& _input, BlockTable *_blockTable, int id, char* filename);
+	int drawBG(File& _input, BlockTable *_blockTable, int id);
 	int drawObject(File& _input, BlockTable *_blockTable, int id);
 	int drawSmushFrame(BlockTable *_blockTable, int id, File& _input);
 	int drawBoxes(BlockTable *_blockTable, int id, File& _input, int newWindow = 1);

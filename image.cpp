@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.7 2003/09/22 15:23:56 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.8 2003/09/22 18:25:16 yoshizf Exp $
  *
  */
 
@@ -112,6 +112,9 @@ int Image::drawBoxes(BlockTable *_blockTable, int id, File& _input, int newWindo
 	RMHDindex = _resource->findBlock(0, _blockTable, _input, id, "RMHD", "-1");
 	width = _blockTable[RMHDindex].width;
 	height = _blockTable[RMHDindex].height;
+
+	if (newWindow == 0)
+		id = _resource->findBlock(0, _blockTable, _input, id, "BOXD", "-1");
 	
 	_input.seek(_blockTable[id].offset + 10, SEEK_SET);
 	
@@ -203,7 +206,7 @@ int Image::drawSmushFrame(BlockTable *_blockTable, int id, File& _input) {
 	return 0;
 }
 
-int Image::drawBG(File& _input, BlockTable *_blockTable, int id, char* filename)
+int Image::drawBG(File& _input, BlockTable *_blockTable, int id)
 {
 	int RMHDindex, CLUTindex, SMAPindex, TRNSindex;
 	
@@ -215,7 +218,7 @@ int Image::drawBG(File& _input, BlockTable *_blockTable, int id, char* filename)
 	_width = _blockTable[RMHDindex].width;
 	_height = _blockTable[RMHDindex].height;
 
-	_gui->DisplayImage("Room Image", _width, _height);
+	_gui->DisplayImage("Room Image", _width, _height, IMAGE_BOXES);
 	
 	if (_blockTable[id].blockTypeID != 209) {
 		TRNSindex = _resource->findBlock(0, _blockTable, _input, id, "TRNS", "-1");

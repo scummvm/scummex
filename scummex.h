@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.h,v 1.8 2003/09/22 15:43:24 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.h,v 1.9 2003/09/22 18:25:16 yoshizf Exp $
  *
  */
 
@@ -63,6 +63,7 @@ public:
 	void SmushFrameDraw();
 	void objectDraw();
 	void boxesDraw();
+	void boxesDrawOverlay();
 };
 
 #endif
