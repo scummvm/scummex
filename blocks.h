@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/blocks.h,v 1.3 2003/09/18 20:50:55 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/blocks.h,v 1.4 2003/09/21 06:47:15 aquadran Exp $
  *
  */
 
@@ -109,7 +109,7 @@ enum {
 	AKOS,
 	ZP04,
 	RMSC,
-	BSTR,
+	TBSTR,
 	ZPLN,
 	AKHD,
 	AKPL,

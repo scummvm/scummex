@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.5 2003/09/19 19:57:07 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.6 2003/09/21 06:47:15 aquadran Exp $
  *
  */
 
@@ -958,7 +958,7 @@ void MainWindow::OnSelChanged(wxTreeEvent& event) {
 			break;
 			
 		case SMAP:
-		case BSTR:
+		case TBSTR:
 			bigIconBitmap = wxBitmap(xpm_42_big);
 			break;
 			
