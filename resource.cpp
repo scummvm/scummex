@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.6 2003/09/19 11:10:17 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.7 2003/09/20 23:59:07 yoshizf Exp $
  *
  */
 
@@ -201,10 +201,15 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 	int z = 0;
 	byte c;
 	char name[256];
-	int numFiles, offset, number;
+	int numFiles, number = 0;
 	int bufindex;
 	uint blockOffset, blockSize;
 	byte temp[8];
+
+	int32 offset;
+	int16 code;
+	int len;
+	bool quit = 0;
 
 	strcpy(_blockTable[index].blockDescription, blocksInfo[_blockTable[index].blockTypeID].description);
 
@@ -762,20 +767,50 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 			break;
 
 		case Crea:
-			_input.seek(23, SEEK_CUR);
-			_input.read(temp, 3);
-			_blockTable[index].blockSize = (temp[0] | (temp[1] << 8) | (temp[2] << 16)) - 2;
-			_blockTable[index].blockSize += 28;
-			number = _input.readByte();
-			if (number == 0xa5 || number == 0xa6) {
-				_blockTable[index].variables = 11025;
-			} else if (number == 0xd2 || number == 0xd3) {
-				_blockTable[index].variables = 22050;
-			} else {
-				_blockTable[index].variables = 1000000L / (256L - number);
-			}
-
-			_input.seek(_blockTable[index].offset + _blockTable[index].blockSize, SEEK_SET);
+			_input.seek(22, SEEK_CUR);
+			offset = 0;
+			code = 0;
+			while (!quit) {
+				code = _input.readByte();
+				switch(code) {
+					case 0: quit = 1; break;
+					case 1: {
+						_input.read(&temp, 3);
+						len = (temp[0] | (temp[1] << 8) | (temp[2] << 16));
+						int rate = _input.readByte();
+						_input.readByte();
+						len -= 2;
+						if (rate == 0xa5 || rate == 0xa6) {
+							_blockTable[index].variables = 11025;
+						} else if (rate == 0xd2 || rate == 0xd3) {
+							_blockTable[index].variables = 22050;
+						} else {
+							_blockTable[index].variables = 1000000L / (256L - rate);
+						}
+						// FIXME some FT samples (ex. 362) has bad length, 2 bytes too short
+						_input.seek(len, SEEK_CUR);
+						} break;
+					case 5:
+						_input.seek(4, SEEK_CUR);
+						quit = 1;
+						break;
+					case 6:	// begin of loop
+						_input.read(&temp, 3);
+						len = (temp[0] | (temp[1] << 8) | (temp[2] << 16));
+						_input.seek(len, SEEK_CUR);
+						break;
+					case 7:	// end of loop
+						_input.read(&temp, 3);
+						len = (temp[0] | (temp[1] << 8) | (temp[2] << 16));
+						_input.seek(len, SEEK_CUR);
+						break;
+					default:
+						quit = 1;
+						break;
+				}
+			}	
+			number = _input.pos();
+			_blockTable[index].blockSize = number - _blockTable[index].offset;
 			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
 			index++;
 			break;
