@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.35 2003/10/01 10:06:11 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.36 2003/10/01 14:12:52 yoshizf Exp $
  *
  */
 
@@ -314,6 +314,10 @@ void ImageWindow::Scale() {
 		case BOXD:
 		case BX:
 			g_scummex->boxesDraw(_blockId);
+			break;
+
+		case FOBJ:
+			g_scummex->SmushFrameDraw(_blockId);
 			break;
 	}
 }
