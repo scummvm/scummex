@@ -115,45 +115,107 @@ void ScummEX::FileDump(const char *filename) {
 }
 
 void ScummEX::fileView() {
-	int j = 0;
-	uint32 i;
+	int j, i;
 	char *text;
+	char title[256];
 	char buf[256];
+	byte* data;
+	byte* dataorg;
+	int len, offset, nlines, bytes_per_line;
+	byte c;
+	
+	len = _blockTable[block_id].blockSize;
+	offset = _blockTable[block_id].offset;
+	bytes_per_line = 16;
+	nlines = len / bytes_per_line;
+	
+	text = (char *) calloc(((16 + (3*bytes_per_line) + (bytes_per_line/4) + bytes_per_line) * nlines) + 256, 1);
 
-	text = (char *) malloc(4 * _blockTable[block_id].blockSize);
+	if (text == NULL)
+		return;
+
+	sprintf(title, "%s Block at offset %d", _blockTable[block_id].blockName, _blockTable[block_id].offset);
 	
-	sprintf(text, "%s Block at offset %d", _blockTable[block_id].blockName, _blockTable[block_id].offset);
-	
-	sprintf(text, " ");
-    
 	_input.seek(_blockTable[block_id].offset, SEEK_SET);
-		
-	for (i=0; i<_blockTable[block_id].blockSize; i++) {
-		byte c;
-		c = _input.readByte();
-		
-		sprintf(buf, "%02X ", c);
-		
+
+	dataorg = data = (byte*) malloc(_blockTable[block_id].blockSize);
+
+	if (data == NULL)
+		return;
+
+	_input.read(data, _blockTable[block_id].blockSize);
+
+	while (len >= bytes_per_line) {
+		sprintf(buf, "%06X: ", offset);
 		strcat(text, buf);
-	
-		if (j == 3 || j == 7 || j == 11) {
+		for (i = 0; i < bytes_per_line; i++) {
+			sprintf(buf, "%02X ", data[i]);
+			strcat(text, buf);
+			if (i % 4 == 3) {
+				sprintf(buf, " ");
+				strcat(text, buf);
+			}
+		}
+		sprintf(buf, " |");
+		strcat(text, buf);
+		for (i = 0; i < bytes_per_line; i++) {
+			c = data[i];
+			if (c < 32 || c >= 127)
+				c = '.';
+			sprintf(buf, "%c", c);
+			strcat(text, buf);
+		}
+		sprintf(buf, "|\n");
+		strcat(text, buf);
+		data += bytes_per_line;
+		len -= bytes_per_line;
+		offset += bytes_per_line;
+	}
+
+	if (len <= 0) 
+		return;
+
+	sprintf(buf, "%06X: ", offset);
+	strcat(text, buf);
+	for (i = 0; i < len; i++) {
+		sprintf(buf, "%02X ", data[i]);
+		strcat(text, buf);
+		if (i % 4 == 3) {
 			sprintf(buf, " ");
 			strcat(text, buf);
 		}
-
-		if (j == 15) {
-			sprintf(buf, "\n");
-			strcat(text, buf);
-			j = 0;
-		} else {
-			j++;
-		}
 	}
+
+	for (; i < bytes_per_line; i++) {
+		sprintf(buf, "   ");
+		strcat(text, buf);
+			if (i % 4 == 3) {
+				sprintf(buf, " ");
+				strcat(text, buf);
+			}
+	}
+	sprintf(buf, " |");
+	strcat(text, buf);
+	for (i = 0; i < len; i++) {
+		c = data[i];
+		if (c < 32 || c >= 127)
+			c = '.';
+		sprintf(buf, "%c", c);
+		strcat(text, buf);
+	}
+	for (; i < bytes_per_line; i++) {
+		sprintf(buf, " ");
+		strcat(text, buf);
+	}
+	sprintf(buf, "|\n");
 	strcat(text, buf);
 
-	_gui->DisplayViewer("Block", 600, 400, text);
+	free(dataorg);
+	
+	_gui->DisplayViewer(title, 660, 480, text);
 
 	free(text);
+
 }
 
 void ScummEX::iMUSEPlay()
