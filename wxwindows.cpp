@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.31 2003/09/29 10:58:20 khalek Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.32 2003/09/30 00:38:43 yoshizf Exp $
  *
  */
 
@@ -241,9 +241,7 @@ void ImageWindow::PutPixel(int x, int y, int red, int green, int blue) {
 }
 
 void GUI_wxWindows::DisplayViewer(char *title, int width, int height, char *text) {
-
 	ViewerWindow *viewerFrame = new ViewerWindow(_mainWindow, title, text, wxPoint(50,50), wxSize(width, height));
-
 }
 
 void GUI_wxWindows::AppendText(char *text) {
@@ -258,11 +256,10 @@ END_EVENT_TABLE()
 ViewerWindow::ViewerWindow(MainWindow *parent, const wxString& title, const wxString& text, const wxPoint& pos, const wxSize& size)
 	: wxFrame(parent, ID_ViewerWindow, title, pos, size)
 {
-	wxMenuBar *menuBar = new wxMenuBar;
 	wxMenu *menuFile = new wxMenu;
-
 	menuFile->Append(Viewer_Quit,"Close");
 	
+	wxMenuBar *menuBar = new wxMenuBar;
 	menuBar->Append(menuFile,"&File");
 	
 	SetMenuBar(menuBar);
@@ -304,7 +301,6 @@ void MainWindow::SetButton(int blocktype) {
 			SpecButton1->SetLabel("Play");
 			SpecButton2->SetLabel("Dump to WAV...");
 			SpecButton1->Show(TRUE);
-			//SpecButton1->Enable(FALSE); // FIXME Mixer not working anymore?
 			SpecButton2->Show(TRUE);
 			Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
 				(wxObjectEventFunction) &MainWindow::iMUSEPlay );
@@ -339,9 +335,7 @@ void MainWindow::SetButton(int blocktype) {
 			SpecButton1->SetLabel("Play");
 			SpecButton2->SetLabel("Dump to WAV...");
 			SpecButton1->Show(TRUE);
-			//SpecButton1->Enable(FALSE); // FIXME Mixer not working anymore?
 			SpecButton2->Show(TRUE);
-			//SpecButton2->Enable(FALSE);
 			Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
 				(wxObjectEventFunction) &MainWindow::SOUPlay );
 			Connect( ID_SpecButton2, wxEVT_COMMAND_BUTTON_CLICKED,
@@ -423,10 +417,11 @@ void MainWindow::add_tree_elements(char *itemName, int blockid, int level, int t
 	}
 }
 
-void MainWindow::updateLabel(wxStaticText *label, const char *title, uint32 text) {
+void MainWindow::updateLabel(wxStaticText *label[2], const char *title, uint32 text) {
 	char buf[256];
-	sprintf(buf, "%s:    \t\t %d", title, text);
-	label->SetLabel(buf);
+	sprintf(buf, "%d", text);
+	label[0]->SetLabel(title);
+	label[1]->SetLabel(buf);
 }
 
 void MainWindow::updateLabels(int blockid) {
@@ -434,45 +429,45 @@ void MainWindow::updateLabels(int blockid) {
 	char buf[256];
 
 	// Clear out all labels
-	for (int i = 0; i < 6; i++)
-		SpecLabel[i]->SetLabel("");
+	for (int i = 0; i < 6; i++) {
+		_SpecLabel[i][0]->SetLabel("");
+		_SpecLabel[i][1]->SetLabel("");
+	}
+	
+	_GenLabel[0][1]->SetLabel(block.blockType);
 
-	sprintf(buf, "Type: \t\t %s", block.blockType);
-	TypeLabel->SetLabel(buf);
+	sprintf(buf, "%d (0x%08X)", block.offset, block.offset);
+	_GenLabel[1][1]->SetLabel(buf);
 
-	sprintf(buf, "Offset: \t\t %d (0x%08X)", block.offset, block.offset);
-	OffsetLabel->SetLabel(buf);
+	sprintf(buf, "%d (0x%08X)", block.blockSize, block.blockSize);
+	_GenLabel[2][1]->SetLabel(buf);
 
-	sprintf(buf, "Size: \t\t %d (0x%08X)", block.blockSize, block.blockSize);
-	SizeLabel->SetLabel(buf);
-
-	sprintf(buf, "Description: \t %s", block.blockDescription);
-	DescriptionLabel->SetLabel(buf);
+	_GenLabel[3][1]->SetLabel(block.blockDescription);
 
 	switch(block.blockTypeID) {
 		case MAXS:
-			updateLabel(SpecLabel[0], "Number of variables", block.variables);
-			updateLabel(SpecLabel[1], "Number of bit variables", block.bitVariables);
-			updateLabel(SpecLabel[2], "Number of local objects", block.localObjects);
-			updateLabel(SpecLabel[3], "Number of arrays", block.arrays);
-			updateLabel(SpecLabel[4], "Number of character sets", block.characters);
-			updateLabel(SpecLabel[5], "Number of inventory objects", block.invObjects);
+			updateLabel(_SpecLabel[0], "Num. of variables:", block.variables);
+			updateLabel(_SpecLabel[1], "Num. of bit variables:", block.bitVariables);
+			updateLabel(_SpecLabel[2], "Num. of local objects:", block.localObjects);
+			updateLabel(_SpecLabel[3], "Num. of arrays:", block.arrays);
+			updateLabel(_SpecLabel[4], "Num. of character sets:", block.characters);
+			updateLabel(_SpecLabel[5], "Num. of inventory objects:", block.invObjects);
 			break;
 
 		case LB83:
 		case LABN:
-			updateLabel(SpecLabel[0], "Number of files", block.numFiles);
+			updateLabel(_SpecLabel[0], "Number of files:", block.numFiles);
 			break;
 
 		case RMHD:
 		case HD:
-			updateLabel(SpecLabel[0], "Room Width", block.width);
-			updateLabel(SpecLabel[1], "Room Height", block.height);
-			updateLabel(SpecLabel[2], "Number of Objects", block.localObjects);
+			updateLabel(_SpecLabel[0], "Room Width:", block.width);
+			updateLabel(_SpecLabel[1], "Room Height:", block.height);
+			updateLabel(_SpecLabel[2], "Number of Objects:", block.localObjects);
 			break;
 
 		case TRNS:
-			updateLabel(SpecLabel[0], "Transparent Color", block.trans);
+			updateLabel(_SpecLabel[0], "Transparent Color:", block.trans);
 			break;
 			
 		case DROO:
@@ -481,7 +476,7 @@ void MainWindow::updateLabels(int blockid) {
 		case DCOS:
 		case DCHR:
 		case DOBJ:
-			updateLabel(SpecLabel[0], "Number of items", block.numFiles);
+			updateLabel(_SpecLabel[0], "Number of items:", block.numFiles);
 			break;
 
 		case cus2:
@@ -489,7 +484,7 @@ void MainWindow::updateLabels(int blockid) {
 			break;
 			
 		case COMP:
-			updateLabel(SpecLabel[0], "Number of samples", block.numFiles);
+			updateLabel(_SpecLabel[0], "Number of samples:", block.numFiles);
 			break;
 
 		case CLUT:
@@ -532,14 +527,14 @@ void MainWindow::updateLabels(int blockid) {
 			break;
 
 		case IMHD:
-			updateLabel(SpecLabel[0], "Room Width", block.width);
-			updateLabel(SpecLabel[1], "Room Height", block.height);
-			updateLabel(SpecLabel[2], "Number of Images", block.numFiles);
+			updateLabel(_SpecLabel[0], "Room Width:", block.width);
+			updateLabel(_SpecLabel[1], "Room Height:", block.height);
+			updateLabel(_SpecLabel[2], "Number of Images:", block.numFiles);
 			break;
 			
 		case Crea:
 		case AUdt:
-			updateLabel(SpecLabel[0], "Sample Rate", block.variables);
+			updateLabel(_SpecLabel[0], "Sample Rate:", block.variables);
 			SetButton(block.blockTypeID);
 			break;
 
@@ -557,15 +552,15 @@ void MainWindow::updateLabels(int blockid) {
 			break;
 
 		case FOBJ:
-			updateLabel(SpecLabel[0], "Frame Width", block.width);
-			updateLabel(SpecLabel[1], "Frame Height", block.height);
-			updateLabel(SpecLabel[2], "Codec", block.variables);
+			updateLabel(_SpecLabel[0], "Frame Width:", block.width);
+			updateLabel(_SpecLabel[1], "Frame Height:", block.height);
+			updateLabel(_SpecLabel[2], "Codec:", block.variables);
 			SetButton(block.blockTypeID);
 			break;
 
 		case BOXD:
 		case BX:
-			updateLabel(SpecLabel[0], "No. of Boxes", block.numFiles);
+			updateLabel(_SpecLabel[0], "No. of Boxes:", block.numFiles);
 			SetButton(block.blockTypeID);
 			break;
 	}
@@ -670,296 +665,150 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 	wxBoxSizer *RootSizer = new wxBoxSizer( wxVERTICAL );
 	
 	wxBoxSizer *BlocksSizer = new wxBoxSizer( wxHORIZONTAL );
+	RootSizer->Add(BlocksSizer, 1, wxALL|wxEXPAND, 0);
 
-	RootSizer->Add(BlocksSizer,
-			1,
-			wxALL|wxEXPAND,
-			0
-			);
-
-	tree = new wxTreeCtrl(panel, ID_Tree, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxTR_HAS_BUTTONS|wxTR_HIDE_ROOT, wxDefaultValidator, "listCtrl");
-	
 	wxImageList *ImageList = new wxImageList(16, 16, true, 61);
-
-	wxIcon icon0 = wxIcon(xpm_0); ImageList->Add(icon0);
-	wxIcon icon1 = wxIcon(xpm_1); ImageList->Add(icon1);
-	wxIcon icon2 = wxIcon(xpm_2); ImageList->Add(icon2);
-	wxIcon icon3 = wxIcon(xpm_3); ImageList->Add(icon3);
-	wxIcon icon4 = wxIcon(xpm_4); ImageList->Add(icon4);
-	wxIcon icon5 = wxIcon(xpm_5); ImageList->Add(icon5);
-	wxIcon icon6 = wxIcon(xpm_6); ImageList->Add(icon6);
-	wxIcon icon7 = wxIcon(xpm_7); ImageList->Add(icon7);
-	wxIcon icon8 = wxIcon(xpm_8); ImageList->Add(icon8);
-	wxIcon icon9 = wxIcon(xpm_9); ImageList->Add(icon9);
-	wxIcon icon10 = wxIcon(xpm_10); ImageList->Add(icon10);
-	wxIcon icon11 = wxIcon(xpm_11); ImageList->Add(icon11);
-	wxIcon icon12 = wxIcon(xpm_12); ImageList->Add(icon12);
-	wxIcon icon13 = wxIcon(xpm_13); ImageList->Add(icon13);
-	wxIcon icon14 = wxIcon(xpm_14); ImageList->Add(icon14);
-	wxIcon icon15 = wxIcon(xpm_15); ImageList->Add(icon15);
-	wxIcon icon16 = wxIcon(xpm_16); ImageList->Add(icon16);
-	wxIcon icon17 = wxIcon(xpm_17); ImageList->Add(icon17);
-	wxIcon icon18 = wxIcon(xpm_18); ImageList->Add(icon18);
-	wxIcon icon19 = wxIcon(xpm_19); ImageList->Add(icon19);
-	wxIcon icon20 = wxIcon(xpm_20); ImageList->Add(icon20);
-	wxIcon icon21 = wxIcon(xpm_21); ImageList->Add(icon21);
-	wxIcon icon22 = wxIcon(xpm_22); ImageList->Add(icon22);
-	wxIcon icon23 = wxIcon(xpm_23); ImageList->Add(icon23);
-	wxIcon icon24 = wxIcon(xpm_24); ImageList->Add(icon24);
-	wxIcon icon25 = wxIcon(xpm_25); ImageList->Add(icon25);
-	wxIcon icon26 = wxIcon(xpm_26); ImageList->Add(icon26);
-	wxIcon icon27 = wxIcon(xpm_27); ImageList->Add(icon27);
-	wxIcon icon28 = wxIcon(xpm_28); ImageList->Add(icon28);
-	wxIcon icon29 = wxIcon(xpm_29); ImageList->Add(icon29);
-	wxIcon icon30 = wxIcon(xpm_30); ImageList->Add(icon30);
-	wxIcon icon31 = wxIcon(xpm_31); ImageList->Add(icon31);
-	wxIcon icon32 = wxIcon(xpm_32); ImageList->Add(icon32);
-	wxIcon icon33 = wxIcon(xpm_33); ImageList->Add(icon33);
-	wxIcon icon34 = wxIcon(xpm_34); ImageList->Add(icon34);
-	wxIcon icon35 = wxIcon(xpm_35); ImageList->Add(icon35);
-	wxIcon icon36 = wxIcon(xpm_36); ImageList->Add(icon36);
-	wxIcon icon37 = wxIcon(xpm_37); ImageList->Add(icon37);
-	wxIcon icon38 = wxIcon(xpm_38); ImageList->Add(icon38);
-	wxIcon icon39 = wxIcon(xpm_39); ImageList->Add(icon39);
-	wxIcon icon40 = wxIcon(xpm_40); ImageList->Add(icon40);
-	wxIcon icon41 = wxIcon(xpm_41); ImageList->Add(icon41);
-	wxIcon icon42 = wxIcon(xpm_42); ImageList->Add(icon42);
-	wxIcon icon43 = wxIcon(xpm_43); ImageList->Add(icon43);
-	wxIcon icon44 = wxIcon(xpm_44); ImageList->Add(icon44);
-	wxIcon icon45 = wxIcon(xpm_45); ImageList->Add(icon45);
-	wxIcon icon46 = wxIcon(xpm_46); ImageList->Add(icon46);
-	wxIcon icon47 = wxIcon(xpm_47); ImageList->Add(icon47);
-	wxIcon icon48 = wxIcon(xpm_48); ImageList->Add(icon48);
-	wxIcon icon49 = wxIcon(xpm_49); ImageList->Add(icon49);
-	wxIcon icon50 = wxIcon(xpm_50); ImageList->Add(icon50);
-	wxIcon icon51 = wxIcon(xpm_51); ImageList->Add(icon51);
-	wxIcon icon52 = wxIcon(xpm_52); ImageList->Add(icon52);
-	wxIcon icon53 = wxIcon(xpm_53); ImageList->Add(icon53);
-	wxIcon icon54 = wxIcon(xpm_54); ImageList->Add(icon54);
-	wxIcon icon55 = wxIcon(xpm_55); ImageList->Add(icon55);
-	wxIcon icon56 = wxIcon(xpm_56); ImageList->Add(icon56);
-	wxIcon icon57 = wxIcon(xpm_57); ImageList->Add(icon57);
-	wxIcon icon58 = wxIcon(xpm_58); ImageList->Add(icon58);
-	wxIcon icon59 = wxIcon(xpm_59); ImageList->Add(icon59);
-	wxIcon icon60 = wxIcon(xpm_60); ImageList->Add(icon60);
-
-	tree->AssignImageList(ImageList);
 	
-		
-	BlocksSizer->Add(tree,
-			1,
-			wxALL|wxEXPAND,
-			4
-			);
+	LOADICONS;
+	LOADBIGICONS;
 
+	tree = new wxTreeCtrl(panel, ID_Tree, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxTR_HAS_BUTTONS|wxTR_HIDE_ROOT);
+	tree->AssignImageList(ImageList);
 	iter[0] = tree->AddRoot("", -1, -1, NULL);
+	BlocksSizer->Add(tree, 1, wxALL|wxEXPAND, 4);
 	
 	wxBoxSizer *InfosSizer = new wxBoxSizer( wxVERTICAL );
-
-	BlocksSizer->Add(InfosSizer,
-			1,
-			wxALL|wxEXPAND,
-			5
-			);
+	BlocksSizer->Add(InfosSizer, 1, wxALL|wxEXPAND,	5);
 
 	notebook = new wxNotebook(panel, -1, wxPoint(-1, -1), wxSize(-1, -1), 0, "notebook");
+	
 	wxNotebookSizer *nbs = new wxNotebookSizer( notebook );
+	InfosSizer->Add(nbs, 1,	wxALL|wxEXPAND,	0);
 	
-	InfosSizer->Add(nbs,
-			1,
-			wxALL|wxEXPAND,
-			0
-			);
-
-	infospanel = new wxPanel(notebook, -1, wxPoint(-1, -1), wxSize(-1, -1), 0, "infopanel");
-	
+	//
+	// Explorer panel
+	//	
+	infospanel = new wxPanel(notebook, -1);
 	notebook->AddPage(infospanel, "Explorer", true, -1);
 	
 	wxBoxSizer *panelsizer = new wxBoxSizer( wxVERTICAL );
 	
-	wxStaticBox *GenInfosBox = new wxStaticBox(infospanel, -1, "General Block Infos", wxDefaultPosition, wxDefaultSize, 0, "staticBox");
+	//
+	// General Block Infos
+	//	
+	wxStaticBox *GenInfosBox = new wxStaticBox(infospanel, -1, "General Block Infos");
 	
 	wxStaticBoxSizer *GenInfosHSizer = new wxStaticBoxSizer( GenInfosBox, wxHORIZONTAL );
-
-	panelsizer->Add(GenInfosHSizer,
-			1,
-			wxALL|wxEXPAND,
-			0
-			);
+	panelsizer->Add(GenInfosHSizer,	1, wxALL|wxEXPAND, 0);
 				
 	wxBoxSizer *GenInfosSizer = new wxBoxSizer( wxVERTICAL );
+	GenInfosHSizer->Add(GenInfosSizer, 0, wxALL|wxEXPAND, 0);
 	
-	GenInfosHSizer->Add(GenInfosSizer,
-			1,
-			wxALL|wxEXPAND,
-			0
-			);
+	wxBoxSizer *GenInfosSizer2 = new wxBoxSizer( wxVERTICAL );
+	GenInfosHSizer->Add(GenInfosSizer2, 1, wxLEFT|wxEXPAND,	12);
 
-	TypeLabel = new wxStaticText(infospanel, -1, "Type:  \t\t n/a", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE, "TypeLabel");
-	OffsetLabel = new wxStaticText(infospanel, -1, "Offset:  \t\t n/a", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE, "TypeLabel");
-	SizeLabel = new wxStaticText(infospanel, -1, "Size:  \t\t n/a", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE, "TypeLabel");
-	DescriptionLabel = new wxStaticText(infospanel, -1, "Description:  \t n/a", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE, "TypeLabel");
+	_GenLabel[0][0] = new wxStaticText(infospanel, -1, "Type:", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE);
+	_GenLabel[1][0] = new wxStaticText(infospanel, -1, "Offset:", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE);
+	_GenLabel[2][0] = new wxStaticText(infospanel, -1, "Size:", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE);
+	_GenLabel[3][0] = new wxStaticText(infospanel, -1, "Description:", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE);
 	
-	GenInfosSizer->Add(TypeLabel,
-			0,
-			wxALL|wxEXPAND,
-			1
-			);
-					
-	GenInfosSizer->Add(OffsetLabel,
-			0,
-			wxALL|wxEXPAND,
-			1
-			);
-			
-	GenInfosSizer->Add(SizeLabel,
-			0,
-			wxALL|wxEXPAND,
-			1
-			);
-			
-	GenInfosSizer->Add(DescriptionLabel,
-			0,
-			wxALL|wxEXPAND,
-			1
-			);
+	for (int i = 0; i < 4; i++) {
+		GenInfosSizer->Add(_GenLabel[i][0], 0, wxALL|wxEXPAND, 1);
+	}
+		
+	for (int i = 0; i < 4; i++) {
+		_GenLabel[i][1] = new wxStaticText(infospanel, -1, "n/a", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE);
+		GenInfosSizer2->Add(_GenLabel[i][1], 0, wxALL|wxEXPAND, 1);
+	}				
 
 	wxBoxSizer *IconSizer = new wxBoxSizer( wxVERTICAL );
+	GenInfosHSizer->Add(IconSizer, 0, wxALL, 0);
 	
-	GenInfosHSizer->Add(IconSizer,
-			0,
-			wxALL,
-			0
-			);
-
-	bigIconBitmap = wxBitmap(xpm_0_big);
-	
+	bigIconBitmap = _bigIcon[60];
 	BigIcon = new wxStaticBitmap(infospanel, -1, bigIconBitmap, wxPoint(-1, -1), wxSize(-1, -1), wxALIGN_RIGHT);
+	IconSizer->Add(BigIcon,	0, wxALL, 0);
 
-	IconSizer->Add(BigIcon,
-			0,
-			wxALL,
-			0
-			);
-							
-	wxStaticBox *SpecInfosBox = new wxStaticBox(infospanel, -1, "Specific Block Infos", wxDefaultPosition, wxDefaultSize, 0, "staticBox");
+	//
+	// Specific Block Infos
+	//
+	wxStaticBox *SpecInfosBox = new wxStaticBox(infospanel, -1, "Specific Block Infos");
 	
-	wxStaticBoxSizer *SpecInfosSizer = new wxStaticBoxSizer( SpecInfosBox, wxVERTICAL );
+	wxStaticBoxSizer *SpecInfosVSizer = new wxStaticBoxSizer( SpecInfosBox, wxVERTICAL );
+	panelsizer->Add(SpecInfosVSizer, 1, wxALL|wxEXPAND, 0);
 
-	panelsizer->Add(SpecInfosSizer,
-			1,
-			wxALL|wxEXPAND,
-			0
-			);
+	wxBoxSizer *SpecSizer = new wxBoxSizer( wxHORIZONTAL );
+	SpecInfosVSizer->Add(SpecSizer, 0, wxALL|wxEXPAND, 0);
+			
+	wxBoxSizer *SpecInfosSizer[2]; 
+	SpecInfosSizer[0] = new wxBoxSizer( wxVERTICAL );
+	SpecSizer->Add(SpecInfosSizer[0], 1, wxRIGHT|wxEXPAND, 5);
 	
-	SpecLabel[0] = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE);
-	SpecLabel[1] = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE);
-	SpecLabel[2] = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE);
-	SpecLabel[3] = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE);
-	SpecLabel[4] = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE);
-	SpecLabel[5] = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE);
+	SpecInfosSizer[1] = new wxBoxSizer( wxVERTICAL );
+	SpecSizer->Add(SpecInfosSizer[1], 1, wxALL|wxEXPAND, 0);
 	
-	for (int i = 0; i < 6; i++) {
-		SpecInfosSizer->Add(SpecLabel[i],
-				0,
-				wxALL|wxEXPAND,
-				1
-				);
+	for (int i = 0; i < 2; i++) {
+		for (int j = 0; j < 6; j++) {
+			_SpecLabel[j][i] = new wxStaticText(infospanel, -1, "");
+			SpecInfosSizer[i]->Add(_SpecLabel[j][i], 1, wxALL|wxEXPAND, 1);
+		}
 	}
-
+	
 	HtmlHelp = new wxHtmlHelpController(wxHF_DEFAULT_STYLE & wxHF_CONTENTS);
-
 	HtmlHelp->AddBook(wxFileName("help/help.hhp"));
 
 	wxBoxSizer *SpecButtonsSizer = new wxBoxSizer ( wxHORIZONTAL );
-
-	SpecInfosSizer->Add(SpecButtonsSizer,
-			0,
-			wxALL,
-			0
-			);
+	SpecInfosVSizer->Add(SpecButtonsSizer, 0, wxALL, 0);
 	
-	SpecButton1 = new wxButton( infospanel, ID_SpecButton1, "", wxPoint(-1, -1), wxSize(110, -1));
-	SpecButton2 = new wxButton( infospanel, ID_SpecButton2, "", wxPoint(-1, -1), wxSize(110, -1));
-
+	SpecButton1 = new wxButton( infospanel, ID_SpecButton1, "", wxPoint(-1, -1), wxSize(120, -1));
+	SpecButtonsSizer->Add( SpecButton1, 1, wxALL, 3);
 	SpecButton1->Show(FALSE);
+	
+	SpecButton2 = new wxButton( infospanel, ID_SpecButton2, "", wxPoint(-1, -1), wxSize(120, -1));
+	SpecButtonsSizer->Add( SpecButton2, 1, wxALL, 3);
 	SpecButton2->Show(FALSE);
-
-	SpecButtonsSizer->Add( SpecButton1,
-			1,
-			wxALL,
-			3
-			);
-
-	SpecButtonsSizer->Add( SpecButton2,
-			1,
-			wxALL,
-			3
-			);
 
 	infospanel->SetAutoLayout( true );
 	infospanel->SetSizer( panelsizer );
-
-	htmlpanel = new wxPanel(notebook, -1, wxPoint(-1, -1), wxSize(-1, -1), 0, "htmlpanel");
+	
+	//
+	// Block Specifications panel
+	//	
+	htmlpanel = new wxPanel(notebook, -1);
 	
 	wxBoxSizer *htmlpanelsizer = new wxBoxSizer( wxVERTICAL );
 
 	HtmlWindow = new wxHtmlWindow(htmlpanel, -1, wxDefaultPosition, wxDefaultSize, wxHW_SCROLLBAR_AUTO, "htmlWindow");
-	
-	htmlpanelsizer->Add(HtmlWindow,
-			1,
-			wxALL|wxEXPAND,
-			0
-			);
+	htmlpanelsizer->Add(HtmlWindow,	1, wxALL|wxEXPAND, 0);
 			
 	htmlpanel->SetAutoLayout( true );
 	htmlpanel->SetSizer( htmlpanelsizer );	
-
-	searchpanel = new wxPanel(notebook, -1, wxPoint(-1, -1), wxSize(-1, -1), 0, "searchpanel");
+	
+	//
+	// Search panel
+	//	
+	searchpanel = new wxPanel(notebook, -1);
 	notebook->AddPage(searchpanel, "Search", false, -1);
 	
 	wxBoxSizer *SearchPanelSizer = new wxBoxSizer( wxVERTICAL );
 	
 	wxBoxSizer *SearchControlsSizer = new wxBoxSizer( wxHORIZONTAL );
-
-	SearchPanelSizer->Add(SearchControlsSizer,
-			0,
-			wxALL|wxEXPAND,
-			5
-			);
+	SearchPanelSizer->Add(SearchControlsSizer, 0, wxALL|wxEXPAND, 5);
 						
 	wxStaticText *FindLabel = new wxStaticText(searchpanel, -1, "Text:", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE, "FindLabel");
-	wxTextCtrl *FindTextCtrl = new wxTextCtrl(searchpanel, -1, "", wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, wxTextCtrlNameStr);
-	wxButton *FindButton = new wxButton(searchpanel, -1, "Search", wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, "button");
-	
-	SearchControlsSizer->Add(FindLabel,
-			0,
-			wxALL,
-			2
-			);
+	SearchControlsSizer->Add(FindLabel, 0, wxALL, 2);
 
-	SearchControlsSizer->Add(FindTextCtrl,
-			1,
-			wxALL,
-			2
-			);
-			
-	SearchControlsSizer->Add(FindButton,
-			0,
-			wxALL,
-			2
-			);
+	wxTextCtrl *FindTextCtrl = new wxTextCtrl(searchpanel, -1, "", wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, wxTextCtrlNameStr);
+	SearchControlsSizer->Add(FindTextCtrl, 1, wxALL, 2);
+	
+	wxButton *FindButton = new wxButton(searchpanel, -1, "Search", wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, "button");
+	SearchControlsSizer->Add(FindButton, 0,	wxALL, 2);
 			
 	wxListCtrl *SearchResultsList = new wxListCtrl(searchpanel, -1, wxDefaultPosition, wxDefaultSize, wxLC_REPORT, wxDefaultValidator, "listCtrl");
+	SearchPanelSizer->Add(SearchResultsList, 1, wxALL|wxEXPAND, 0);
+	
 	SearchResultsList->InsertColumn(0, "Block");
 	SearchResultsList->InsertColumn(1, "Offset");
 	SearchResultsList->InsertColumn(2, "Found");
-
-	SearchPanelSizer->Add(SearchResultsList,
-			1,
-			wxALL|wxEXPAND,
-			0
-			);
 			
 	searchpanel->SetAutoLayout( true );
 	searchpanel->SetSizer( SearchPanelSizer );	
@@ -1024,273 +873,8 @@ void MainWindow::OnSelChanged(wxTreeEvent& event) {
 	val2 = SpecButton2->Disconnect(ID_SpecButton2, wxEVT_COMMAND_BUTTON_CLICKED);
 
 	itemtype = item->_blockType;
-	switch (itemtype) {
-		case LECF:
-		case LABN:
-		case LB83:
-		case LE:
-			bigIconBitmap = wxBitmap(xpm_6_big);
-			break;
-			
-		case LOFF:
-		case OFFS:
-		case FO:
-			bigIconBitmap = wxBitmap(xpm_44_big);
-			break;
-			
-		case LFLF:
-		case LF:
-			bigIconBitmap = wxBitmap(xpm_58_big);
-			break;
-			
-		case ROOM:
-		case RO:
-			bigIconBitmap = wxBitmap(xpm_38_big);
-			break;
-			
-		case RMHD:
-		case HD:
-			bigIconBitmap = wxBitmap(xpm_35_big);
-			break;
-			
-		case CYCL:
-		case CC:
-			bigIconBitmap = wxBitmap(xpm_12_big);
-			break;
-			
-		case TRNS:
-			bigIconBitmap = wxBitmap(xpm_46_big);
-			break;	
-			
-		case EPAL:
-		case CLUT:
-		case APAL:
-		case NPAL:
-		case XPAL:
-		case PA:
-			bigIconBitmap = wxBitmap(xpm_34_big);
-			break;
-			
-		case BOXD:
-		case BX:
-			bigIconBitmap = wxBitmap(xpm_4_big);
-			break;
-			
-		case BOXM:
-			bigIconBitmap = wxBitmap(xpm_5_big);
-			break;
-			
-		case SCAL:
-		case SA:
-			bigIconBitmap = wxBitmap(xpm_40_big);
-			break;
-			
-		case RMIM:
-		case BM:
-			bigIconBitmap = wxBitmap(xpm_37_big);
-			break;
-			
-		case EXCD:
-		case EX:
-			bigIconBitmap = wxBitmap(xpm_22_big);
-			break;
-
-		case ENCD:
-		case EN:
-			bigIconBitmap = wxBitmap(xpm_21_big);
-			break;
-			
-		case NLSC:
-		case SCRP:
-		case LSCR:
-		case OC:
-		case NL:
-		case LS:
-		case SC:
-			bigIconBitmap = wxBitmap(xpm_41_big);
-			break;
-			
-		case SOUN:
-		case SOU:
-		case iMUS:
-		case cus2:
-		case IMC:
-		case SO:
-			bigIconBitmap = wxBitmap(xpm_59_big);
-			break;
-			
-		case RMIH:
-			bigIconBitmap = wxBitmap(xpm_36_big);
-			break;
-
-		case IM00:
-		case IM01:
-		case IM02:
-		case IM03:
-		case IM04:
-		case IM05:
-		case IM06:
-		case IM07:
-		case IM08:
-		case IM09:
-		case IMAG:
-			bigIconBitmap = wxBitmap(xpm_25_big);
-			break;
-			
-		case SMAP:
-		case TBSTR:
-			bigIconBitmap = wxBitmap(xpm_42_big);
-			break;
-			
-		case OBIM:
-		case OI:
-			bigIconBitmap = wxBitmap(xpm_33_big);
-			break;
-			
-		case IMHD:
-			bigIconBitmap = wxBitmap(xpm_26_big);
-			break;
-			
-		case OBCD:
-		case RMSC:
-			bigIconBitmap = wxBitmap(xpm_57_big);
-			break;
-			
-		case CDHD:
-			bigIconBitmap = wxBitmap(xpm_7_big);
-			break;
-			
-		case VERB:
-			bigIconBitmap = wxBitmap(xpm_50_big);
-			break;
-			
-		case OBNA:
-		case TEXT:
-			bigIconBitmap = wxBitmap(xpm_45_big);
-			break;
-						
-		case VCTL:
-			bigIconBitmap = wxBitmap(xpm_15_big);
-			break;
-			
-		case Crea:
-			bigIconBitmap = wxBitmap(xpm_16_big);
-			break;
-			
-		case MAXS:
-			bigIconBitmap = wxBitmap(xpm_2_big);
-			break;
-			
-		case DROO:
-		case DIRR:
-			bigIconBitmap = wxBitmap(xpm_18_big);
-			break;
-			
-		case DSCR:
-		case DIRS:
-			bigIconBitmap = wxBitmap(xpm_19_big);
-			break;
-			
-		case DSOU:
-		case DIRN:
-			bigIconBitmap = wxBitmap(xpm_20_big);
-			break;
-			
-		case DCOS:
-		case DIRC:
-			bigIconBitmap = wxBitmap(xpm_14_big);
-			break;
-			
-		case DCHR:
-		case DIRF:
-			bigIconBitmap = wxBitmap(xpm_13_big);
-			break;
-			
-		case DOBJ:
-			bigIconBitmap = wxBitmap(xpm_17_big);
-			break;
-			
-		case COMP:
-		case MCMP:
-			bigIconBitmap = wxBitmap(xpm_9_big);
-			break;
-			
-		case MAP:
-			bigIconBitmap = wxBitmap(xpm_29_big);
-			break;
-			
-		case FRMT:
-			bigIconBitmap = wxBitmap(xpm_51_big);
-			break;
-			
-		case SYNC:
-			bigIconBitmap = wxBitmap(xpm_43_big);
-			break;
-			
-		case REGN:
-		case STOP:
-		case JUMP:
-		
-			bigIconBitmap = wxBitmap(xpm_27_big);
-			break;
-			
-		case DATA:
-			bigIconBitmap = wxBitmap(xpm_16_big);
-			break;
-			
-		case WRAP:
-			bigIconBitmap = wxBitmap(xpm_60_big);
-			break;
-			
-		case ZP01:
-		case ZP02:
-		case ZP03:
-		case ZP04:
-		case ZPLN:
-			bigIconBitmap = wxBitmap(xpm_52_big);
-			break;
-			
-		case COST:
-		case CO:
-			bigIconBitmap = wxBitmap(xpm_11_big);
-			break;
-		
-		case PALS:
-			bigIconBitmap = wxBitmap(xpm_56_big);
-			break;
-
-		case ANIM:
-		case FRME:
-			bigIconBitmap = wxBitmap(xpm_55_big);
-			break;
-
-		case FOBJ:
-			bigIconBitmap = wxBitmap(xpm_32_big);
-			break;
-
-		case AHDR:
-			bigIconBitmap = wxBitmap(xpm_1_big);
-			break;
-
-		case PSAD:
-		case SAUD:
-		case STRK:
-		case SDAT:
-		case IACT:
-			bigIconBitmap = wxBitmap(xpm_24_big);
-			break;
-
-		case ADL:
-		case SPK:
-		case ROL:
-		case MIDI:
-			bigIconBitmap = wxBitmap(xpm_31_big);
-			break;
-
-		default:
-			bigIconBitmap = wxBitmap(xpm_47_big);
-			break;
-	}
+	bigIconBitmap = _bigIcon[blocksInfo[itemtype].iconid];
+	BigIcon->SetBitmap(bigIconBitmap);
 
 	if (blocksInfo[itemtype].html == 1) {
 		if (htmlflag == 0) {
@@ -1306,8 +890,6 @@ void MainWindow::OnSelChanged(wxTreeEvent& event) {
 		htmlflag = 0;
 	}
 		
-	BigIcon->SetBitmap(bigIconBitmap);
-	
 	_blockId = item->_blockId;
 	updateLabels(_blockId);
 	event.Skip();

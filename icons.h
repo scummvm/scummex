@@ -16,9 +16,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/icons.h,v 1.2 2003/09/18 19:37:14 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/icons.h,v 1.3 2003/09/30 00:38:43 yoshizf Exp $
  *
  */
+
+#ifndef ICONS_H
+#define ICONS_H
 
 #if defined(__WXGTK__) || defined(__WXMOTIF__) || defined(__WXMAC__) || defined(__WXMGL__) || defined(__WXX11__)
 	#include "scummex.xpm"
@@ -157,4 +160,132 @@
 #include "icons/xpm_58_big.xpm"
 #include "icons/xpm_59_big.xpm"
 #include "icons/xpm_60_big.xpm"
+
+#define LOADICONS \
+	ImageList->Add(xpm_0); \
+	ImageList->Add(xpm_1); \
+	ImageList->Add(xpm_2); \
+	ImageList->Add(xpm_3); \
+	ImageList->Add(xpm_4); \
+	ImageList->Add(xpm_5); \
+	ImageList->Add(xpm_6); \
+	ImageList->Add(xpm_7); \
+	ImageList->Add(xpm_8); \
+	ImageList->Add(xpm_9); \
+	ImageList->Add(xpm_10); \
+	ImageList->Add(xpm_11); \
+	ImageList->Add(xpm_12); \
+	ImageList->Add(xpm_13); \
+	ImageList->Add(xpm_14); \
+	ImageList->Add(xpm_15); \
+	ImageList->Add(xpm_16); \
+	ImageList->Add(xpm_17); \
+	ImageList->Add(xpm_18); \
+	ImageList->Add(xpm_19); \
+	ImageList->Add(xpm_20); \
+	ImageList->Add(xpm_21); \
+	ImageList->Add(xpm_22); \
+	ImageList->Add(xpm_23); \
+	ImageList->Add(xpm_24); \
+	ImageList->Add(xpm_25); \
+	ImageList->Add(xpm_26); \
+	ImageList->Add(xpm_27); \
+	ImageList->Add(xpm_28); \
+	ImageList->Add(xpm_29); \
+	ImageList->Add(xpm_30); \
+	ImageList->Add(xpm_31); \
+	ImageList->Add(xpm_32); \
+	ImageList->Add(xpm_33); \
+	ImageList->Add(xpm_34); \
+	ImageList->Add(xpm_35); \
+	ImageList->Add(xpm_36); \
+	ImageList->Add(xpm_37); \
+	ImageList->Add(xpm_38); \
+	ImageList->Add(xpm_39); \
+	ImageList->Add(xpm_40); \
+	ImageList->Add(xpm_41); \
+	ImageList->Add(xpm_42); \
+	ImageList->Add(xpm_43); \
+	ImageList->Add(xpm_44); \
+	ImageList->Add(xpm_45); \
+	ImageList->Add(xpm_46); \
+	ImageList->Add(xpm_47); \
+	ImageList->Add(xpm_48); \
+	ImageList->Add(xpm_49); \
+	ImageList->Add(xpm_50); \
+	ImageList->Add(xpm_51); \
+	ImageList->Add(xpm_52); \
+	ImageList->Add(xpm_53); \
+	ImageList->Add(xpm_54); \
+	ImageList->Add(xpm_55); \
+	ImageList->Add(xpm_56); \
+	ImageList->Add(xpm_57); \
+	ImageList->Add(xpm_58); \
+	ImageList->Add(xpm_59); \
+	ImageList->Add(xpm_60)
+
+#define LOADBIGICONS \
+	_bigIcon[0] = wxBitmap(xpm_0_big); \
+	_bigIcon[1] = wxBitmap(xpm_1_big); \
+	_bigIcon[2] = wxBitmap(xpm_2_big); \
+	_bigIcon[3] = wxBitmap(xpm_3_big); \
+	_bigIcon[4] = wxBitmap(xpm_4_big); \
+	_bigIcon[5] = wxBitmap(xpm_5_big); \
+	_bigIcon[6] = wxBitmap(xpm_6_big); \
+	_bigIcon[7] = wxBitmap(xpm_7_big); \
+	_bigIcon[8] = wxBitmap(xpm_8_big); \
+	_bigIcon[9] = wxBitmap(xpm_9_big); \
+	_bigIcon[10] = wxBitmap(xpm_10_big); \
+	_bigIcon[11] = wxBitmap(xpm_11_big); \
+	_bigIcon[12] = wxBitmap(xpm_12_big); \
+	_bigIcon[13] = wxBitmap(xpm_13_big); \
+	_bigIcon[14] = wxBitmap(xpm_14_big); \
+	_bigIcon[15] = wxBitmap(xpm_15_big); \
+	_bigIcon[16] = wxBitmap(xpm_16_big); \
+	_bigIcon[17] = wxBitmap(xpm_17_big); \
+	_bigIcon[18] = wxBitmap(xpm_18_big); \
+	_bigIcon[19] = wxBitmap(xpm_19_big); \
+	_bigIcon[20] = wxBitmap(xpm_20_big); \
+	_bigIcon[21] = wxBitmap(xpm_21_big); \
+	_bigIcon[22] = wxBitmap(xpm_22_big); \
+	_bigIcon[23] = wxBitmap(xpm_23_big); \
+	_bigIcon[24] = wxBitmap(xpm_24_big); \
+	_bigIcon[25] = wxBitmap(xpm_25_big); \
+	_bigIcon[26] = wxBitmap(xpm_26_big); \
+	_bigIcon[27] = wxBitmap(xpm_27_big); \
+	_bigIcon[28] = wxBitmap(xpm_28_big); \
+	_bigIcon[29] = wxBitmap(xpm_29_big); \
+	_bigIcon[30] = wxBitmap(xpm_30_big); \
+	_bigIcon[31] = wxBitmap(xpm_31_big); \
+	_bigIcon[32] = wxBitmap(xpm_32_big); \
+	_bigIcon[33] = wxBitmap(xpm_33_big); \
+	_bigIcon[34] = wxBitmap(xpm_34_big); \
+	_bigIcon[35] = wxBitmap(xpm_35_big); \
+	_bigIcon[36] = wxBitmap(xpm_36_big); \
+	_bigIcon[37] = wxBitmap(xpm_37_big); \
+	_bigIcon[38] = wxBitmap(xpm_38_big); \
+	_bigIcon[39] = wxBitmap(xpm_39_big); \
+	_bigIcon[40] = wxBitmap(xpm_40_big); \
+	_bigIcon[41] = wxBitmap(xpm_41_big); \
+	_bigIcon[42] = wxBitmap(xpm_42_big); \
+	_bigIcon[43] = wxBitmap(xpm_43_big); \
+	_bigIcon[44] = wxBitmap(xpm_44_big); \
+	_bigIcon[45] = wxBitmap(xpm_45_big); \
+	_bigIcon[46] = wxBitmap(xpm_46_big); \
+	_bigIcon[47] = wxBitmap(xpm_47_big); \
+	_bigIcon[48] = wxBitmap(xpm_48_big); \
+	_bigIcon[49] = wxBitmap(xpm_49_big); \
+	_bigIcon[50] = wxBitmap(xpm_50_big); \
+	_bigIcon[51] = wxBitmap(xpm_51_big); \
+	_bigIcon[52] = wxBitmap(xpm_52_big); \
+	_bigIcon[53] = wxBitmap(xpm_53_big); \
+	_bigIcon[54] = wxBitmap(xpm_54_big); \
+	_bigIcon[55] = wxBitmap(xpm_55_big); \
+	_bigIcon[56] = wxBitmap(xpm_56_big); \
+	_bigIcon[57] = wxBitmap(xpm_57_big); \
+	_bigIcon[58] = wxBitmap(xpm_58_big); \
+	_bigIcon[59] = wxBitmap(xpm_59_big); \
+	_bigIcon[60] = wxBitmap(xpm_60_big)
+
+#endif
 

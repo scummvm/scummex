@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.h,v 1.16 2003/09/29 10:58:20 khalek Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.h,v 1.17 2003/09/30 00:38:43 yoshizf Exp $
  *
  */
 
@@ -112,7 +112,7 @@ const struct blockInfo blocksInfo[] = {
 	{46, "SOU", "Sound", 0, "", 59},
 	{47, "VCTL", "", 0, "", 15},
 	{48, "Crea", "", 0, "", 16},
-	{49, "VTLK", ""},
+	{49, "VTLK", "", 0, "", 15},
 	{50, "MCMP", "", 1, "help/specMCMP.html", 9},
 	{51, "iMUS", "iMUSE Digital Sound", 1, "help/speciMUS.html", 59},
 	{52, "MAP ", "iMUSE MAP", 1, "help/specMAP.html", 29},
@@ -146,7 +146,7 @@ const struct blockInfo blocksInfo[] = {
 	{80, "IM0E", "Image", 0, "", 25},
 	{81, "IM0F", "Image", 0, "", 25},
 	{82, "IM10", "Image", 0, "", 25},
-	{83, "BOMP", ""},
+	{83, "BOMP", "", 0, "", 47},
 	{84, "IMAG", "", 0, "", 25},
 	{85, "AKOS", "", 0, "", 47},
 	{86, "ZP04", "", 0, "", 52},

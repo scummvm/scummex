@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.h,v 1.15 2003/09/28 09:51:07 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.h,v 1.16 2003/09/30 00:38:43 yoshizf Exp $
  *
  */
 
@@ -53,11 +53,11 @@ private:
 	wxStaticBitmap *BigIcon;
 	wxPanel *panel, *infospanel, *htmlpanel, *searchpanel;
 	int htmlflag;
-
-	wxStaticText *TypeLabel, *OffsetLabel, *SizeLabel, *DescriptionLabel;
-	wxStaticText *SpecLabel[6];
+	wxStaticText *_GenLabel[4][2];
+	wxStaticText *_SpecLabel[6][2];
 	wxButton *SpecButton1, *SpecButton2;
 	wxTreeItemId iter[11];
+	wxBitmap _bigIcon[61];
 	wxTreeCtrl *tree;
 	wxFileName _file;
 
@@ -95,7 +95,7 @@ protected:
 	void boxesDraw(wxEvent& event);
 
 	void updateLabels(int blockid);
-	void updateLabel(wxStaticText *label, const char *title, uint32 text);
+	void updateLabel(wxStaticText *label[2], const char *title, uint32 text);
 
 	void FileInfoDialog(int size, int encbyte);
 
