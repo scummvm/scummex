@@ -11,7 +11,7 @@ WX_LIBS=`wxmsw-2.4-config --libs`
 
 CC=g++
 OBJECTS= bomp.o codec37.o codec47.o descumm.o descumm6.o file.o image.o mixer.o resource.o resources.o \
-	 scummex.o sound.o wxwindows.o
+	 scaler.o scummex.o sound.o wxwindows.o
 CFLAGS= $(SDL_CFLAGS) $(WX_CFLAGS) -O -Wall -Wstrict-prototypes -Wuninitialized -Wno-long-long -Wno-multichar -Wno-unknown-pragmas
 LIBS= $(SDL_LIBS) $(WX_LIBS) -lmingw32
 
