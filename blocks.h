@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/blocks.h,v 1.5 2003/09/21 15:04:14 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/blocks.h,v 1.6 2003/09/24 12:38:45 yoshizf Exp $
  *
  */
 
@@ -133,7 +133,9 @@ enum {
 	XPAL,
 	ADL,
 	SPK,
-	ROL
+	ROL,
+	FTCH,
+	STOR
 };
 
 enum {
