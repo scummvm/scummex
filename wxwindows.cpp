@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.22 2003/09/24 11:49:30 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.23 2003/09/24 23:04:06 yoshizf Exp $
  *
  */
 
@@ -365,6 +365,7 @@ void MainWindow::SetButton(int blocktype) {
 			break;
 
 		case BOXD:
+		case BX:
 			SpecButton1->SetLabel("View Boxes...");
 			SpecButton1->Show(TRUE);
 			Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
@@ -515,6 +516,7 @@ void MainWindow::updateLabels(int blockid) {
 			break;
 
 		case BOXD:
+		case BX:
 			updateLabel(SpecLabel[0], "No. of Boxes", block.numFiles);
 			SetButton(block.blockTypeID);
 			break;

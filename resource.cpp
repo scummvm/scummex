@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.16 2003/09/24 12:38:45 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.17 2003/09/24 23:04:06 yoshizf Exp $
  *
  */
 
@@ -833,6 +833,13 @@ int Resource::parseOldBlocks(char *blockName, BlockTable *_blockTable, File& _in
 			level++;
 			index = searchOldBlocks(_blockTable, _input, index, level, _blockTable[index-1].blockSize + _blockTable[index-1].offset);
 			_input.seek(_blockTable[bufindex].offset + _blockTable[bufindex].blockSize, SEEK_SET);
+			break;
+
+		case BX:
+			_blockTable[index].numFiles = _input.readByte(); // Number of boxes
+			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
+			_input.seek(_blockTable[index].blockSize + _blockTable[index].offset, SEEK_SET);
+			index++;
 			break;
 		
 		default:

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.16 2003/09/24 19:12:16 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.17 2003/09/24 23:04:05 yoshizf Exp $
  *
  */
 
@@ -35,6 +35,31 @@ Image::Image() {
 
 Image::~Image() {
 	delete _resource;
+}
+
+void Image::setupEGAPalette() {
+	setPalColor( 0,   0,   0,   0);
+	setPalColor( 1,   0,   0, 168);
+	setPalColor( 2,   0, 168,   0);
+	setPalColor( 3,   0, 168, 168);
+	setPalColor( 4, 168,   0,   0);
+	setPalColor( 5, 168,   0, 168); 
+	setPalColor( 6, 168,  84,   0);
+	setPalColor( 7, 168, 168, 168);
+	setPalColor( 8,  84,  84,  84);
+	setPalColor( 9,  84,  84, 252);
+	setPalColor(10,  84, 252,  84);
+	setPalColor(11,  84, 252, 252);
+	setPalColor(12, 252,  84,  84);
+	setPalColor(13, 252,  84, 252);
+	setPalColor(14, 252, 252,  84);
+	setPalColor(15, 252, 252, 252);
+}
+
+void Image::setPalColor(int idx, int r, int g, int b) {
+	_rgbTable[idx].red = r;
+	_rgbTable[idx].green = g;
+	_rgbTable[idx].blue = b;
 }
 
 int Image::drawPalette(BlockTable *_blockTable, int id, File& _input)
@@ -123,13 +148,19 @@ void Image::drawLine(int xStart, int yStart, int xEnd, int yEnd, int red, int gr
 int Image::drawBoxes(BlockTable *_blockTable, int id, File& _input, int newWindow, int imageWindowId) {
 	int nBox, RMHDindex, width, height, version = 5;
 
-	RMHDindex = _resource->findBlock(0, _blockTable, id, "RMHD", NULL);
+	if (_blockTable[id].blockTypeID == BM || _blockTable[id].blockTypeID == BX) {
+		version = 3;
+		RMHDindex = _resource->findBlock(0, _blockTable, id, "HD", NULL);
+	} else {
+		RMHDindex = _resource->findBlock(0, _blockTable, id, "RMHD", NULL);
+	}
+
 	width = _blockTable[RMHDindex].width;
 	height = _blockTable[RMHDindex].height;
 
 	if ( _resource->findBlock(0, _blockTable, id, "IMAG", NULL) != -1) {
 		version = 8;
-	} else if ( _resource->findBlock(0, _blockTable, id, "PALS", NULL) != -1) {
+	} else if ( version > 3 && _resource->findBlock(0, _blockTable, id, "PALS", NULL) != -1) {
 		version = 7;
 	}
 			
@@ -138,14 +169,16 @@ int Image::drawBoxes(BlockTable *_blockTable, int id, File& _input, int newWindo
 		if (version > 5) {
 			id = _resource->findBlock(1, _blockTable, id, "BOXD", NULL);
 		} else {
-			id = _resource->findBlock(0, _blockTable, id, "BOXD", NULL);
+			id = _resource->findBlock(0, _blockTable, id, "BOXD", "BX", NULL);
 		}
 	}
 	
 	if (version == 8) { 
 		_input.seek(_blockTable[id].offset + 12, SEEK_SET);
-	} else {
+	} else if (version > 3) {
 		_input.seek(_blockTable[id].offset + 10, SEEK_SET);
+	} else {
+		_input.seek(_blockTable[id].offset + 7, SEEK_SET);
 	}
 	
 	nBox = _blockTable[id].numFiles;
@@ -257,15 +290,20 @@ int Image::drawSmushFrame(BlockTable *_blockTable, int id, File& _input) {
 
 int Image::drawBG(File& _input, BlockTable *_blockTable, int id, int newWindow, int imageWindowId)
 {
-	int RMHDindex, CLUTindex, SMAPindex, TRNSindex;
+	int RMHDindex, CLUTindex, SMAPindex, TRNSindex, version;
+	byte *dst, *dstorg, *src;
 	
 	if (_blockTable[id].blockTypeID == BM) {
+		version = 3;
 		RMHDindex = _resource->findBlock(0, _blockTable, id, "HD", NULL);
 	} else if (_blockTable[id-1].blockTypeID == IMHD) {
+		version = 8;
 		RMHDindex = id-1;
 	} else {
+		version = 5;
 		RMHDindex = _resource->findBlock(0, _blockTable, id, "RMHD", NULL);
 	}
+	
 	_width = _blockTable[RMHDindex].width;
 	_height = _blockTable[RMHDindex].height;
 
@@ -275,7 +313,7 @@ int Image::drawBG(File& _input, BlockTable *_blockTable, int id, int newWindow, 
 		_imageWindowId = imageWindowId;
 	}
 	
-	if (_blockTable[id].blockTypeID != BM) {
+	if (version > 4) {
 		TRNSindex = _resource->findBlock(0, _blockTable, id, "TRNS", NULL);
 		_transp = _blockTable[TRNSindex].trans;
 		CLUTindex = _resource->findBlock(0, _blockTable, id, "CLUT", "APAL", "NPAL", NULL);
@@ -283,16 +321,25 @@ int Image::drawBG(File& _input, BlockTable *_blockTable, int id, int newWindow, 
 	} else {
 		_transp = 260;
 		CLUTindex = _resource->findBlock(0, _blockTable, id, "PA", NULL);
-		_input.seek(_blockTable[CLUTindex].offset + 8, SEEK_SET);
+		if (CLUTindex != -1) {
+			version = 4;
+			_input.seek(_blockTable[CLUTindex].offset + 8, SEEK_SET);
+		} else {
+			version = 3;
+		}
 	}
 
-	for (int j = 0; j < 256; j++) {
-		_rgbTable[j].red = _input.readByte();	// red
-		_rgbTable[j].green = _input.readByte();	// green
-		_rgbTable[j].blue = _input.readByte();	// blue
+	if (version > 3) {
+		for (int j = 0; j < 256; j++) {
+			_rgbTable[j].red = _input.readByte();	// red
+			_rgbTable[j].green = _input.readByte();	// green
+			_rgbTable[j].blue = _input.readByte();	// blue
+		}
+	} else {
+		setupEGAPalette();
 	}
-	
-	if (_blockTable[id].blockTypeID != BM) {
+
+	if (version > 4) {
 		SMAPindex = _resource->findBlock(1, _blockTable, id, "SMAP", NULL);
 	} else {
 		SMAPindex = id;
@@ -304,20 +351,31 @@ int Image::drawBG(File& _input, BlockTable *_blockTable, int id, int newWindow, 
 
 	_offsets = new uint32[_width/8];
 	
-	if (_blockTable[id].blockTypeID != BM) {
-		_input.seek(_blockTable[SMAPindex].offset + 8, SEEK_SET);
+	_input.seek(_blockTable[SMAPindex].offset + 8, SEEK_SET);
+
+	if (version > 3) {
+		for (int x = 0; x < _width/8; x++) 
+			_offsets[x] = _input.readUint32LE() + _blockTable[SMAPindex].offset;
+
+		for (int x = 0; x < _width/8; x++) {
+			offset = x*8;
+			GetStrip(x, _input);
+		}
 	} else {
-		_input.seek(_blockTable[SMAPindex].offset + 10, SEEK_SET);
-	}
-
-	for (int x = 0; x < _width/8; x++) 
-		_offsets[x] = _input.readUint32LE() + _blockTable[SMAPindex].offset;
-
-	for (int x = 0; x < _width/8; x++)
-	{
-		offset = x*8;
-
-		GetStrip(x, _input);
+		_offsets[0] = _input.readUint16LE();
+		_input.seek(_offsets[0] - 4, SEEK_CUR);
+		dstorg = dst = (byte *)malloc(_width * _height);
+		src = (byte *)malloc(_blockTable[SMAPindex].blockSize - _offsets[0] - 12);
+		_input.read(src, _blockTable[SMAPindex].blockSize - _offsets[0] - 12);
+		decodeEGA(dst, src, _width, _height);
+		free(src);
+		for (int y=0; y<_height; y++) {
+			for (int x=0; x<_width; x++) {
+				int color = *dst++;
+				_gui->PutPixel(_imageWindowId, x, y, _rgbTable[color].red, _rgbTable[color].green, _rgbTable[color].blue);
+			}
+		}
+		free(dstorg);
 	}
 
 	if (newWindow) {
@@ -812,6 +870,65 @@ void Image::decodeCodec1(byte *dst, byte *src, int height) {
 					if (val)
 						*dst = val;
 					dst++;
+				}
+			}
+		}
+	}
+}
+
+void Image::decodeEGA(byte *dst, const byte *src, int width, int height) {
+	byte color = 0;
+	int run = 0, x = 0, y = 0, z;
+
+	while (x < width) {
+		color = *src++;
+		
+		if (color & 0x80) {
+			run = color & 0x3f;
+
+			if (color & 0x40) {
+				color = *src++;
+
+				if (run == 0) {
+					run = *src++;
+				}
+				for (z = 0; z < run; z++) {
+					*(dst + y * width + x) = (z&1) ? color & 0xf : color >> 4;
+
+					y++;
+					if (y >= height) {
+						y = 0;
+						x++;
+					}
+				}
+			} else {
+				if (run == 0) {
+					run = *src++;
+				}
+
+				for (z = 0; z < run; z++) {
+					*(dst + y * width + x) = *(dst + y * width + x - 1);
+
+					y++;
+					if (y >= height) {
+						y = 0;
+						x++;
+					}
+				}
+			}
+		} else {
+			run = color >> 4;
+			if (run == 0) {
+				run = *src++;
+			}
+			
+			for (z = 0; z < run; z++) {
+				*(dst + y * width + x) = color & 0xf;
+
+				y++;
+				if (y >= height) {
+					y = 0;
+					x++;
 				}
 			}
 		}

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.h,v 1.10 2003/09/24 19:12:17 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.h,v 1.11 2003/09/24 23:04:06 yoshizf Exp $
  *
  */
 
@@ -54,6 +54,8 @@ private:
 	Codec47Decoder _codec47;
 
 	void drawLine(int xStart, int yStart, int xEnd, int yEnd, int red, int green, int blue);
+	void setupEGAPalette();
+	void setPalColor(int idx, int r, int g, int b);
 
 public:
 	Image();
@@ -73,6 +75,7 @@ public:
 	void GetStrip( uint8 pos, File& _input);
 	void decodeCodec44(byte *dst, const byte *src, uint32 length);
 	void decodeCodec1(byte *dst, byte *src, int height);
+	void decodeEGA(byte *dst, const byte *src, int width, int height);
 };
 
 #endif
