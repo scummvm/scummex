@@ -33,11 +33,9 @@ DEPDIRS := $(addsuffix /$(DEPDIR),$(MODULE_DIRS))
 # Main executable build rule
 scummex: ${OBJS}
 	$(CXX) $+ ${LIBS} -o $@
-
-# Special build rule for MacOS: need to add the resource fork to the binary. 
-# Not sure if we can just use REZ_CMD unconditionally on all platforms?
-mac: scummex
+ifdef REZ_CMD
 	$(REZ_CMD) scummex
+endif
 
 clean:
 	rm -f scummex $(OBJS)
