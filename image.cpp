@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.9 2003/09/22 19:47:58 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.10 2003/09/22 21:31:18 yoshizf Exp $
  *
  */
 
@@ -107,31 +107,56 @@ void Image::drawLine(int xStart, int yStart, int xEnd, int yEnd, int red, int gr
 }
 
 int Image::drawBoxes(BlockTable *_blockTable, int id, File& _input, int newWindow) {
-	int nBox, RMHDindex, width, height;
+	int nBox, RMHDindex, width, height, v8 = 0;
 
 	RMHDindex = _resource->findBlock(0, _blockTable, id, "RMHD", "-1");
 	width = _blockTable[RMHDindex].width;
 	height = _blockTable[RMHDindex].height;
 
-	if (newWindow == 0)
-		id = _resource->findBlock(0, _blockTable, id, "BOXD", "-1");
+	if (newWindow == 0) {
+		if ( _resource->findBlock(0, _blockTable, id, "IMAG", "-1") != -1) {
+			v8 = 1;
+			id = _resource->findBlock(1, _blockTable, id, "BOXD", "-1");
+		} else {
+			id = _resource->findBlock(0, _blockTable, id, "BOXD", "-1");
+		}
+	}
 	
-	_input.seek(_blockTable[id].offset + 10, SEEK_SET);
+	if (v8) { 
+		_input.seek(_blockTable[id].offset + 12, SEEK_SET);
+	} else {
+		_input.seek(_blockTable[id].offset + 10, SEEK_SET);
+	}
 	
 	nBox = _blockTable[id].numFiles;
 
-	for (int i=0; i<nBox; i++) {
-		_points[i][0].x = _input.readUint16LE();
-		_points[i][0].y = _input.readUint16LE();
-		_points[i][1].x = _input.readUint16LE();
-		_points[i][1].y = _input.readUint16LE();
-		_points[i][2].x = _input.readUint16LE();
-		_points[i][2].y = _input.readUint16LE();
-		_points[i][3].x = _input.readUint16LE();
-		_points[i][3].y = _input.readUint16LE();
-		_input.readUint16LE();
-		_input.readUint16LE();
+	if (v8) {
+		for (int i=0; i<nBox; i++) {
+			_points[i][0].x = (short)_input.readUint32LE();
+			_points[i][0].y = (short)_input.readUint32LE();
+			_points[i][1].x = (short)_input.readUint32LE();
+			_points[i][1].y = (short)_input.readUint32LE();
+			_points[i][2].x = (short)_input.readUint32LE();
+			_points[i][2].y = (short)_input.readUint32LE();
+			_points[i][3].x = (short)_input.readUint32LE();
+			_points[i][3].y = (short)_input.readUint32LE();
+			_input.seek(20, SEEK_CUR);
+		}
+	} else {
+		for (int i=0; i<nBox; i++) {
+			_points[i][0].x = _input.readUint16LE();
+			_points[i][0].y = _input.readUint16LE();
+			_points[i][1].x = _input.readUint16LE();
+			_points[i][1].y = _input.readUint16LE();
+			_points[i][2].x = _input.readUint16LE();
+			_points[i][2].y = _input.readUint16LE();
+			_points[i][3].x = _input.readUint16LE();
+			_points[i][3].y = _input.readUint16LE();
+			_input.readUint16LE();
+			_input.readUint16LE();
+		}
 	}
+	
 
 	if (newWindow == 1) {
 		_gui->DisplayImage("Boxes", width, height);
