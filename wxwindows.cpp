@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.2 2003/09/18 19:37:14 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.3 2003/09/18 20:50:56 yoshizf Exp $
  *
  */
 
@@ -1073,6 +1073,12 @@ void MainWindow::OnSelChanged(wxTreeEvent& event) {
 		case SDAT:
 		case IACT:
 			bigIconBitmap = wxBitmap(xpm_24_big);
+			break;
+
+		case ADL:
+		case SPK:
+		case ROL:
+			bigIconBitmap = wxBitmap(xpm_31_big);
 			break;
 
 		default:

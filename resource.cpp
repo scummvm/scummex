@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.3 2003/09/18 19:37:14 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.4 2003/09/18 20:50:56 yoshizf Exp $
  *
  */
 
@@ -356,13 +356,6 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 			index++;
 			break;
 
-		case SOUN:
-			_blockTable[index].blockSize = _input.readUint32BE();
-			_input.seek(_blockTable[index].offset + _blockTable[index].blockSize, SEEK_SET);
-			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
-			index++;
-			break;
-			
 		case IMHD:
 			_blockTable[index].blockSize = _input.readUint32BE();
 			_blockTable[index].width = _input.readUint32LE();
@@ -645,7 +638,6 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 		case LFLF:
 		case ROOM:
 		case OBCD:
-		case MAP:
 		case IM00:
 		case IM01:
 		case IM02:
@@ -660,7 +652,32 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 		case PALS:
 		case WRAP:
 		case OBIM:
+		case SOUN:
 			_blockTable[index].blockSize = _input.readUint32BE();
+			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
+			bufindex = index;
+			index++;
+			level++;
+			index = searchBlocks(_blockTable, _input, index, level, _blockTable[index-1].blockSize + _blockTable[index-1].offset);
+			_input.seek(_blockTable[bufindex].offset + _blockTable[bufindex].blockSize, SEEK_SET);
+			break;
+
+		case MAP:
+			_blockTable[index].blockSize = _input.readUint32BE();
+			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
+			index++;
+			level++;
+			index = searchBlocks(_blockTable, _input, index, level, _blockTable[index-1].blockSize + _blockTable[index-1].offset);
+			break;
+
+		case SOU:
+			_blockTable[index].blockSize = _input.readUint32BE();
+			if (_blockTable[index].blockSize == 0) {
+				stopflag = 1;
+				_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
+				index++;
+				break;
+			}
 			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
 			bufindex = index;
 			index++;
@@ -710,8 +727,17 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 		case TRES:
 		case STRK:
 		case XPAL:
+		case ADL:
+		case ROL:
 			_blockTable[index].blockSize = _input.readUint32BE() + 8;
 			_input.seek(_blockTable[index].offset + _blockTable[index].blockSize, SEEK_SET);
+			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
+			index++;
+			break;
+
+		case SPK:
+			_blockTable[index].blockSize = _input.readUint32BE() + 8;
+			stopflag = 1;
 			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
 			index++;
 			break;
@@ -821,7 +847,7 @@ int Resource::parseOldBlocks(char *blockName, BlockTable *_blockTable, File& _in
 
 int Resource::getBlockType(char *tag) {
 	
-	for (int i=0; i<110; i++) {
+	for (int i=0; i<113; i++) {
 		if(strstr(tag, blocksInfo[i].name)) {
 			return blocksInfo[i].id;
 		}
