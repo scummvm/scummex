@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.28 2003/09/28 09:51:03 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.29 2003/09/28 10:33:23 fingolfin Exp $
  *
  */
 
@@ -596,33 +596,48 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 	wxBitmap FileIcon = wxBitmap(file_icon);
 	wxBitmap HexIcon = wxBitmap(hex_icon);
 	
-	wxMenuBar *menuBar = new wxMenuBar;
-	wxMenu *menuFile = new wxMenu;
-	
-	wxMenuItem *OpenItem = new wxMenuItem(menuFile, wxID_OPEN, "Open...", "Open resource file", wxITEM_NORMAL, NULL );
-	OpenItem->SetBitmap(OpenIcon);
-	menuFile->Append(OpenItem);
-	
-	menuFile->AppendSeparator();
-	
-	wxMenuItem *QuitItem = new wxMenuItem(menuFile, wxID_EXIT, "Exit", "Exit ScummEX", wxITEM_NORMAL, NULL );
-	QuitItem->SetBitmap(ExitIcon);
-	menuFile->Append(QuitItem);
 
-	menuBar->Append(menuFile,"&File");
-
-	wxMenu *menuTools = new wxMenu;
-	wxMenuItem *DumpItem = new wxMenuItem(menuTools, ID_Dump, "File Dump...", "Dump block to disk", wxITEM_NORMAL, NULL );
-	DumpItem->SetBitmap(SaveIcon);
-	menuTools->Append(DumpItem);
-	menuTools->Append(ID_SoundStop, "Stop Sounds");
-	menuBar->Append(menuTools, "&Tools");
-
-	wxMenu *menuHelp = new wxMenu;
-	menuHelp->Append(wxID_HELP, "Contents");
-	menuHelp->Append(wxID_ABOUT,"About...");
-	menuBar->Append(menuHelp, "&Help");
+	//
+	// File menu
+	//
+	wxMenu *fileMenu = new wxMenu();
 	
+	fileMenu->Append(wxID_OPEN, "&Open...\tCtrl-O", "Open resource file");
+	fileMenu->Append(wxID_CLOSE, "Close\tCtrl-W", "Close resource file");
+	fileMenu->AppendSeparator();
+	fileMenu->Append(ID_FileInfo, "File Info", "Show File Info");
+	fileMenu->AppendSeparator();
+	fileMenu->Append(wxID_EXIT, "Exit\tCtrl-X");
+	// FIXME: On Mac you *always* say "Quit", but on Windows/Linux, "Exit" is more common, I think?
+	// So maybe we'll have to make this compile conditionally...
+	
+
+	//
+	// Tools menu
+	//
+	wxMenu *toolsMenu = new wxMenu();
+
+	toolsMenu->Append(ID_Dump, "File Dump...", "Dump block to disk");
+	toolsMenu->Append(ID_View, "Hex Viewer...", "View block as hex");
+	toolsMenu->AppendSeparator();
+	toolsMenu->Append(ID_SoundStop, "Stop Sounds");
+	toolsMenu->AppendSeparator();
+	toolsMenu->Append(Button_Options, "Options...", "ScummEX Options");
+
+	//
+	// Help menu
+	//
+	wxMenu *helpMenu = new wxMenu();
+	helpMenu->Append(wxID_HELP, "Contents");
+	helpMenu->Append(wxID_ABOUT, "About...");
+
+	//
+	// Add the menus to a menu bar
+	//
+	wxMenuBar *menuBar = new wxMenuBar();
+	menuBar->Append(fileMenu, "&File");
+	menuBar->Append(toolsMenu, "&Tools");
+	menuBar->Append(helpMenu, "&Help");
 	SetMenuBar(menuBar);
 
 	SetThemeEnabled(true);
@@ -638,7 +653,7 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 	ToolBar->EnableTool(ID_FileInfo, FALSE);
 	ToolBar->AddTool(wxID_EXIT, ExitIcon, "Exit", "Exit ScummEX");
 	ToolBar->AddSeparator();
-	ToolBar->AddTool(ID_Dump, SaveIcon, "File Dump", "Dump block to disk");
+	ToolBar->AddTool(ID_Dump, SaveIcon, "File Dump...", "Dump block to disk");
 	ToolBar->EnableTool(ID_Dump, FALSE);
 	ToolBar->AddTool(ID_View, HexIcon, "Hex Viewer...", "View block as hex");
 	ToolBar->EnableTool(ID_View, FALSE);
