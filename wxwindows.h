@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.h,v 1.11 2003/09/24 11:49:30 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.h,v 1.12 2003/09/26 23:47:59 yoshizf Exp $
  *
  */
 
@@ -137,6 +137,7 @@ class GUI_wxWindows : public wxApp {
 private:
 	MainWindow *_mainWindow;
 	ImageWindow *_imageWindow[10];
+	wxConfig *config;
 
 public:
 	GUI_wxWindows();
@@ -156,6 +157,10 @@ public:
 	virtual bool OnInit();
 	void add_tree_elements(char *itemName, int blockid, int level, int type);
 	int getScummVersionDialog();
+	bool readConfigValue(const char* key, int* string);
+	bool readConfigValue(const char* key, wxString* string);
+	bool writeConfigValue(const char* key, int string);
+	bool writeConfigValue(const char* key, wxString& string);
 };
 
 class TreeItemData : public wxTreeItemData {

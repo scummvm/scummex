@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.23 2003/09/24 23:04:06 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.24 2003/09/26 23:47:59 yoshizf Exp $
  *
  */
 
@@ -38,10 +38,12 @@ GUI_wxWindows::GUI_wxWindows()
 	: _mainWindow(0) {
 	g_scummex = new ScummEX();
 	_gui = this; // FIXME - ugly quick workaround for previously broken code
+	config = new wxConfig("ScummEX");
 }
 
 GUI_wxWindows::~GUI_wxWindows() {
 	delete g_scummex;
+	delete config;
 }
 
 bool GUI_wxWindows::OnInit()
@@ -139,6 +141,32 @@ void GUI_wxWindows::DrawImage(int imgWindowId) {
 
 void GUI_wxWindows::UpdateImage(int imgWindowId) {
 	_imageWindow[imgWindowId]->UpdateImage();
+}
+
+bool GUI_wxWindows::readConfigValue(const char* key, int* string) {
+	bool result;
+	result = config->Read(key, string);
+	return result;
+}
+
+bool GUI_wxWindows::readConfigValue(const char* key, wxString* string) {
+	bool result;
+	result = config->Read(key, string);
+	return result;
+}
+
+bool GUI_wxWindows::writeConfigValue(const char* key, int string) {
+	bool result;
+	result = config->Write(key, string);
+	config->Flush();
+	return result;
+}
+
+bool GUI_wxWindows::writeConfigValue(const char* key, wxString& string) {
+	bool result;
+	result = config->Write(key, string);
+	config->Flush();
+	return result;
 }
 
 BEGIN_EVENT_TABLE(ImageWindow, wxFrame)
@@ -300,6 +328,21 @@ void MainWindow::SetButton(int blocktype) {
 			break;
 
 		case OBIM:
+		case IM01:
+		case IM02:
+		case IM03:
+		case IM04:
+		case IM05:
+		case IM06:
+		case IM07:
+		case IM08:
+		case IM09:
+		case IM0A:
+		case IM0B:
+		case IM0C:
+		case IM0D:
+		case IM0E:
+		case IM0F:
 			SpecButton1->SetLabel("View Object");
 			SpecButton1->Show(TRUE);
 			Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
@@ -482,6 +525,24 @@ void MainWindow::updateLabels(int blockid) {
 			if (g_scummex->getBlockTable(blockid+3).blockTypeID == 35) {
 				SetButton(block.blockTypeID);
 			}
+			break;
+
+		case IM01:
+		case IM02:
+		case IM03:
+		case IM04:
+		case IM05:
+		case IM06:
+		case IM07:
+		case IM08:
+		case IM09:
+		case IM0A:
+		case IM0B:
+		case IM0C:
+		case IM0D:
+		case IM0E:
+		case IM0F:
+			SetButton(block.blockTypeID);
 			break;
 
 		case IMHD:
@@ -910,6 +971,7 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 	SetIcon(wxICON(scummex_icon));
 	
 	SetSizeHints(640, 480);
+	_gui->readConfigValue("DataPath", &_filepath);
 }
 
 void MainWindow::OnQuit(wxCommandEvent& WXUNUSED(event))
@@ -927,7 +989,7 @@ void MainWindow::OnHelp(wxCommandEvent& WXUNUSED(event)) {
 	HtmlHelp->DisplayContents();
 }
 
-void MainWindow::OnOpen(wxCommandEvent& WXUNUSED(event))
+void MainWindow::OnOpen(wxCommandEvent& WXUNUSED(event)) 
 {
 	wxFileDialog *dialog = new wxFileDialog(this, "Please select an input file.", _filepath, "",
 		"All Supported Files|*|"
@@ -939,6 +1001,7 @@ void MainWindow::OnOpen(wxCommandEvent& WXUNUSED(event))
 		_file = wxFileName(_filename);
 	
 		_filepath = _file.GetPath();
+		_gui->writeConfigValue("DataPath", _filepath);
 		tree->DeleteChildren(iter[0]);
 		g_scummex->loadFile(_filename);
 	}
@@ -1213,6 +1276,7 @@ void MainWindow::OnSelChanged(wxTreeEvent& event) {
 		case ADL:
 		case SPK:
 		case ROL:
+		case MIDI:
 			bigIconBitmap = wxBitmap(xpm_31_big);
 			break;
 
