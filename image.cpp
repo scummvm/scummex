@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.24 2003/10/01 17:34:41 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.25 2003/11/08 02:38:00 khalek Exp $
  *
  */
 
@@ -283,7 +283,7 @@ void Image::drawSmushFrame(BlockTable *_blockTable, int id, File& _input) {
 			break;
 
 		case 44:
-		case 22:
+		case 21:
 			decodeCodec44(dst, chunk_buffer, _blockTable[id].blockSize - 22);
 			break;
 
