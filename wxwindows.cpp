@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.32 2003/09/30 00:38:43 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.33 2003/09/30 08:46:12 yoshizf Exp $
  *
  */
 
@@ -873,7 +873,11 @@ void MainWindow::OnSelChanged(wxTreeEvent& event) {
 	val2 = SpecButton2->Disconnect(ID_SpecButton2, wxEVT_COMMAND_BUTTON_CLICKED);
 
 	itemtype = item->_blockType;
-	bigIconBitmap = _bigIcon[blocksInfo[itemtype].iconid];
+	if (itemtype < 200)
+		bigIconBitmap = _bigIcon[blocksInfo[itemtype].iconid];
+	else
+		bigIconBitmap = _bigIcon[oldBlocksInfo[itemtype-200].iconid];
+
 	BigIcon->SetBitmap(bigIconBitmap);
 
 	if (blocksInfo[itemtype].html == 1) {

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.20 2003/09/28 09:51:07 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.21 2003/09/30 08:46:12 yoshizf Exp $
  *
  */
 
@@ -149,7 +149,7 @@ void Image::drawLine(int xStart, int yStart, int xEnd, int yEnd, int red, int gr
 }
 
 void Image::drawBoxes(BlockTable *_blockTable, int id, File& _input) {
-	int nBox, RMHDindex, width, height, version = 5;
+	int nBox, RMHDindex, version = 5;
 
 	if (_blockTable[id].blockTypeID == BM || _blockTable[id].blockTypeID == BX) {
 		version = 3;
@@ -158,8 +158,8 @@ void Image::drawBoxes(BlockTable *_blockTable, int id, File& _input) {
 		RMHDindex = _resource->findBlock(0, _blockTable, id, "RMHD", NULL);
 	}
 
-	width = _blockTable[RMHDindex].width;
-	height = _blockTable[RMHDindex].height;
+	_width = _blockTable[RMHDindex].width;
+	_height = _blockTable[RMHDindex].height;
 
 	if ( _resource->findBlock(0, _blockTable, id, "IMAG", NULL) != -1) {
 		version = 8;
