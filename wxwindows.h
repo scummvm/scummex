@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.h,v 1.2 2003/09/18 19:37:14 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.h,v 1.3 2003/09/19 19:57:07 yoshizf Exp $
  *
  */
 
@@ -95,13 +95,14 @@ public:
 	void updateLabel(char *label, char *title, uint32 text);
 	virtual bool OnInit();
 	void add_tree_elements(char *itemName, int blockid, int level, int type);
+	int getScummVersionDialog();
 };
 
 class TreeItemData : public wxTreeItemData {
 	public:
-		TreeItemData(int blockid, int blocktype) : block_id(blockid), block_type(blocktype) { }
-		int block_id;
-		int block_type;
+		TreeItemData(int blockid, int blocktype) : _blockId(blockid), _blockType(blocktype) { }
+		int _blockId;
+		int _blockType;
 };
 		
 enum

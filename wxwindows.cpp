@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.4 2003/09/19 01:36:40 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.5 2003/09/19 19:57:07 yoshizf Exp $
  *
  */
 
@@ -25,7 +25,7 @@
 #include "scummex.h"
 #include "icons.h"
 
-wxTreeItemId iter[9], itemid;
+wxTreeItemId iter[11], itemid;
 wxTreeCtrl *tree;
 wxStaticText *TypeLabel, *OffsetLabel, *SizeLabel, *DescriptionLabel;
 wxStaticText *SpecLabel[6];
@@ -79,6 +79,71 @@ void GUI_wxWindows::SetTitle(char *title) {
 
 void MainWindow::OnHelp(wxCommandEvent& WXUNUSED(event)) {
 	HtmlHelp->DisplayContents();
+}
+
+int GUI_wxWindows::getScummVersionDialog() {
+	int choice;
+	wxString games[22] = {
+	"Maniac Mansion (C64)",
+	"Maniac Mansion (PC)",
+	"Zak McKracken",
+	"Zak McKracken (FM Towns)",
+	"Indiana Jones & The Last Crusade",
+	"Sampler (Loom, Indy3, SOMI)",
+	"The Secret of Monkey Island (Demo)",
+	"The Secret of Monkey Island (EGA)",
+	"The Secret of Monkey Island",
+	"Loom",
+	"Loom (CD)",
+	"Monkey Island 2: LeChuck's Revenge",
+	"Indiana Jones & The Fate of Atlantis",
+	"Day of the Tentacle",
+	"Sam & Max Hit The Road (Demo)",
+	"Sam & Max Hit The Road (Mac demo)",
+	"Sam & Max Hit The Road (Disk)",
+	"Sam & Max Hit The Road (CD)",
+	"Full Throttle",
+	"The Dig",
+	"The Dig (Win95)",
+	"The Curse of Monkey Island"
+	};
+	
+	wxSingleChoiceDialog *dialog = new wxSingleChoiceDialog(frame, "Please select the correct game", "Scumm version selection", 22, games, NULL, wxOK|wxCANCEL|wxCENTRE, wxDefaultPosition);
+	if (dialog->ShowModal() == wxID_OK) {
+		choice = dialog->GetSelection();
+		switch (choice) {
+			case 0:
+				return 1;
+			case 1:
+			case 2:
+				return 2;
+			case 3:
+			case 4:
+			case 9:
+				return 3;
+			case 5:
+			case 6:
+			case 7:
+				return 4;
+			case 8:
+			case 10:
+			case 11:
+			case 12:
+				return 5;
+			case 13:
+			case 14:
+			case 16:
+				return 6;
+			case 17:
+			case 18:
+			case 19:
+				return 7;
+			case 20:
+			case 21:
+				return 8;
+		}
+	}
+	return 0;
 }
 
 void GUI_wxWindows::FileInfoDialog(int size, int encbyte) {
@@ -320,7 +385,7 @@ void GUI_wxWindows::SetButton(int blocktype) {
 
 void GUI_wxWindows::add_tree_elements(char *itemName, int blockid, int level, int type) {
 
-	assert(level <= 8);
+	assert(level <= 10);
 	itemid = iter[level] = tree->AppendItem(iter[level-1], itemName, -1, -1, new TreeItemData(blockid, type));
 
 	if (blocksInfo[type].iconid != 0) {
@@ -795,7 +860,7 @@ void MainWindow::OnSelChanged(wxTreeEvent& event) {
 	val1 = SpecButton1->Disconnect(ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED);
 	val2 = SpecButton2->Disconnect(ID_SpecButton2, wxEVT_COMMAND_BUTTON_CLICKED);
 
-	itemtype = item->block_type;
+	itemtype = item->_blockType;
 	switch (itemtype) {
 		case LECF:
 		case LABN:
@@ -1053,6 +1118,6 @@ void MainWindow::OnSelChanged(wxTreeEvent& event) {
 		
 	BigIcon->SetBitmap(bigIconBitmap);
 			
-	_scummex->UpdateInfosFromTree(item->block_id);
+	_scummex->UpdateInfosFromTree(item->_blockId);
 	event.Skip();
 }

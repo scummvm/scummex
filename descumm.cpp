@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/descumm.cpp,v 1.1 2003/09/18 16:26:53 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/descumm.cpp,v 1.2 2003/09/19 19:57:07 yoshizf Exp $
  *
  */
 
@@ -92,9 +92,7 @@ bool ZakFlag = false;
 bool IndyFlag = false;
 bool GF_UNBLOCKED = false;
 
-
 void emit_if(char *buf, char *condition);
-
 
 const char *var_names2[] = {
 	/* 0 */
@@ -185,7 +183,6 @@ const char *DeScumm::get_num_string(int i)
 
 	return s;
 }
-
 
 char *DeScumm::get_var(char *buf)
 {
@@ -293,8 +290,6 @@ char *DeScumm::get_ascii(char *buf)
 
 	return strecpy(buf, "\"");
 }
-
-
 
 char *DeScumm::add_a_tok(char *buf, int type)
 {
@@ -1026,67 +1021,6 @@ void DeScumm::do_room_ops_old(char *buf, byte master_opcode)
 	case 0x06:
 		do_tok(buf, "ShakeOff", 0);
 		break;
-/*
-	case 0x07:
-		do_tok(buf, "Unused", 0);
-		break;
-	case 0x08:
-		buf =
-			do_tok(buf, "roomFunc2",
-						 ((opcode & 0x80) ? A1V : A1B) | ((opcode & 0x40) ? A2V : A2B) |
-						 ((opcode & 0x20) ? A3V : A3B));
-		break;
-	case 0x09:
-		buf = do_tok(buf, "saveLoad?", ((opcode & 0x80) ? A1V : A1B) | ((opcode & 0x40) ? A2V : A2B));
-		break;
-	case 0x0A:
-		buf = do_tok(buf, "screenEffect?", ((opcode & 0x80) ? A1V : A1W));
-		break;
-	case 0x0B:
-		buf =
-			do_tok(buf, "roomFunc2",
-						 ANOLASTPAREN | ((opcode & 0x80) ? A1V : A1W) | ((opcode & 0x40) ?
-																														 A2V : A2W) |
-						 ((opcode & 0x20) ? A3V : A3W));
-		opcode = get_byte();
-		buf =
-			do_tok(buf, NULL,
-						 ASTARTCOMMA | ANOFIRSTPAREN | ((opcode & 0x80) ? A1V : A1B) |
-						 ((opcode & 0x40) ? A2V : A2B));
-		break;
-
-	case 0x0C:
-		buf =
-			do_tok(buf, "roomFunc3",
-						 ANOLASTPAREN | ((opcode & 0x80) ? A1V : A1W) | ((opcode & 0x40) ?
-																														 A2V : A2W) |
-						 ((opcode & 0x20) ? A3V : A3W));
-		opcode = get_byte();
-		buf =
-			do_tok(buf, NULL,
-						 ASTARTCOMMA | ANOFIRSTPAREN | ((opcode & 0x80) ? A1V : A1B) |
-						 ((opcode & 0x40) ? A2V : A2B));
-		break;
-
-	case 0x0D:
-		do_tok(buf, "save-string", ((opcode & 0x80) ? A1V : A1B) | A2ASCII);
-		break;
-	case 0x0E:
-		do_tok(buf, "load-string", ((opcode & 0x80) ? A1V : A1B) | A2ASCII);
-		break;
-
-	case 0x0F:
-		buf = do_tok(buf, "palManipulate", ANOLASTPAREN | ((opcode & 0x80) ? A1V : A1B));
-		opcode = get_byte();
-		buf =
-			do_tok(buf, NULL,
-						 ASTARTCOMMA | ANOFIRSTPAREN | ANOLASTPAREN | ((opcode & 0x80) ?
-																													 A1V : A1B) |
-						 ((opcode & 0x40) ? A2V : A2B));
-		opcode = get_byte();
-		buf = do_tok(buf, NULL, ASTARTCOMMA | ANOFIRSTPAREN | ((opcode & 0x80) ? A1V : A1B));
-		break;
-*/
 	case 0x10:
 		do_tok(buf, "colorCycleDelay", ((opcode & 0x80) ? A1V : A1B) | ((opcode & 0x40) ? A2V : A2B));
 		break;
@@ -2960,29 +2894,48 @@ byte *DeScumm::skipVerbHeader_V5(byte *p)
 	return p;
 }
 
-
-DeScumm::DeScumm(File& _input, int size)
+DeScumm::DeScumm(File& _input, int size, int scummVersion)
 {
 	byte *mem, *memorg;
 	int len;
 	char *buf;
 
-	scriptVersion = 5;
-	g_jump_opcode = 0x18;
+	scriptVersion = scummVersion;
+	switch (scriptVersion) {
+		case 1:
+		case 2:
+			GF_UNBLOCKED = true;
+			g_jump_opcode = 0x18;
+			break;
+
+		case 3:
+		case 4:
+		case 5:
+			g_jump_opcode = 0x18;
+			break;
+
+		case 6:
+		case 7:
+			g_jump_opcode = 0x73;
+			break;
+
+		case 8:
+			g_jump_opcode = 0x66;
+			break;
+	}
 	
 	len = size;
 	memorg = mem = (byte *)malloc(size);
 	_input.read(mem, size);
 	size_of_code = size;
 
-	buf = (char *)malloc(4096);
+	output = buf = (char *)malloc(8192);
 
 	offs_of_line = 0;
 
 	if (GF_UNBLOCKED) {
 		if (size_of_code < 4) {
-			printf("File too small to be a script\n");
-			exit(0);
+			return;
 		}
 		// Hack to detect verb script: first 4 bytes should be file length
 		if (TO_LE_32(*((uint32 *)mem)) == size_of_code) {
@@ -2993,15 +2946,19 @@ DeScumm::DeScumm(File& _input, int size)
 		} else {
 			mem += 4;
 		}
-	} else if (scriptVersion == 5) {
+	} else if (scriptVersion > 4) {
 		if (size_of_code < 8) {
-			printf("File too small to be a script\n");
-			exit(0);
+			return;
 		}
 		switch (TO_BE_32(*((uint32 *)mem))) {
 		case 'LSCR':
-			printf("Script# %d\n", (byte)mem[8]);
-			mem += 9;
+			if (scriptVersion == 8) {
+				mem += 12;
+			} else if (scriptVersion == 7) {
+				mem += 10;
+			} else {
+				mem += 9;
+			}
 			break;											/* Local script */
 		case 'SCRP':
 			mem += 8;
@@ -3013,20 +2970,23 @@ DeScumm::DeScumm(File& _input, int size)
 			mem += 8;
 			break;											/* Exit code */
 		case 'VERB':
-			offs_of_line = skipVerbHeader_V5(mem + 8) - mem;
+			if (scriptVersion == 8) {
+				mem = skipVerbHeader_V8(mem + 8);
+			} else if (scriptVersion > 5) {
+				offs_of_line = skipVerbHeader_V67(mem);
+			} else {
+				offs_of_line = skipVerbHeader_V5(mem + 8) - mem;
+			}
 			break;											/* Verb */
 		default:
-			printf("Unknown script type!\n");
-			exit(0);
+			return;
 		}
 	} else {
 		if (size_of_code < 6) {
-			printf("File too small to be a script\n");
-			exit(0);
+			return;
 		}
 		switch (TO_LE_16(*((uint16 *)mem + 2))) {
 		case MKID('LS'):
-			printf("Script# %d\n", (byte)mem[6]);
 			mem += 7;
 			break;			/* Local script */
 		case MKID('SC'):
@@ -3042,8 +3002,7 @@ DeScumm::DeScumm(File& _input, int size)
 			offs_of_line = skipVerbHeader_V34(mem);
 			break;			/* Verb */
 		default:
-			printf("Unknown script type!\n");
-			exit(0);
+			return;
 		}
 	}
 
@@ -3057,10 +3016,15 @@ DeScumm::DeScumm(File& _input, int size)
 		byte opcode = *cur_pos;
 		int j = num_block_stack;
 		buf[0] = 0;
-		if (scriptVersion <= 2)
+		if (scriptVersion <= 2) {
 			get_tok_V12(buf);
-		else
+		} else if (scriptVersion <= 5) {
 			get_tok_V345(buf);
+		} else if (scriptVersion == 8) {
+			next_line_V8();
+		} else {
+			next_line_V67();
+		}
 		if (buf[0]) {
 			writePendingElse();
 			if (haveElse) {

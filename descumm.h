@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/descumm.h,v 1.1 2003/09/18 16:26:53 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/descumm.h,v 1.2 2003/09/19 19:57:07 yoshizf Exp $
  *
  */
 
@@ -103,6 +103,13 @@ extern int offs_of_line;
 //
 extern uint size_of_code;
 
+struct StackEnt {
+	byte type;
+	long data;
+	StackEnt *left, *right;
+	char *str;
+	StackEnt **list;
+};
 
 class DeScumm {
 private:
@@ -160,8 +167,42 @@ private:
 	byte *skipVerbHeader_V5(byte *p);
 
 public:
-	DeScumm(File& _input, int size);
-	
+	DeScumm(File& _input, int size, int scummVersion);
+
+private:
+	char *output;
+
+	const char *getVarName(uint var);
+	void push(StackEnt * se);
+	void invalidop(const char *cmd, int op);
+	byte *skipVerbHeader_V8(byte *p);
+	int skipVerbHeader_V67(byte *p);
+	StackEnt *se_new(int type);
+	void se_free(StackEnt * se);
+	StackEnt *se_neg(StackEnt * se);
+	StackEnt *se_int(int i);
+	StackEnt *se_var(int i);
+	StackEnt *se_array(int i, StackEnt * dim2, StackEnt * dim1);
+	StackEnt *se_oper(StackEnt * a, int op);
+	StackEnt *se_oper(StackEnt * a, int op, StackEnt * b);
+	StackEnt *se_complex(const char *s);
+	char *se_astext(StackEnt * se, char *where, bool wantparens = true);
+	StackEnt *pop();
+	void kill(StackEnt * se);
+	void doAssign(StackEnt * dst, StackEnt * src);
+	void doAdd(StackEnt * se, int val);
+	StackEnt *dup(StackEnt * se);
+	void writeArray(int i, StackEnt * dim2, StackEnt * dim1, StackEnt * value);
+	void writeVar(int i, StackEnt * value);
+	void addArray(int i, StackEnt * dim1, int val);
+	void addVar(int i, int val);
+	StackEnt *se_get_string();
+	StackEnt *se_get_list();
+	void ext(const char *fmt);
+	void jump();
+	void jumpif(StackEnt * se, bool negate);
+	void next_line_V8();
+	void next_line_V67();
 	
 };
 

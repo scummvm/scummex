@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.7 2003/09/19 15:47:42 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.8 2003/09/19 19:57:07 yoshizf Exp $
  *
  */
 
@@ -112,19 +112,23 @@ void ScummEX::getFileType(const char *filename) {
 }
 
 void ScummEX::Descumm() {
-	_input.seek(_blockTable[block_id].offset, SEEK_SET);
-	DeScumm(_input, _blockTable[block_id].blockSize);
-}
 	
+	_input.seek(_blockTable[_blockId].offset, SEEK_SET);
+	_scummVersion = _gui->getScummVersionDialog();
+	if (_scummVersion != 0) {
+		DeScumm(_input, _blockTable[_blockId].blockSize, _scummVersion);
+	}
+}
+
 void ScummEX::FileDump(const char *filename) {
 
 	uint32 size = 0, tot_size = 0;
 	char fbuf2[2048];
 
 	_output.open(filename, 2, 0);
-	_input.seek(_blockTable[block_id].offset, SEEK_SET);
+	_input.seek(_blockTable[_blockId].offset, SEEK_SET);
 
-	while (tot_size < _blockTable[block_id].blockSize) {
+	while (tot_size < _blockTable[_blockId].blockSize) {
 		size = _input.read(fbuf2, 1);
 		tot_size += size;
 		_output.write(fbuf2, 1);
@@ -142,8 +146,8 @@ void ScummEX::fileView() {
 	int len, offset, nlines, bytes_per_line;
 	byte c;
 	
-	len = _blockTable[block_id].blockSize;
-	offset = _blockTable[block_id].offset;
+	len = _blockTable[_blockId].blockSize;
+	offset = _blockTable[_blockId].offset;
 	bytes_per_line = 16;
 	nlines = len / bytes_per_line;
 	
@@ -152,16 +156,16 @@ void ScummEX::fileView() {
 	if (text == NULL)
 		return;
 
-	sprintf(title, "%s Block at offset %d", _blockTable[block_id].blockName, _blockTable[block_id].offset);
+	sprintf(title, "%s Block at offset %d", _blockTable[_blockId].blockName, _blockTable[_blockId].offset);
 	
-	_input.seek(_blockTable[block_id].offset, SEEK_SET);
+	_input.seek(_blockTable[_blockId].offset, SEEK_SET);
 
-	dataorg = data = (byte*) malloc(_blockTable[block_id].blockSize);
+	dataorg = data = (byte*) malloc(_blockTable[_blockId].blockSize);
 
 	if (data == NULL)
 		return;
 
-	_input.read(data, _blockTable[block_id].blockSize);
+	_input.read(data, _blockTable[_blockId].blockSize);
 
 	while (len >= bytes_per_line) {
 		sprintf(buf, "%06X: ", offset);
@@ -238,37 +242,37 @@ void ScummEX::fileView() {
 
 void ScummEX::iMUSEPlay()
 {
-	_sound->playiMUSE(_input, _blockTable, block_id, _input);
+	_sound->playiMUSE(_input, _blockTable, _blockId, _input);
 }
 
 void ScummEX::iMUSEDump(const char *filename)
 {
 	_output.open(filename, 2, 0);
 
-	_sound->playiMUSE(_input, _blockTable, block_id, _output, 1);
+	_sound->playiMUSE(_input, _blockTable, _blockId, _output, 1);
 }
 
 void ScummEX::SOUPlay()
 {
-	_sound->playSOU(_blockTable, _input, block_id, _input);
+	_sound->playSOU(_blockTable, _input, _blockId, _input);
 }
 
 void ScummEX::paletteDraw()
 {
 	_image = new Image();
-	_image->drawPalette(_blockTable, block_id, _input);
+	_image->drawPalette(_blockTable, _blockId, _input);
 }
 
 void ScummEX::bgDraw()
 {
 	_image = new Image();
-	_image->drawBG(_input, _blockTable, block_id, "");
+	_image->drawBG(_input, _blockTable, _blockId, "");
 }
 
 void ScummEX::objectDraw()
 {
 	_image = new Image();
-	_image->drawObject(_input, _blockTable, block_id);
+	_image->drawObject(_input, _blockTable, _blockId);
 }
 
 void ScummEX::FileInfo() {
@@ -278,7 +282,7 @@ void ScummEX::FileInfo() {
 }
 	
 void ScummEX::UpdateInfosFromTree(int blockid) {
-	block_id = blockid;
+	_blockId = blockid;
 
 	_gui->updateLabel("TypeLabel", "Type", (uint32)_blockTable[blockid].blockType);
 	_gui->updateLabel("OffsetLabel", "Offset", _blockTable[blockid].offset);
