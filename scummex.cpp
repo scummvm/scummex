@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.23 2003/09/24 11:49:30 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.24 2003/09/25 07:32:19 yoshizf Exp $
  *
  */
 
@@ -24,6 +24,10 @@
 #include "file.h"
 #include "scummex.h"
 #include "descumm.h"
+
+static const byte encBytesTable[] = {
+	0x00, 0x69, 0xFF
+};
 
 ScummEX::ScummEX() {
 	_image = new Image();
@@ -46,8 +50,6 @@ void ScummEX::loadFile(const char *filename) {
 	if (_input.isOpen()) {
 		_input.close();
 	}
-		
-	_input.open(filename, 1, _encbyte);
 
 	sprintf(buf, "ScummEX - %s", filename);
 	_gui->SetTitle(buf);
@@ -55,61 +57,41 @@ void ScummEX::loadFile(const char *filename) {
 	_gui->EnableToolbarTool(wxID_CLOSE);
 	_gui->EnableToolbarTool(ID_FileInfo);
 
-	_input.read(&tag, 4);
+	for (uint i=0; i<sizeof(encBytesTable); i++) {
+		_encbyte = encBytesTable[i];
+		_input.open(filename, 1, _encbyte);
 
-	switch (tag) {
-		case MKID('LB83'):
-		case MKID('LABN'):
-		case MKID('RNAM'):
-		case MKID('LECF'):
-		case MKID('ANIM'):
-		case MKID('SOU '):
-			_input.seek(0, SEEK_SET);
-			_resource->searchBlocks(_blockTable, _input);
-			return;
+		tag = 0;
+		_input.read(&tag, 4);
+		switch (tag) {
+			case MKID('LB83'):
+			case MKID('LABN'):
+			case MKID('RNAM'):
+			case MKID('LECF'):
+			case MKID('ANIM'):
+			case MKID('SOU '):
+				_input.seek(0, SEEK_SET);
+				_resource->searchBlocks(_blockTable, _input);
+				return;
 
-	}
+		}
 
-	tag = 0;
-	_input.read(&tag, 2);
+		tag = 0;
+		_input.read(&tag, 2);
+		switch(tag) {
+			case 21040: // OR
+			case 20306: // RO
+			case 20050: // RN
+			case 17740: // LE
+				_input.seek(0, SEEK_SET);
+				_resource->searchOldBlocks(_blockTable, _input);
+				return;
 
-	switch(tag) {
-		case 21040: // OR
-		case 20306: // RO
-		case 20050: // RN
-			_input.seek(0, SEEK_SET);
-			_resource->searchOldBlocks(_blockTable, _input);
-			return;
-
+		}
+	
+		_input.close();
 	}
 	
-	_input.close();
-	_encbyte = 0x69;
-	_input.open(filename, 1, _encbyte);
-	_input.read(&tag, 4);
-
-	switch (tag) {
-		case MKID('RNAM'):
-			_input.seek(0, SEEK_SET);
-			_resource->searchBlocks(_blockTable, _input);
-			return;
-
-		case MKID('LECF'):
-			_input.seek(0, SEEK_SET);
-			_resource->searchBlocks(_blockTable, _input);
-			return;
-	}
-
-	tag = 0;
-	_input.read(&tag, 2);
-
-	switch(tag) {
-		case 17740: // LE
-			_input.seek(0, SEEK_SET);
-			_resource->searchOldBlocks(_blockTable, _input);
-			return;
-	}
-
 	_gui->SetTitle("ScummEX");
 	_gui->DisableToolbarTool(wxID_CLOSE);
 	_gui->DisableToolbarTool(ID_FileInfo);
