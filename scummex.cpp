@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.26 2003/09/27 14:56:11 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.27 2003/09/29 09:21:13 yoshizf Exp $
  *
  */
 
@@ -42,7 +42,7 @@ ScummEX::~ScummEX() {
 }
 
 void ScummEX::loadFile(const char *filename) {
-	uint32 tag;
+	char tag[5];
 	_encbyte = 0;
 	char buf[256];
 	_scummVersion = 0;
@@ -61,32 +61,19 @@ void ScummEX::loadFile(const char *filename) {
 		_encbyte = encBytesTable[i];
 		_input.open(filename, 1, _encbyte);
 
-		tag = 0;
 		_input.read(&tag, 4);
-		switch (tag) {
-			case MKID('LB83'):
-			case MKID('LABN'):
-			case MKID('RNAM'):
-			case MKID('LECF'):
-			case MKID('ANIM'):
-			case MKID('SOU '):
-				_input.seek(0, SEEK_SET);
-				_resource->searchBlocks(_blockTable, _input);
-				return;
-
+		if (_resource->getBlockType(tag) != -1) {
+			_input.seek(0, SEEK_SET);
+			_resource->searchBlocks(_blockTable, _input);
+			return;
 		}
 
-		tag = 0;
-		_input.read(&tag, 2);
-		switch(tag) {
-			case 21040: // OR
-			case 20306: // RO
-			case 20050: // RN
-			case 17740: // LE
-				_input.seek(0, SEEK_SET);
-				_resource->searchOldBlocks(_blockTable, _input);
-				return;
 
+		_input.read(&tag, 2);
+		if (_resource->getOldBlockType(tag) != -1) {
+			_input.seek(0, SEEK_SET);
+			_resource->searchOldBlocks(_blockTable, _input);
+			return;
 		}
 	
 		_input.close();
