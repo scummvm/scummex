@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.12 2003/09/23 06:44:43 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.13 2003/09/23 09:05:47 yoshizf Exp $
  *
  */
 
@@ -41,6 +41,7 @@ int Image::drawPalette(BlockTable *_blockTable, int id, File& _input)
 {
 	int addindex = 0;
 	int index = 0;
+	int h;
 
 	_gui->DisplayImage("Block Palette", 384, 384);
 
@@ -49,10 +50,23 @@ int Image::drawPalette(BlockTable *_blockTable, int id, File& _input)
 	if (_blockTable[id].blockTypeID == AHDR)
 		_input.seek(6, SEEK_CUR);
 
-	for (int j = 0; j < 256; j++) {
-		_rgbTable[j].red = _input.readByte();	// red
-		_rgbTable[j].green = _input.readByte(); // green
-		_rgbTable[j].blue = _input.readByte();	// blue
+	if (_blockTable[id].blockTypeID == RGBS) {
+		for (h = 0; h < (_blockTable[id].blockSize - 8) / 3; h++) {
+			_rgbTable[h].red = _input.readByte();	// red
+			_rgbTable[h].green = _input.readByte(); // green
+			_rgbTable[h].blue = _input.readByte();	// blue
+		}
+		for (; h < 256; h++) {
+			_rgbTable[h].red = 255;
+			_rgbTable[h].green = 255;
+			_rgbTable[h].blue = 255;
+		}
+	} else {				
+		for (int j = 0; j < 256; j++) {
+			_rgbTable[j].red = _input.readByte();	// red
+			_rgbTable[j].green = _input.readByte(); // green
+			_rgbTable[j].blue = _input.readByte();	// blue
+		}
 	}
 
 	int x = 0, y = 0;
@@ -107,24 +121,27 @@ void Image::drawLine(int xStart, int yStart, int xEnd, int yEnd, int red, int gr
 }
 
 int Image::drawBoxes(BlockTable *_blockTable, int id, File& _input, int newWindow) {
-	int nBox, RMHDindex, width, height, v8 = 0;
+	int nBox, RMHDindex, width, height, version = 5;
 
 	RMHDindex = _resource->findBlock(0, _blockTable, id, "RMHD", NULL);
 	width = _blockTable[RMHDindex].width;
 	height = _blockTable[RMHDindex].height;
 
-	if ( _resource->findBlock(0, _blockTable, id, "IMAG", NULL) != -1)
-			v8 = 1;
+	if ( _resource->findBlock(0, _blockTable, id, "IMAG", NULL) != -1) {
+		version = 8;
+	} else if ( _resource->findBlock(0, _blockTable, id, "PALS", NULL) != -1) {
+		version = 7;
+	}
 			
 	if (newWindow == 0) {
-		if (v8) {
+		if (version > 5) {
 			id = _resource->findBlock(1, _blockTable, id, "BOXD", NULL);
 		} else {
 			id = _resource->findBlock(0, _blockTable, id, "BOXD", NULL);
 		}
 	}
 	
-	if (v8) { 
+	if (version == 8) { 
 		_input.seek(_blockTable[id].offset + 12, SEEK_SET);
 	} else {
 		_input.seek(_blockTable[id].offset + 10, SEEK_SET);
@@ -132,7 +149,7 @@ int Image::drawBoxes(BlockTable *_blockTable, int id, File& _input, int newWindo
 	
 	nBox = _blockTable[id].numFiles;
 
-	if (v8) {
+	if (version == 8) {
 		for (int i=0; i<nBox; i++) {
 			_points[i][0].x = (short)_input.readUint32LE();
 			_points[i][0].y = (short)_input.readUint32LE();

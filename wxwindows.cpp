@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.16 2003/09/23 01:28:15 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.17 2003/09/23 09:05:47 yoshizf Exp $
  *
  */
 
@@ -380,6 +380,7 @@ void GUI_wxWindows::SetButton(int blocktype) {
 		case PA:
 		case NPAL:
 		case AHDR:
+		case RGBS:
 			SpecButton1->SetLabel("View Palette");
 			SpecButton1->Show(TRUE);
 printf("Connect: SpecButton1 = %d, this = %d\n", (int)SpecButton1, (int)this);
@@ -522,6 +523,7 @@ void GUI_wxWindows::updateLabels(int blockid) {
 		case PA:
 		case NPAL:
 		case AHDR:
+		case RGBS:
 			SetButton(block.blockTypeID);
 			break;
 

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.h,v 1.8 2003/09/23 00:47:23 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.h,v 1.9 2003/09/23 09:05:47 yoshizf Exp $
  *
  */
 
@@ -147,19 +147,19 @@ const struct blockInfo blocksInfo[] = {
 	{82, "IM10", "Image", 0, "", 25},
 	{83, "BOMP", ""},
 	{84, "IMAG", "", 0, "", 25},
-	{85, "AKOS", ""},
+	{85, "AKOS", "", 0, "", 47},
 	{86, "ZP04", "", 0, "", 52},
 	{87, "RMSC", "", 1, "help/specRMSC.html", 57},
 	{88, "BSTR", "", 0, "", 42},
 	{89, "ZPLN", "", 0, "", 52},
-	{90, "AKHD", ""},
-	{91, "AKPL", ""},
-	{92, "RGBS", ""},
-	{93, "AKOF", ""},
-	{94, "AKCI", ""},
-	{95, "AKCD", ""},
-	{96, "AKSQ", ""},
-	{97, "AKCH", ""},
+	{90, "AKHD", "", 0, "", 47},
+	{91, "AKPL", "", 0, "", 47},
+	{92, "RGBS", "", 0, "", 47},
+	{93, "AKOF", "", 0, "", 47},
+	{94, "AKCI", "", 0, "", 47},
+	{95, "AKCD", "", 0, "", 47},
+	{96, "AKSQ", "", 0, "", 47},
+	{97, "AKCH", "", 0, "", 47},
 	{98, "ANIM", "SMUSH Animation", 0, "", 55},
 	{99, "AHDR", "SMUSH Animation Header", 0, "", 1},
 	{100, "FRME", "SMUSH Frame", 0, "", 55},
