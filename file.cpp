@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/file.cpp,v 1.3 2003/09/28 21:49:25 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/file.cpp,v 1.4 2003/10/01 17:28:48 yoshizf Exp $
  *
  */
 
@@ -146,25 +146,6 @@ uint32 File::read(void *ptr, uint32 len) {
 	}
 
 	return real_len;
-}
-
-byte File::getbit(byte s)
-{
-	static uint8 mask, byteout;
-  	  	
-  	if (s == 0)
-  	{
-  		mask = 256;
-  		return 0;
-  	}
-  	
-  	if ((mask <<= 1) == 0) 
-  	{
-  		mask = 1;
-  		byteout = readByte();
-  	}
-  
-  	return ((byteout & mask) != 0);
 }
 
 byte File::readByte() {
