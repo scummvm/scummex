@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.5 2003/09/18 22:13:12 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.6 2003/09/19 11:10:17 fingolfin Exp $
  *
  */
 
@@ -518,11 +518,9 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 
 			// Files blocks
 			for (int i=index; i<numFiles+index; i++) {
-				char name[13];
 				char *tempname;
-				byte c;
-				int z = 0;
 				int z2;
+				z = 0;
 				for (z2 = 0; z2 < 8; z2++)
 				    if ((c = _input.readByte()) != 0)
 					name[z++] = c;
@@ -582,10 +580,8 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 			}
 			
 			for (int i=index; i<numFiles+index; i++) {
-				char name[29];
 				char *tempname;
-				byte c;
-				int z = 0;
+				z = 0;
 
 				while(1) {
 					c = _input.readByte();
