@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/blocks.h,v 1.9 2003/09/29 09:43:18 khalek Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/blocks.h,v 1.10 2003/09/29 10:04:01 khalek Exp $
  *
  */
 
@@ -154,7 +154,12 @@ enum {
 	DIRF,
 	DIRM,
 	DLFL,
-	DIRS
+	DIRS,
+	SONG,
+	SGHD,
+	SGEN,
+	DIGI,
+	RMDA
 };
 
 enum {
