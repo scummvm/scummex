@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.25 2003/09/26 00:39:50 kirben Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.26 2003/09/27 14:56:11 yoshizf Exp $
  *
  */
 
@@ -255,11 +255,6 @@ void ScummEX::bgDraw(int blockid)
 	_image->drawBG(_input, _blockTable, blockid);
 }
 
-void ScummEX::bgReDraw(int imageWindowId, int blockid)
-{
-	_image->drawBG(_input, _blockTable, blockid, 0, imageWindowId);
-}
-
 void ScummEX::SmushFrameDraw(int blockid)
 {
 	_image->drawSmushFrame(_blockTable, blockid, _input);
@@ -273,9 +268,4 @@ void ScummEX::objectDraw(int blockid)
 void ScummEX::boxesDraw(int blockid)
 {
 	_image->drawBoxes(_blockTable, blockid, _input);
-}
-
-void ScummEX::boxesDrawOverlay(int imageWindowId, int blockid)
-{
-	_image->drawBoxes(_blockTable, blockid, _input, 0, imageWindowId);
 }

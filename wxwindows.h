@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.h,v 1.12 2003/09/26 23:47:59 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.h,v 1.13 2003/09/27 14:56:11 yoshizf Exp $
  *
  */
 
@@ -104,7 +104,9 @@ protected:
 
 class ImageWindow : public wxFrame {
 public:
-	ImageWindow(MainWindow *parent, int imgWindowId, const wxString& title, const wxPoint& pos, const wxSize& size, int blockId, byte flags);
+	int _scaleFactor;
+	
+	ImageWindow(const wxString& title, const wxSize& size, int blockId, byte flags = FLAG_NONE);
 	void DrawImage();
 	void PutPixel(int x, int y, int red, int green, int blue);
 	void UpdateImage();
@@ -135,24 +137,19 @@ protected:
 
 class GUI_wxWindows : public wxApp {
 private:
-	MainWindow *_mainWindow;
-	ImageWindow *_imageWindow[10];
 	wxConfig *config;
 
 public:
 	GUI_wxWindows();
 	~GUI_wxWindows();
 	
+	MainWindow *_mainWindow;
 	void EnableToolbarTool(int tool);
 	void DisableToolbarTool(int tool);
 	void AppendText(char *text);
-	void DrawImage(int imgWindowId);
-	void UpdateImage(int imgWindowId);
 	void DisplayHelp();
 	void SetTitle(char *title);
 	void DisplayViewer(char *title, int width, int height, char *text);
-	void PutPixel(int imgWindowId, int x, int y, int red, int green, int blue);
-	int DisplayImage(char* title, int width, int height, int blockID, byte flags = FLAG_NONE);
 	void DisplayDialog(char *message, char *title);
 	virtual bool OnInit();
 	void add_tree_elements(char *itemName, int blockid, int level, int type);

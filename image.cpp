@@ -16,13 +16,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.18 2003/09/25 15:26:26 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.19 2003/09/27 14:56:11 yoshizf Exp $
  *
  */
 
 #include "file.h"
 #include "resource.h"
 #include "image.h"
+#include "scaler.h"
 
 uint32 offset;
 
@@ -62,13 +63,16 @@ void Image::setPalColor(int idx, int r, int g, int b) {
 	_rgbTable[idx].blue = b;
 }
 
-int Image::drawPalette(BlockTable *_blockTable, int id, File& _input)
+void Image::drawPalette(BlockTable *_blockTable, int id, File& _input)
 {
 	int addindex = 0;
 	int index = 0;
 	unsigned int h;
 
-	_imageWindowId = _gui->DisplayImage("Block Palette", 384, 384, id);
+	if (_blockTable[id].image == NULL)
+		_image = _blockTable[id].image = new ImageWindow("Block Palette", wxSize(384, 384), id);
+	else
+		_image = _blockTable[id].image;
 
 	_input.seek(_blockTable[id].offset + 8, SEEK_SET);
 
@@ -100,7 +104,7 @@ int Image::drawPalette(BlockTable *_blockTable, int id, File& _input)
 			for (int l = 0; l < 16; l++) {
 				for (int j = 0; j < 384 / 16; j++) {
 					index = l + addindex;
-					_gui->PutPixel(_imageWindowId, x++, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
+					_image->PutPixel(x++, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
 				}
 			}
 			y++;
@@ -109,8 +113,7 @@ int Image::drawPalette(BlockTable *_blockTable, int id, File& _input)
 		addindex += 16;
 	}
 
-	_gui->DrawImage(_imageWindowId);
-	return 0;
+	_image->DrawImage();
 }
 
 void Image::drawLine(int xStart, int yStart, int xEnd, int yEnd, int red, int green, int blue) {
@@ -119,7 +122,7 @@ void Image::drawLine(int xStart, int yStart, int xEnd, int yEnd, int red, int gr
 	double x, xinc, y, yinc;
 
 	if (xStart == xEnd && yStart == yEnd) {
-		_gui->PutPixel(_imageWindowId, xEnd, yEnd, red, green, blue);
+		_image->PutPixel(xEnd, yEnd, red, green, blue);
 		return;
 	}
 
@@ -138,14 +141,14 @@ void Image::drawLine(int xStart, int yStart, int xEnd, int yEnd, int red, int gr
 	y = yStart + 0.5;
 
 	for (i=0; i<=len; ++i) { 
-		_gui->PutPixel(_imageWindowId, (int)x, (int)y, red, green, blue);
+		_image->PutPixel((int)x, (int)y, red, green, blue);
 		x += xinc;
 		y += yinc;
 	}
 
 }
 
-int Image::drawBoxes(BlockTable *_blockTable, int id, File& _input, int newWindow, int imageWindowId) {
+void Image::drawBoxes(BlockTable *_blockTable, int id, File& _input) {
 	int nBox, RMHDindex, width, height, version = 5;
 
 	if (_blockTable[id].blockTypeID == BM || _blockTable[id].blockTypeID == BX) {
@@ -163,9 +166,13 @@ int Image::drawBoxes(BlockTable *_blockTable, int id, File& _input, int newWindo
 	} else if ( version > 3 && _resource->findBlock(0, _blockTable, id, "PALS", NULL) != -1) {
 		version = 7;
 	}
-			
-	if (newWindow == 0) {
-		_imageWindowId = imageWindowId;
+
+	if (_blockTable[id].image == NULL)
+		_image = _blockTable[id].image = new ImageWindow("Boxes", wxSize(_width, _height), id);
+	else
+		_image = _blockTable[id].image;
+
+	if (_blockTable[id].blockTypeID != BOXD && _blockTable[id].blockTypeID != BX) {
 		if (version > 5) {
 			id = _resource->findBlock(1, _blockTable, id, "BOXD", NULL);
 		} else {
@@ -185,35 +192,44 @@ int Image::drawBoxes(BlockTable *_blockTable, int id, File& _input, int newWindo
 
 	if (version == 8) {
 		for (int i=0; i<nBox; i++) {
-			_points[i][0].x = (short)_input.readUint32LE();
-			_points[i][0].y = (short)_input.readUint32LE();
-			_points[i][1].x = (short)_input.readUint32LE();
-			_points[i][1].y = (short)_input.readUint32LE();
-			_points[i][2].x = (short)_input.readUint32LE();
-			_points[i][2].y = (short)_input.readUint32LE();
-			_points[i][3].x = (short)_input.readUint32LE();
-			_points[i][3].y = (short)_input.readUint32LE();
+			_points[i][0].x = (short)_input.readUint32LE() * _image->_scaleFactor;
+			_points[i][0].y = (short)_input.readUint32LE() * _image->_scaleFactor;
+			_points[i][1].x = (short)_input.readUint32LE() * _image->_scaleFactor;
+			_points[i][1].y = (short)_input.readUint32LE() * _image->_scaleFactor;
+			_points[i][2].x = (short)_input.readUint32LE() * _image->_scaleFactor;
+			_points[i][2].y = (short)_input.readUint32LE() * _image->_scaleFactor;
+			_points[i][3].x = (short)_input.readUint32LE() * _image->_scaleFactor;
+			_points[i][3].y = (short)_input.readUint32LE() * _image->_scaleFactor;
 			_input.seek(20, SEEK_CUR);
+		}
+
+	} else if (version == 3 && _resource->findBlock(0, _blockTable, id, "LF", NULL) == -1 && _resource->findBlock(1, _blockTable, id, "PA", NULL) != -1) {
+		for (int i=0; i<nBox; i++) {
+			_points[i][0].x = _input.readUint16LE() * _image->_scaleFactor;
+			_points[i][0].y = _input.readUint16LE() * _image->_scaleFactor;
+			_points[i][1].x = _input.readUint16LE() * _image->_scaleFactor;
+			_points[i][1].y = _input.readUint16LE() * _image->_scaleFactor;
+			_points[i][2].x = _input.readUint16LE() * _image->_scaleFactor;
+			_points[i][2].y = _input.readUint16LE() * _image->_scaleFactor;
+			_points[i][3].x = _input.readUint16LE() * _image->_scaleFactor;
+			_points[i][3].y = _input.readUint16LE() * _image->_scaleFactor;
+			_input.readUint16LE();
 		}
 	} else {
 		for (int i=0; i<nBox; i++) {
-			_points[i][0].x = _input.readUint16LE();
-			_points[i][0].y = _input.readUint16LE();
-			_points[i][1].x = _input.readUint16LE();
-			_points[i][1].y = _input.readUint16LE();
-			_points[i][2].x = _input.readUint16LE();
-			_points[i][2].y = _input.readUint16LE();
-			_points[i][3].x = _input.readUint16LE();
-			_points[i][3].y = _input.readUint16LE();
+			_points[i][0].x = _input.readUint16LE() * _image->_scaleFactor;
+			_points[i][0].y = _input.readUint16LE() * _image->_scaleFactor;
+			_points[i][1].x = _input.readUint16LE() * _image->_scaleFactor;
+			_points[i][1].y = _input.readUint16LE() * _image->_scaleFactor;
+			_points[i][2].x = _input.readUint16LE() * _image->_scaleFactor;
+			_points[i][2].y = _input.readUint16LE() * _image->_scaleFactor;
+			_points[i][3].x = _input.readUint16LE() * _image->_scaleFactor;
+			_points[i][3].y = _input.readUint16LE() * _image->_scaleFactor;
 			_input.readUint16LE();
 			_input.readUint16LE();
 		}
 	}
-	
 
-	if (newWindow == 1)
-		_imageWindowId = _gui->DisplayImage("Boxes", width, height, id);
-	
 	for (int i=0; i<nBox; i++) {
 		for (int j=0; j<3; j++) {
 			drawLine(_points[i][j].x, _points[i][j].y, _points[i][j+1].x, _points[i][j+1].y, 255, 255, 255);
@@ -221,18 +237,13 @@ int Image::drawBoxes(BlockTable *_blockTable, int id, File& _input, int newWindo
 		drawLine(_points[i][3].x, _points[i][3].y, _points[i][0].x, _points[i][0].y, 255, 255, 255);
 	}
 	
-	if (newWindow == 1) {
-		_gui->DrawImage(_imageWindowId);
-	} else {
-		_gui->UpdateImage(_imageWindowId);
-	}
-	return 0;
+	_image->DrawImage();
 }
 
-int Image::drawSmushFrame(BlockTable *_blockTable, int id, File& _input) {
+void Image::drawSmushFrame(BlockTable *_blockTable, int id, File& _input) {
 	int index;
 	int x = 0, y = 0;
-	byte *dst, *dstorg, *chunk_buffer;
+	byte *dst, *dstorg, *chunk_buffer, *dstFinal;
 
 	index = _resource->findBlock(0, _blockTable, id, "NPAL", "AHDR", NULL);
 	if (_blockTable[index].blockTypeID == AHDR) {
@@ -247,16 +258,24 @@ int Image::drawSmushFrame(BlockTable *_blockTable, int id, File& _input) {
 		_rgbTable[j].blue = _input.readByte();	// blue
 	}
 
+	_width = _blockTable[id].width;
+	_height = _blockTable[id].height;
+
+	if (_blockTable[id].image == NULL)
+		_image = _blockTable[id].image = new ImageWindow("SMUSH Frame", wxSize(_width, _height), id);
+	else
+		_image = _blockTable[id].image;
+
 	_input.seek(_blockTable[id].offset + 22, SEEK_SET);
-	_codec37.init(_blockTable[id].width, _blockTable[id].height);
-	_codec47.init(_blockTable[id].width, _blockTable[id].height);
+	_codec37.init(_width, _height);
+	_codec47.init(_width, _height);
 	chunk_buffer = (byte *)malloc(_blockTable[id].blockSize - 22);
-	dstorg = dst = (byte *)malloc(_blockTable[id].width * _blockTable[id].height + 1000);
+	dstorg = dst = (byte *)malloc(_width * _height + 1000);
 	_input.read(chunk_buffer, _blockTable[id].blockSize - 22);
 
 	switch (_blockTable[id].variables) {
 		case 1:
-			decodeCodec1(dst, chunk_buffer, _blockTable[id].height);
+			decodeCodec1(dst, chunk_buffer, _height);
 			break;
 
 		case 37:
@@ -272,28 +291,33 @@ int Image::drawSmushFrame(BlockTable *_blockTable, int id, File& _input) {
 			_codec47.decode(dst, chunk_buffer);
 			break;
 	}
+	free(chunk_buffer);
 
-	_imageWindowId = _gui->DisplayImage("SMUSH Frame", _blockTable[id].width, _blockTable[id].height, id);
-	
-	for (y=0; y<_blockTable[id].height; y++) {
-		for (x=0; x<_blockTable[id].width; x++) {
-			int color = *dst++;
-			_gui->PutPixel(_imageWindowId, x, y, _rgbTable[color].red, _rgbTable[color].green, _rgbTable[color].blue);
+	if (_image->_scaleFactor > 1) {
+		dstorg = dstFinal = (byte *)malloc((_width * _image->_scaleFactor) * (_height * _image->_scaleFactor));
+		scale(_image->_scaleFactor, dst, _width, dstFinal, _width * _image->_scaleFactor, _width, _height);
+		free(dst);
+	} else {
+		dstFinal = dst;
+	}
+
+	for (y=0; y<_height * _image->_scaleFactor; y++) {
+		for (x=0; x<_width * _image->_scaleFactor; x++) {
+			int color = *dstFinal++;
+			_image->PutPixel(x, y, _rgbTable[color].red, _rgbTable[color].green, _rgbTable[color].blue);
 		}
 	}
 	
-	free(chunk_buffer);
 	free(dstorg);
-	_gui->DrawImage(_imageWindowId);
-	return 0;
+	_image->DrawImage();
 }
 
-int Image::drawBG(File& _input, BlockTable *_blockTable, int id, int newWindow, int imageWindowId)
+void Image::drawBG(File& _input, BlockTable *_blockTable, int id)
 {
 	int RMHDindex, CLUTindex, SMAPindex, TRNSindex, version;
 	int32 blockSize;
-	byte *dst, *dstorg, *src;
-	
+	byte *dst, *dstorg, *src, *dstFinal;
+
 	if (_blockTable[id].blockTypeID == BM) {
 		version = 3;
 		RMHDindex = _resource->findBlock(0, _blockTable, id, "HD", NULL);
@@ -308,12 +332,11 @@ int Image::drawBG(File& _input, BlockTable *_blockTable, int id, int newWindow, 
 	_width = _blockTable[RMHDindex].width;
 	_height = _blockTable[RMHDindex].height;
 
-	if (newWindow) {
-		_imageWindowId = _gui->DisplayImage("Room Image", _width, _height, id, IMAGE_BOXES);
-	} else {
-		_imageWindowId = imageWindowId;
-	}
-	
+	if (_blockTable[id].image == NULL)
+		_image = _blockTable[id].image = new ImageWindow("Room Image", wxSize(_width, _height), id, IMAGE_BOXES);
+	else
+		_image = _blockTable[id].image;
+
 	if (version > 4) {
 		TRNSindex = _resource->findBlock(0, _blockTable, id, "TRNS", NULL);
 		_transp = _blockTable[TRNSindex].trans;
@@ -384,36 +407,46 @@ int Image::drawBG(File& _input, BlockTable *_blockTable, int id, int newWindow, 
 			GetStrip(dst + (8 * x), src + _offsets[x], _height);
 	}
 	free(src);
+
+	if (_image->_scaleFactor > 1) {
+		dstorg = dstFinal = (byte *)malloc((_width * _image->_scaleFactor) * (_height * _image->_scaleFactor));
+		scale(_image->_scaleFactor, dst, _width, dstFinal, _width * _image->_scaleFactor, _width, _height);
+		free(dst);
+	} else {
+		dstFinal = dst;
+	}
 	
-	for (int y=0; y<_height; y++) {
-		for (int x=0; x<_width; x++) {
-			int color = *dst++;
-			_gui->PutPixel(_imageWindowId, x, y, _rgbTable[color].red, _rgbTable[color].green, _rgbTable[color].blue);
+	for (int y=0; y<_height * _image->_scaleFactor; y++) {
+		for (int x=0; x<_width * _image->_scaleFactor; x++) {
+			int color = *dstFinal++;
+			_blockTable[id].image->PutPixel(x, y, _rgbTable[color].red, _rgbTable[color].green, _rgbTable[color].blue);
 		}
 	}
+
 	free(dstorg);
 		
-	if (newWindow) {
-		_gui->DrawImage(_imageWindowId);
-	} else {
-		_gui->UpdateImage(_imageWindowId);
-	}
-
-	return 0;
+	_image->DrawImage();
 }
 
-int Image::drawObject(File& _input, BlockTable *_blockTable, int id)
+void Image::drawObject(File& _input, BlockTable *_blockTable, int id)
 {
 	int RMHDindex, CLUTindex, SMAPindex, TRNSindex;
-	byte *dst, *dstorg, *src;
+	byte *dst, *dstorg, *src, *dstFinal;
 
-	RMHDindex = _resource->findBlock(1, _blockTable, id, "IMHD", NULL);
+	if (_blockTable[id].blockTypeID == OBIM) {
+		RMHDindex = _resource->findBlock(1, _blockTable, id, "IMHD", NULL);
+	} else {
+		RMHDindex = _resource->findBlock(0, _blockTable, id, "IMHD", NULL);
+	}
 	
 	_width = _blockTable[RMHDindex].width;
 	_height = _blockTable[RMHDindex].height;
-	
-	_imageWindowId = _gui->DisplayImage("Object", _width, _height, id);
-	
+
+	if (_blockTable[id].image == NULL)
+		_image = _blockTable[id].image = new ImageWindow("Object", wxSize(_width, _height), id);
+	else
+		_image = _blockTable[id].image;
+
 	TRNSindex = _resource->findBlock(0, _blockTable, id, "TRNS", NULL);
 
 	_transp = _blockTable[TRNSindex].trans;
@@ -445,17 +478,24 @@ int Image::drawObject(File& _input, BlockTable *_blockTable, int id)
 		GetStrip(dst + (8 * x), src + _offsets[x], _height);
 	}
 	free(src);
-	
-	for (int y=0; y<_height; y++) {
-		for (int x=0; x<_width; x++) {
-			int color = *dst++;
-			_gui->PutPixel(_imageWindowId, x, y, _rgbTable[color].red, _rgbTable[color].green, _rgbTable[color].blue);
+
+	if (_image->_scaleFactor > 1) {
+		dstorg = dstFinal = (byte *)malloc((_width * _image->_scaleFactor) * (_height * _image->_scaleFactor));
+		scale(_image->_scaleFactor, dst, _width, dstFinal, _width * _image->_scaleFactor, _width, _height);
+		free(dst);
+	} else {
+		dstFinal = dst;
+	}
+
+	for (int y=0; y<_height * _image->_scaleFactor; y++) {
+		for (int x=0; x<_width * _image->_scaleFactor; x++) {
+			int color = *dstFinal++;
+			_image->PutPixel(x, y, _rgbTable[color].red, _rgbTable[color].green, _rgbTable[color].blue);
 		}
 	}
 	free(dstorg);
 	
-	_gui->DrawImage(_imageWindowId);
-	return 0;
+	_image->DrawImage();
 }
 
 void Image::GetStrip(byte *dst, const byte *src, int numLinesToProcess)

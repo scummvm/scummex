@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.24 2003/09/26 23:47:59 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.25 2003/09/27 14:56:11 yoshizf Exp $
  *
  */
 
@@ -28,9 +28,7 @@
 ScummEX *g_scummex = 0;
 wxTextCtrl *hexdata = 0;
 wxToolBar *ToolBar = 0;
-
 GUI_wxWindows *_gui = 0;
-int imageWindowId;
 
 IMPLEMENT_APP(GUI_wxWindows)
 
@@ -125,24 +123,6 @@ int GUI_wxWindows::getScummVersionDialog() {
 	return 0;
 }
 
-void GUI_wxWindows::PutPixel(int imgWindowId, int x, int y, int red, int green, int blue) {
-	_imageWindow[imgWindowId]->PutPixel(x, y, red, green, blue);
-}
-
-int GUI_wxWindows::DisplayImage(char* title, int width, int height, int blockId, byte flags) {
-	_imageWindow[imageWindowId] = new ImageWindow(_mainWindow, imageWindowId + 150, title, wxPoint(-1,-1), wxSize(width, height), blockId, flags);
-	imageWindowId++;
-	return imageWindowId - 1;
-}
-
-void GUI_wxWindows::DrawImage(int imgWindowId) {
-	_imageWindow[imgWindowId]->DrawImage();
-}
-
-void GUI_wxWindows::UpdateImage(int imgWindowId) {
-	_imageWindow[imgWindowId]->UpdateImage();
-}
-
 bool GUI_wxWindows::readConfigValue(const char* key, int* string) {
 	bool result;
 	result = config->Read(key, string);
@@ -176,8 +156,8 @@ BEGIN_EVENT_TABLE(ImageWindow, wxFrame)
 	EVT_MENU(ID_Boxes, ImageWindow::boxesDrawOverlay)
 END_EVENT_TABLE()
 
-ImageWindow::ImageWindow(MainWindow *parent, int imgWindowId, const wxString& title, const wxPoint& pos, const wxSize& size, int blockId, byte flags)
-	: wxFrame(parent, imgWindowId, title, pos, size, wxDEFAULT_FRAME_STYLE & (wxMINIMIZE_BOX | wxSYSTEM_MENU | wxCAPTION))
+ImageWindow::ImageWindow(const wxString& title, const wxSize& size, int blockId, byte flags)
+	: wxFrame(_gui->_mainWindow, -1, title, wxPoint(-1,-1), size, wxDEFAULT_FRAME_STYLE & (wxMINIMIZE_BOX | wxSYSTEM_MENU | wxCAPTION))
 {
 	wxMenuBar *menuBar = new wxMenuBar;
 	wxMenu *menuFile = new wxMenu;
@@ -201,26 +181,33 @@ ImageWindow::ImageWindow(MainWindow *parent, int imgWindowId, const wxString& ti
 	}
 	
 	SetMenuBar(menuBar);
-	SetClientSize(size.GetWidth(), size.GetHeight());
-	_image = new wxImage(size.GetWidth(), size.GetHeight());
+	
+	_scaleFactor = 1;
+	_gui->readConfigValue("Scaler", &_scaleFactor);
+	SetClientSize(size.GetWidth() * _scaleFactor, size.GetHeight() * _scaleFactor);
+	_image = new wxImage(size.GetWidth() * _scaleFactor, size.GetHeight() * _scaleFactor);
+	_sbmp = NULL;
 }
 
 void ImageWindow::DrawImage() {
 	wxBitmap bitmap = wxBitmap(_image);
-		
-	wxBoxSizer *vertSizer = new wxBoxSizer( wxVERTICAL );
+	
+	if (_sbmp == NULL) {
+		wxBoxSizer *vertSizer = new wxBoxSizer( wxVERTICAL );
 
-	_sbmp = new wxStaticBitmap(this, -1, bitmap);
-	
-	vertSizer->Add(_sbmp, 0, wxALL, 0 );
-	
-	Show(TRUE);
+		_sbmp = new wxStaticBitmap(this, -1, bitmap);
+		vertSizer->Add(_sbmp, 0, wxALL, 0 );
+		Show(TRUE);
+	} else {
+		_sbmp->SetBitmap(bitmap);
+		Refresh();
+	}
 }
 
 void ImageWindow::OnQuit(wxCommandEvent& WXUNUSED(event))
 {
 	delete _image;
-	imageWindowId--;
+	g_scummex->getBlockTable(_blockId).image = NULL;
 	Destroy();
 }
 
@@ -235,13 +222,12 @@ void ImageWindow::SaveImage(wxEvent& event) {
 }
 
 void ImageWindow::boxesDrawOverlay(wxEvent& event) {
-	int windowId = this->GetId() - 150;
 	if (!_boxesDisplayed) {
 		_boxesDisplayed = 1;
-		g_scummex->boxesDrawOverlay(windowId, _blockId);
+		g_scummex->boxesDraw(_blockId);
 	} else {
 		_boxesDisplayed = 0;
-		g_scummex->bgReDraw(windowId, _blockId);
+		g_scummex->bgDraw(_blockId);
 	}
 }
 

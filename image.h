@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.h,v 1.12 2003/09/25 15:26:26 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.h,v 1.13 2003/09/27 14:56:11 yoshizf Exp $
  *
  */
 
@@ -35,8 +35,8 @@ struct rgbtable {
 };
 
 struct points {
-	int x;
-	int y;
+	uint x;
+	uint y;
 };
 
 class Image {
@@ -55,26 +55,11 @@ private:
 	Resource *_resource;
 	Codec37Decoder _codec37;
 	Codec47Decoder _codec47;
+	ImageWindow *_image;
 
 	void drawLine(int xStart, int yStart, int xEnd, int yEnd, int red, int green, int blue);
 	void setupEGAPalette();
 	void setPalColor(int idx, int r, int g, int b);
-
-public:
-	Image();
-	~Image();
-	int drawPalette(BlockTable *_blockTable, int id, File& _input);
-	int drawBG(File& _input, BlockTable *_blockTable, int id, int newWindow = 1, int imageWindowId = 0);
-	int drawObject(File& _input, BlockTable *_blockTable, int id);
-	int drawSmushFrame(BlockTable *_blockTable, int id, File& _input);
-	int drawBoxes(BlockTable *_blockTable, int id, File& _input, int newWindow = 1, int imageWindowId = 0);
-	void decode_uncompressed(uint16 height, File& _input);
-	void decode_horiz(uint16 height, uint8 compr, File& _input);
-	void decode_vert(uint16 height, uint8 compr, File& _input);
-	void decode_horiz_transp(uint16 height, uint8 compr, File& _input);
-	void decode_vert_transp(uint16 height, uint8 compr, File& _input);
-	void decode2(uint16 height, uint8 compr, File& _input);
-	void decode2transp(uint16 height, uint8 compr, File& _inpuit);
 	void GetStrip(byte *dst, const byte *src, int numLinesToProcess);
 	void decodeCodec44(byte *dst, const byte *src, uint32 length);
 	void decodeCodec1(byte *dst, byte *src, int height);
@@ -87,6 +72,15 @@ public:
 	void unkDecode9(byte *dst, const byte *src, int height);
 	void unkDecode10(byte *dst, const byte *src, int height);
 	void unkDecode11(byte *dst, const byte *src, int height);
+
+public:
+	Image();
+	~Image();
+	void drawPalette(BlockTable *_blockTable, int id, File& _input);
+	void drawBG(File& _input, BlockTable *_blockTable, int id);
+	void drawObject(File& _input, BlockTable *_blockTable, int id);
+	void drawSmushFrame(BlockTable *_blockTable, int id, File& _input);
+	void drawBoxes(BlockTable *_blockTable, int id, File& _input);
 };
 
 #endif
