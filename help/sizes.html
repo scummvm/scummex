@@ -1,0 +1,73 @@
+<HTML>
+<HEAD>
+   <TITLE>Size Formats</TITLE>
+   <META NAME="resource-type" CONTENT="document">
+</HEAD>
+<FONT SIZE="+2" FACE="Arial">
+
+<B>Size Formats</B>
+</FONT><P>
+<FONT FACE="Arial" SIZE="-1">
+If you have read some of the specifications of SCUMM blocks, you'll notice
+that they don't all include their size in the same way. In order to find
+the next block when analyzing (and in order to dump to files and process
+blocks correctly) SCUMM Revisited has to know the size of the current one.
+Thus, it needs to know the size format of each block. Just for those
+interested in internal stuff, here is a list of the different size formats
+used by SCUMM - and SCUMM Revisited:<P>
+
+<B>Standard:</B> The format I have chosen to call &quot;Standard&quot; is
+the one most commonly used in blocks for newer SCUMM games. All of these
+blocks start with four characters containing the block type (e.g. &quot;LECF&quot;)
+followed by four bytes containing the size in little endian format
+(e.g. 00 01 32 2F - a size of 78383 bytes). These eight bytes are included
+in the size.<P>
+
+<B>Name and Size not Included:</B> This format is almost the same as the
+Standard format. The only difference is that here, the eight bytes containing
+the block type and size are not included in the size. So to get the correct
+size of the block we add 8.<P>
+
+<B>Name and Size not Included - Inconsistent:</B> This format is the same
+as the one described right above, except that sometimes this block has one
+more byte than the size says.<P>
+
+<B>Undefined - Based on Parent or Filesize:</B> Some blocks do not contain
+any useable size information at all. An example is the Creative Voice File
+blocks. Creative Voice Files (.voc) do not contain any information on their
+own size, which is probably why LEC placed those files within a wrapper
+block named VTLK for Full Throttle . Luckily, there is usually always a
+way to find the size anyway. Some blocks are known to be the root blocks of
+a file, and thus are just set to the size of the resource file. Others are
+always the last blocks within a parent block, and thus the size can be
+derived from the parent block size, by subtracting the size of all other
+sub-blocks (i.e. the offset of the current block, relative to the parent
+block offset) from the size of the parent.<P>
+
+<B>Entry Based:</B> Some blocks, such as MCMP and COMP, contain their sizes
+not in bytes, but in entries. So, to get the byte size, we multiply the size of
+each entry with the number of entries and add the 8 starting bytes mentioned
+above + the bytes containing the number of entries.<P>
+
+<B>Directory Table:</B> In bundle files, the block types/names and sizes of
+the contained files are listed in a directory at the start of the bundle file.
+This size format is used for such blocks.<P>
+
+<B>Old SCUMM:</B> For the early games Indiana Jones and the Last Crusade and
+Secret of Monkey Island, the entire file format was quite different: Each
+block started with the four bytes containing the size of the block in <I>big</I>
+endian followed by <I>two</I> characters for the block type identifier.<P>
+
+<B>VOC:</B> The Creative Voice Files (.voc) do not contain any info on
+size, which is the reason why MONSTER.SOU files take so long to analyze.
+In order to find the size, SCUMM Revisited parses the file's data in
+order to find the end of the file.<P>
+
+<B>Unknown:</B> Unknown is used for blocks that SCUMM Revisited does not
+know of. Other than displaying &quot;Unknown&quot; in the info panel, I
+decided to let this format be the same as the Undefined format, which is
+the safest and will allow more files to be opened that SCUMM Revisited was
+not made for ;)<P>
+</FONT>
+</BODY>
+</HTML>

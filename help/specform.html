@@ -1,0 +1,78 @@
+<HTML>
+<HEAD>
+   <TITLE>SCUMM Block Specifications Format</TITLE>
+   <META NAME="resource-type" CONTENT="document">
+</HEAD>
+<FONT SIZE="+2" FACE="Arial">
+
+<B>SCUMM Block Specifications Format</B>
+</FONT><P>
+<FONT FACE="Arial" SIZE="-1">
+
+Each block specification contains a general description of the block and
+a table of the exact ordering of data within the block. The first column
+in these tables either contains a string literal (for example the block
+name &quot;APAL&quot;) or an identifier (made up by me) written in
+hungarian notation.<P>
+
+The second column contains the size/format of the data meaning the
+following:<P>
+
+<UL>
+<LI>byte - Yep, a byte.
+<LI>word - 2 bytes
+<LI>dword - 4 bytes
+<LI>char - basically a byte, but used for character contents.
+<LI>string - null-terminated string, i.e. a string of chars ended with a
+    byte of the value 0. Normally, char will be used for strings containing
+    a known number of chars, while string will be used where the length
+    of the string is variable.
+<LI>block - SCUMM format block.
+</UL>
+Some of these may be prepended a multiplier, such as &quot;5 *&quot;, which
+means what you think it does.<P>
+
+The third column contains a description of the data. In this, some
+abbreviations are used:<P>
+
+<UL>
+<LI>BE - Big Endian, i.e. the number is stored with the most significant
+    byte <B>first</B> (as most normal people would write it, no offense to Intel).
+    Also known as Motorola format.
+<LI>LE - Little Endian, i.e. the number is stored with the most significant
+    byte <B>last</B>. Also known as Intel format.
+</UL>
+
+If nothing is noted, the number is stored as Big Endian.<P>
+
+Special schemes are used for special instances, such as a piece of the spec
+being repeated for a specified number of times:<BR>
+<B>loop <<I>count</I>></B><BR>
+&nbsp;...<BR>
+<B>end of loop</B><P>
+
+- or an unspecified number of times:<BR>
+<B>loop</B><BR>
+&nbsp;...<BR>
+<B>end of loop</B><P>
+
+Also, if a piece of the spec may not occur in some instances, it's marked
+thusly:<BR>
+
+<B>(</B><BR>
+&nbsp;...<BR>
+<B>)</B><P>
+
+Finally, if a piece can be different in some instances, it's marked with:<BR>
+<B>{</B><BR>
+&nbsp;...<BR>
+<B>}<BR>
+or<BR>
+{</B><BR>
+&nbsp;...<BR>
+<B>}</B><P>
+
+</FONT>
+</BODY>
+</HTML>
+

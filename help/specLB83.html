@@ -1,0 +1,81 @@
+<HTML>
+<HEAD>
+   <TITLE>LB83</TITLE>
+   <META NAME="resource-type" CONTENT="document">
+</HEAD>
+<FONT SIZE="+2" FACE="Arial">
+
+<B>LB83</B>
+</FONT><P>
+<FONT FACE="Arial" SIZE="-1">
+LB83 is the DOS equivalent of <A HREF="specLABN.html">LABN</A> (83 stemming
+from the well known DOS 8.3 filename format - max 8 chars for filename and
+3 for extension), although it is used in both The Dig and CMI for voice and
+music. I.e., it is a bundle of files.<P>
+</FONT>
+
+<FONT FACE="Courier">
+<TABLE CELLSPACING=1 WIDTH="100%">
+<TR>
+  <TD WIDTH="30%" VALIGN=top>&quot;LB83&quot;</TD>
+  <TD WIDTH="20%" VALIGN=top>dword</TD>
+  <TD WIDTH="50%"><FONT FACE="Arial" SIZE="-1">Block identifier</FONT></TD>
+</TR>
+<TR>
+  <TD VALIGN=top>dwNamesOffs</TD>
+  <TD VALIGN=top>dword</TD>
+  <TD><FONT FACE="Arial" SIZE="-1">Byte offset to filenames (BE).</FONT></TD>
+</TR>
+<TR>
+  <TD VALIGN=top>nFiles</TD>
+  <TD VALIGN=top>dword</TD>
+  <TD><FONT FACE="Arial" SIZE="-1">Number of files (BE)</FONT></TD>
+</TR>
+<TR>
+  <TD VALIGN=top>szCompileDate</TD>
+  <TD VALIGN=top>string</TD>
+  <TD><FONT FACE="Arial" SIZE="-1">Compilation time and date.</FONT></TD>
+</TR>
+<TR>
+  <TD VALIGN=top>??Unknown</TD>
+  <TD VALIGN=top>?</TD>
+  <TD><FONT FACE="Arial" SIZE="-1">Unknown stuff until first file.</FONT></TD>
+</TR>
+<TR>
+  <TD>&nbsp;</TD>
+<TR>
+
+<TR>
+  <TD COLSPAN=3><FONT FACE="Arial" SIZE="-1"><B>at offset dwNamesOffs:</B></TD>
+</TR>
+<TR>
+  <TD COLSPAN=3><FONT FACE="Arial" SIZE="-1"><B>loop nFiles</B></TD>
+</TR>
+<TR>
+  <TD VALIGN=top>&nbsp;sFileName</TD>
+  <TD VALIGN=top>8 * char</TD>
+  <TD><FONT FACE="Arial" SIZE="-1">First 8 characters. Characters not used are set to 00.</FONT></TD>
+</TR>
+<TR>
+  <TD VALIGN=top>&nbsp;sFileExt</TD>
+  <TD VALIGN=top>4 * char</TD>
+  <TD><FONT FACE="Arial" SIZE="-1">The 3 characters of the extension. Characters not used are set to 00. Null-terminated.</FONT></TD>
+</TR>
+<TR>
+  <TD VALIGN=top>&nbsp;dwOffset</TD>
+  <TD VALIGN=top>dword</TD>
+  <TD><FONT FACE="Arial" SIZE="-1">Byte offset to file relative to start of bundle (BE).</FONT></TD>
+</TR>
+<TR>
+  <TD VALIGN=top>&nbsp;dwSize</TD>
+  <TD VALIGN=top>dword</TD>
+  <TD><FONT FACE="Arial" SIZE="-1">Size of file in bytes (BE).</FONT></TD>
+</TR>
+<TR>
+  <TD COLSPAN=3><FONT FACE="Arial" SIZE="-1"><B>end of loop</B></FONT></TD>
+</TR>
+</TABLE>
+</FONT>
+</BODY>
+</HTML>
+

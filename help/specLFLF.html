@@ -1,0 +1,74 @@
+<HTML>
+<HEAD>
+   <TITLE>LFLF</TITLE>
+   <META NAME="resource-type" CONTENT="document">
+</HEAD>
+<FONT SIZE="+2" FACE="Arial">
+
+<B>LFLF</B>
+</FONT><P>
+<FONT FACE="Arial" SIZE="-1">
+The LFLF block is the container for a &quot;room&quot; (in quotes because
+in some games it may only contain music for other rooms etc.).<P>
+</FONT>
+
+<FONT FACE="Courier">
+<TABLE CELLSPACING=1 WIDTH="100%">
+<TR>
+  <TD WIDTH="30%" VALIGN=top>&quot;LFLF&quot;</TD>
+  <TD WIDTH="20%" VALIGN=top>dword</TD>
+  <TD WIDTH="50%"><FONT FACE="Arial" SIZE="-1">Block identifier</FONT></TD>
+</TR>
+<TR>
+  <TD VALIGN=top>dwSize</TD>
+  <TD VALIGN=top>dword</TD>
+  <TD><FONT FACE="Arial" SIZE="-1">Size in bytes (BE)</FONT></TD>
+</TR>
+<TR>
+  <TD>&nbsp;</TD>
+</TR>
+
+<TR>
+  <TD WIDTH="30%" VALIGN=top>blROOM</TD>
+  <TD WIDTH="20%" VALIGN=top>block</TD>
+  <TD WIDTH="50%"><FONT FACE="Arial" SIZE="-1"><A HREF="specROOM.html">ROOM</A> block.</FONT></TD>
+</TR>
+
+<TR>
+  <TD>&nbsp;</TD>
+</TR>
+<TR>
+  <TD COLSPAN=3><FONT FACE="Arial" SIZE="-1"><B>(</B></TD>
+</TR>
+<TR>
+  <TD WIDTH="30%" VALIGN=top>&nbsp;blRMSC</TD>
+  <TD WIDTH="20%" VALIGN=top>block</TD>
+  <TD WIDTH="50%"><FONT FACE="Arial" SIZE="-1"><A HREF="specRMSC.html">RMSC</A> block (only in <I>CMI</I>).</FONT></TD>
+</TR>
+<TR>
+  <TD COLSPAN=3><FONT FACE="Arial" SIZE="-1"><B>)</B></TD>
+</TR>
+
+<TR>
+  <TD>&nbsp;</TD>
+</TR>
+<TR>
+  <TD COLSPAN=3><FONT FACE="Arial" SIZE="-1"><B>(</B></TD>
+</TR>
+<TR>
+  <TD COLSPAN=3><FONT FACE="Arial" SIZE="-1"><B>&nbsp;followed by sub-blocks (depending on the need for them):<BR>
+  &nbsp;SCRP,
+  SOUN,
+  AKOS /
+  COST,
+  CHAR.</B></FONT></TD>
+</TR>
+<TR>
+  <TD COLSPAN=3><FONT FACE="Arial" SIZE="-1"><B>)</B></TD>
+</TR>
+
+</TABLE>
+</FONT>
+</BODY>
+</HTML>
+

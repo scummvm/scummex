@@ -1,0 +1,203 @@
+<ul>
+
+  <li> <object type="text/sitemap">
+           <param name="Name" value="Index">
+           <param name="ID" value=1>
+           <param name="Local" value="index.html">
+       </object>
+   
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="SCUMM Format Encyclopedia">
+  	<param name="Local" value="encycl.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Specification Format">
+			<param name="Local" value="specform.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Old SCUMM File Format">
+			<param name="Local" value="oldfrmt.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="New SCUMM File Format">
+			<param name="Local" value="newfrmt.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Size Formats">
+			<param name="Local" value="sizes.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Block Specifications">
+			<param name="Local" value="spec.html">
+			</OBJECT>
+		<UL>
+      <LI> <OBJECT type="text/sitemap">
+        <param name="Name" value="A-E">
+        </OBJECT>
+      <UL>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value="ADL">
+  				<param name="Local" value="specADL.html">
+  				</OBJECT>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value="AMI">
+  				<param name="Local" value="specAMI.html">
+  				</OBJECT>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value="APAL">
+  				<param name="Local" value="specAPAL.html">
+  				</OBJECT>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value="CLUT">
+  				<param name="Local" value="specCLUT.html">
+  				</OBJECT>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value="DATA">
+  				<param name="Local" value="specDATA.html">
+  				</OBJECT>
+      </UL>
+      <LI> <OBJECT type="text/sitemap">
+        <param name="Name" value="F-J">
+        </OBJECT>
+      <UL>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value="FRMT">
+  				<param name="Local" value="specFRMT.html">
+  				</OBJECT>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value="GMD">
+  				<param name="Local" value="specGMD.html">
+  				</OBJECT>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value="iMUS">
+  				<param name="Local" value="speciMUS.html">
+  				</OBJECT>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value="JUMP">
+  				<param name="Local" value="specJUMP.html">
+  				</OBJECT>
+      </UL>
+      <LI> <OBJECT type="text/sitemap">
+        <param name="Name" value="K-O">
+        </OBJECT>
+      <UL>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value="LABN">
+  				<param name="Local" value="specLABN.html">
+  				</OBJECT>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value="LB83">
+  				<param name="Local" value="specLB83.html">
+  				</OBJECT>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value="LECF">
+  				<param name="Local" value="specLECF.html">
+  				</OBJECT>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value="LFLF">
+  				<param name="Local" value="specLFLF.html">
+  				</OBJECT>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value="LOFF">
+  				<param name="Local" value="specLOFF.html">
+  				</OBJECT>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value="MAP">
+  				<param name="Local" value="specMAP.html">
+  				</OBJECT>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value="MCMP">
+  				<param name="Local" value="specMCMP.html">
+  				</OBJECT>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value="MIDI">
+  				<param name="Local" value="specMIDI.html">
+  				</OBJECT>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value="NPAL">
+  				<param name="Local" value="specNPAL.html">
+  				</OBJECT>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value="OFFS">
+  				<param name="Local" value="specOFFS.html">
+  				</OBJECT>
+      </UL>
+      <LI> <OBJECT type="text/sitemap">
+        <param name="Name" value="P-T">
+        </OBJECT>
+      <UL>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value="PALS">
+  				<param name="Local" value="specPALS.html">
+  				</OBJECT>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value="RIFF">
+  				<param name="Local" value="specRIFF.html">
+  				</OBJECT>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value="ROL">
+  				<param name="Local" value="specROL.html">
+  				</OBJECT>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value="ROOM">
+  				<param name="Local" value="specROOM.html">
+  				</OBJECT>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value="RMSC">
+  				<param name="Local" value="specRMSC.html">
+  				</OBJECT>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value="SPK">
+  				<param name="Local" value="specSPK.html">
+  				</OBJECT>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value="STOP">
+  				<param name="Local" value="specSTOP.html">
+  				</OBJECT>
+      </UL>
+      <LI> <OBJECT type="text/sitemap">
+        <param name="Name" value="U-Z">
+        </OBJECT>
+      <UL>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value="WRAP">
+  				<param name="Local" value="specWRAP.html">
+  				</OBJECT>
+      </UL>
+      <LI> <OBJECT type="text/sitemap">
+        <param name="Name" value="Files">
+        </OBJECT>
+      <UL>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value=".IMC">
+  				<param name="Local" value="specF_IMC.html">
+  				</OBJECT>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value=".IMX">
+  				<param name="Local" value="specF_IMX.html">
+  				</OBJECT>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value=".LUA">
+  				<param name="Local" value="specF_LUA.html">
+  				</OBJECT>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value=".TXT">
+  				<param name="Local" value="specF_TXT.html">
+  				</OBJECT>
+  			<LI> <OBJECT type="text/sitemap">
+  				<param name="Name" value=".WAV">
+  				<param name="Local" value="specF_WAV.html">
+  				</OBJECT>
+      </UL>
+		</UL>
+  	<LI> <OBJECT type="text/sitemap">
+  		<param name="Name" value="CMI Script Opcodes">
+  		<param name="Local" value="CMIOpcodes.html">
+  		</OBJECT>
+  	<LI> <OBJECT type="text/sitemap">
+  		<param name="Name" value="GrimE Script Functions">
+  		<param name="Local" value="GRIMOpcodes.html">
+  		</OBJECT>
+	</UL>
+</ul>

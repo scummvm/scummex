@@ -1,0 +1,72 @@
+<HTML>
+<HEAD>
+   <TITLE>MIDI files</TITLE>
+   <META NAME="resource-type" CONTENT="document">
+</HEAD>
+
+<BODY>
+<FONT SIZE="+2" FACE="Arial">
+
+<B>MIDI files</B>
+</FONT><P>
+<FONT FACE="Arial" SIZE="-1">
+From Monkey Island 2 and until Sam & Max Hit the Road, LEC used
+MIDI files for the music in the adventure games (with a few
+exceptions), because the <I>i</I>MUSE system that was developed
+for Monkey Island 2 used this format.<P>
+
+Each game usually has the MIDIs saved in different versions for
+different types of sound devices: PC speaker, Adlib, Roland MT-32
+etc. Each of these versions had their own block type:<P>
+
+<A HREF="specSPK.html">SPK</A> for the PC speaker.<BR>
+<A HREF="specADL.html">ADL</A> for Adlib MIDI files.<BR>
+<A HREF="specROL.html">ROL</A> for Roland MT-32 files.<BR>
+<A HREF="specAMI.html">AMI</A> for Amiga MIDI files.<BR>
+<A HREF="specGMD.html">GMD</A> and <A HREF="specMIDI.html">MIDI</A>
+for General MIDI files.
+
+<P>
+If you can find a MIDI or GMD version of a piece of music, as a rule
+of thumb, that will be the most detailed version. If not, try to find
+a ROL version. Sometimes this varies, though. Land composed the Monkey
+Island 2 theme for the Adlib, later converting it to MT-32 for the
+game, while the rest of the game's music was composed for MT-32 (as
+most of the MI music is).<P>
+
+When listening to this music, you will find some things that may seem
+odd to you:<P>
+
+<UL>
+<LI>On ADL and SPK tracks, the music only plays back with piano
+and drums (or some other weird instruments)! This is because the ADL,
+SPK and SPK MIDIs don't have any instrument info embedded. You may add
+your own in a sequencing program, of course.
+<LI>On ROL, the instruments sound all wrong! This is because the Roland MT-32
+uses a different set of instruments than the General MIDI standard.
+This means that when a file made for MT-32 tells the MIDI device to
+change to instrument 27, for example, it means that it wants the
+instrument known as Synth Brass 3 - but in General MIDI instrument 27
+is a Jazz Guitar! If you know your patch maps, you can make a relatively
+good General MIDI version of a Roland MIDI. If you don't, do not ask me
+how to do it! Go find converted MIDIs on the web instead, at HighLand
+Productions or Quest Studios.
+(Or, go buy an MT-32 :) Don't ask me how to do it. I won't tell you.
+<LI>On AMI tracks, the instruments sound all wrong too! This is because the
+Amiga games most likely had a software sequencer. The instruments are stored
+elsewhere. As with the ROL MIDIs, you may be able to make a relatively good
+General MIDI version of an Amiga MIDI.
+<LI>On many cues, the music sounds mixed up completely! This is due to
+the way <I>i</I>MUSE works. One MIDI file contains many different cues
+to be mixed together by <I>i</I>MUSE. These are stored &quot;on top of eachother&quot;,
+in the Standard MIDI format 2, which means that each track contains a
+different cue. Obviously, when all these different cues are played at the
+same time, the result is not necessarily nice :) So, if you want listenable
+files from these, you'll have to load them into a sequencer, split the
+tracks apart, and mix them like iMUSE does. Do not ask me how to do this
+either! The MIDIs found at HighLand Productions or Quest Studios will be
+mixed correctly.
+
+</FONT>
+</BODY>
+</HTML>

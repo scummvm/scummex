@@ -1,0 +1,518 @@
+<HTML>
+<HEAD>
+ <TITLE>GRIME Script Functions</TITLE>
+ <META NAME="resource-type" CONTENT="document">
+ <LINK REL=StyleSheet HREF="tables.css" TYPE="text/css">
+</HEAD>
+<FONT SIZE="+2" FACE="Arial">
+
+<B>GRIME Script Functions</B>
+</FONT><P>
+<FONT FACE="Arial" SIZE="-1">
+
+Following is a total list of script function names and identifiers defined
+by GRIME. In addition to these are the internal Lua functions and identifiers.
+Notice that Lua is case sensitive.<P>
+
+<B>GRIME functions</B><BR>
+EnumerateVideoDevices<BR>
+Enumerate3DDevices<BR>
+SetHardwareState<BR>
+SetVideoDevices<BR>
+GetVideoDevices<BR>
+Is3DHardwareEnabled<BR>
+PurgePrimitiveQueue<BR>
+KillPrimitive<BR>
+ChangePrimitive<BR>
+DrawRectangle<BR>
+DrawPolygon<BR>
+DrawLine<BR>
+SetOffscreenTextPos<BR>
+SetEmergencyFont<BR>
+LocalizeString<BR>
+GetTextCharPosition<BR>
+GetTranslationMode<BR>
+SetTranslationMode<BR>
+GetColorComponents<BR>
+MakeColor<BR>
+PurgeText<BR>
+ExpireText<BR>
+BlastText<BR>
+KillTextObject<BR>
+ChangeTextObject<BR>
+GetFontDimensions<BR>
+GetTextObjectDimensions<BR>
+MakeTextObject<BR>
+PrintLine<BR>
+SayLine<BR>
+GetActorTalkColor<BR>
+SetActorTalkColor<BR>
+SetSayLineDefaults<BR>
+IsMessageGoing<BR>
+GetSmushLength<BR>
+GetKeyLength<BR>
+GetMemoryUsage<BR>
+RestoreIMuse<BR>
+SaveIMuse<BR>
+SetWalkSystemFadeTime<BR>
+GetDiskFreeSpace<BR>
+SetActorInvClipNode<BR>
+NukeResources<BR>
+GetShrinkPos<BR>
+UnShrinkBoxes<BR>
+ShrinkBoxes<BR>
+RestoreCache<BR>
+BuildCache<BR>
+ResetTextures<BR>
+DumpMemoryLog<BR>
+JustLoaded<BR>
+ActorVoiceIs3D<BR>
+GetTickCount<BR>
+ActorPuckOrient<BR>
+TEST<BR>
+GetSoundParameters<BR>
+SetSoundParameters<BR>
+AttachToResources<BR>
+DetachFromResources<BR>
+FindFileOnAnyCD<BR>
+GetTextSpeed<BR>
+SetTextSpeed<BR>
+GetSaveGameData<BR>
+SubmitSaveGameData<BR>
+BlastRect<BR>
+BlastImage<BR>
+FreeImage<BR>
+GetImage<BR>
+GetSaveGameImage<BR>
+SaveScreen<BR>
+ScreenShot<BR>
+TextFileGetLine<BR>
+TextFileGetLineCount<BR>
+IrisClear<BR>
+IrisComplete<BR>
+IrisUp<BR>
+IrisDown<BR>
+FadeInChore<BR>
+FadeOutChore<BR>
+SetActorClipPlane<BR>
+SetActorClipActive<BR>
+HardwareAccelerated<BR>
+ResReport<BR>
+RestoreCacheRect<BR>
+CacheRect<BR>
+MarkDirtyRect<BR>
+SetActorCollisionScale<BR>
+SetActorCollisionMode<BR>
+FlushControls<BR>
+ActorToClean<BR>
+SendObjectToFront<BR>
+SendObjectToBack<BR>
+SetObjectType<BR>
+FreeObjectState<BR>
+NewObjectState<BR>
+SetActorShadowValid<BR>
+AddShadowPlane<BR>
+KillActorShadows<BR>
+ActorDistToShadowPlane<BR>
+SetActiveShadow<BR>
+SetActorShadowPoint<BR>
+SetActorShadowPlane<BR>
+ActorShadow<BR>
+ActivateActorShadow<BR>
+SetShadowColor<BR>
+GetSpeechMode<BR>
+SetSpeechMode<BR>
+Display<BR>
+CleanBuffer<BR>
+DimRegion<BR>
+DimScreen<BR>
+ForceRefresh<BR>
+RenderModeUser<BR>
+SetActorConstrain<BR>
+SetActorWalkDominate<BR>
+SetGamma<BR>
+UnloadBundle<BR>
+LoadBundle<BR>
+ImGetSoundCacheSize<BR>
+ImGetMemoryFootprint<BR>
+ImSetVoiceEffect<BR>
+vfx<BR>
+ImResume<BR>
+ImPause<BR>
+ImSetCuePoint<BR>
+ImSetAttribute<BR>
+ImSetSequence<BR>
+ImSetState<BR>
+ImStopVoice<BR>
+ImStartVoice<BR>
+ImSetMusicVol<BR>
+ImGetMusicVol<BR>
+ImSetVoiceVol<BR>
+ImGetVoiceVol<BR>
+ImSetSfxVol<BR>
+ImGetSfxVol<BR>
+ImSetMasterVol<BR>
+ImGetMasterVol<BR>
+ImFadeParam<BR>
+ImSetParam<BR>
+ImGetParam<BR>
+quiet<BR>
+ImStopAllSounds<BR>
+ImStopSound<BR>
+play<BR>
+ImStartSound<BR>
+ImStopRecording<BR>
+ImStartRecording<BR>
+LightMgrSetChange<BR>
+LightMgrShutdown<BR>
+LightMgrStartup<BR>
+PointLightAt<BR>
+GetLightIntensity<BR>
+SetLightIntensity<BR>
+GetLightAngles<BR>
+SetLightAngles<BR>
+GetLightRotation<BR>
+SetLightRotation<BR>
+GetLightPosition<BR>
+SetLightPosition<BR>
+GetLightType<BR>
+SetLightType<BR>
+IsLightOn<BR>
+TurnLightOn<BR>
+FindLight<BR>
+SetAmbientLight<BR>
+GetAngleBetweenActors<BR>
+GetAngleBetweenVectors<BR>
+SnapToPlane<BR>
+PerSecond<BR>
+TurnActorTo<BR>
+PointActorAt<BR>
+GetCameraLookVector<BR>
+SetCameraRoll<BR>
+GetCameraRoll<BR>
+SetCameraFOV<BR>
+GetCameraFOV<BR>
+SetCameraInterest<BR>
+GetCameraInterest<BR>
+SetCameraPosition<BR>
+GetCameraPosition<BR>
+RotateVector<BR>
+SetMemoryUsage<BR>
+GetPhysicalBytes<BR>
+LoadCostume<BR>
+PopActorCostume<BR>
+PushActorCostume<BR>
+PrintActorCostumes<BR>
+GetCurrentScript<BR>
+SpewShutdown<BR>
+SpewStartup<BR>
+PreRender<BR>
+MakeSectorActive<BR>
+IsSectorActive<BR>
+GetSectorOppositeEdge<BR>
+GetSectorVertices<BR>
+ReadRegistryValue<BR>
+WriteRegistryValue<BR>
+QueryDialog<BR>
+InputDialog<BR>
+FileFindDispose<BR>
+FileFindNext<BR>
+FileFindFirst<BR>
+SetSoundPosition<BR>
+IsSoundPlaying<BR>
+PlaySoundAttached<BR>
+PlaySoundAt<BR>
+PlaySound<BR>
+IsMoviePlaying<BR>
+PauseMovie<BR>
+StopMovie<BR>
+StartMovie<BR>
+IsFullscreenMoviePlaying<BR>
+StartFullscreenMovie<BR>
+PreviousSetup<BR>
+NextSetup<BR>
+GetCurrentSetup<BR>
+MakeCurrentSetup<BR>
+UnLockSet<BR>
+LockSet<BR>
+MakeCurrentSet<BR>
+PrintDebug<BR>
+PrintWarning<BR>
+PrintError<BR>
+PrintMessage<BR>
+GetControlState<BR>
+DisableControl<BR>
+EnableControl<BR>
+UnlockCostume<BR>
+LockCostume<BR>
+UnlockSound<BR>
+LockSound<BR>
+UnLockFont<BR>
+LockFont<BR>
+EnableDebugKeys<BR>
+FunctionName<BR>
+ScreenToWorld<BR>
+WorldToScreen<BR>
+GetActorCostumeDepth<BR>
+GetActorLoopingChores<BR>
+GetActorChores<BR>
+SetActorChoreLooping<BR>
+IsActorResting<BR>
+IsActorChoring<BR>
+IsActorMoving<BR>
+CompleteActorChore<BR>
+StopActorChore<BR>
+PlayActorChoreLooping<BR>
+PlayActorChore<BR>
+IsActorTurning<BR>
+SetActorRoll<BR>
+SetActorPitch<BR>
+SetActorRot<BR>
+GetActorRot<BR>
+TurnActor<BR>
+GetPointSector<BR>
+IsPointInSector<BR>
+GetActorSector<BR>
+IsActorInSector<BR>
+SetActorFrustrumCull<BR>
+ShutUpActor<BR>
+SetActorFollowBoxes<BR>
+SetActorVisibility<BR>
+SetActorHead<BR>
+GetCameraActor<BR>
+GetVisibleThings<BR>
+CanActorSee<BR>
+GetActorLookRate<BR>
+SetActorLookRate<BR>
+IsActorLooking<BR>
+ActorLookAt<BR>
+WalkActorToInterest<BR>
+WalkActorToAvoiding<BR>
+WalkActorTo<BR>
+DriveActorTo<BR>
+WalkActorForward<BR>
+WalkActorVector<BR>
+GetClippedPos<BR>
+PutActorInSet<BR>
+PutActorAt<BR>
+PutActorAtOrigin<BR>
+PutActorAtInterest<BR>
+SetActorOffsetYaw<BR>
+SetActorReflection<BR>
+GetActorYawToPoint<BR>
+GetActorPuckVector<BR>
+GetActorRect<BR>
+GetActorPos<BR>
+LoadActor<BR>
+SetSelectedActor<BR>
+GetActorTurnRate<BR>
+SetActorTurnRate<BR>
+GetActorWalkRate<BR>
+SetActorWalkRate<BR>
+SetActorTalkChore<BR>
+SetActorMumblechore<BR>
+SetActorRestChore<BR>
+SetActorTurnChores<BR>
+SetActorWalkChore<BR>
+GetActorNodeLocation<BR>
+SetActorTimeScale<BR>
+GetActorTimeScale<BR>
+SetActorScale<BR>
+GetActorScale<BR>
+SetActorCostume<BR>
+GetActorCostume<BR>
+SetActorColormap<BR>
+Save<BR>
+Load<BR>
+CheckForFile<BR>
+SearchForFileOrSwapCDs<BR>
+EngineDisplay<BR>
+EngineResume<BR>
+EnginePause<P>
+
+system.buttonHandler<BR>
+system.camChangeHandler<BR>
+system.axisHandler<BR>
+
+<P><B>Tables</B><BR>
+system<BR>
+system.controls<BR>
+
+<P><B>Constants</B><BR>
+HOT = 32768<BR>
+SPECIAL = 16384<BR>
+CAMERA = 8192<BR>
+WALK = 4096<BR>
+NONE = 0<P>
+
+system.controls.KEY_ESCAPE = 0<BR>
+system.controls.KEY_1 = 1<BR>
+system.controls.KEY_2 = 2<BR>
+system.controls.KEY_3 = 3<BR>
+system.controls.KEY_4 = 4<BR>
+system.controls.KEY_5 = 5<BR>
+system.controls.KEY_6 = 6<BR>
+system.controls.KEY_7 = 7<BR>
+system.controls.KEY_8 = 8<BR>
+system.controls.KEY_9 = 9<BR>
+system.controls.KEY_0 = 10<BR>
+system.controls.KEY_MINUS = 11<BR>
+system.controls.KEY_EQUALS = 12<BR>
+system.controls.KEY_BACK = 13<BR>
+system.controls.KEY_TAB = 14<BR>
+system.controls.KEY_Q = 15<BR>
+system.controls.KEY_W = 16<BR>
+system.controls.KEY_E = 17<BR>
+system.controls.KEY_R = 18<BR>
+system.controls.KEY_T = 19<BR>
+system.controls.KEY_Y = 20<BR>
+system.controls.KEY_U = 21<BR>
+system.controls.KEY_I = 22<BR>
+system.controls.KEY_O = 23<BR>
+system.controls.KEY_P = 24<BR>
+system.controls.KEY_LBRACKET = 25<BR>
+system.controls.KEY_RBRACKET = 26<BR>
+system.controls.KEY_RETURN = 27<BR>
+system.controls.KEY_LCONTROL = 28<BR>
+system.controls.KEY_A = 29<BR>
+system.controls.KEY_S = 30<BR>
+system.controls.KEY_D = 31<BR>
+system.controls.KEY_F = 32<BR>
+system.controls.KEY_G = 33<BR>
+system.controls.KEY_H = 34<BR>
+system.controls.KEY_J = 35<BR>
+system.controls.KEY_K = 36<BR>
+system.controls.KEY_L = 37<BR>
+system.controls.KEY_SEMICOLON = 38<BR>
+system.controls.KEY_APOSTROPHE = 39<BR>
+system.controls.KEY_GRAVE = 40<BR>
+system.controls.KEY_LSHIFT = 41<BR>
+system.controls.KEY_BACKSLASH = 42<BR>
+system.controls.KEY_Z = 43<BR>
+system.controls.KEY_X = 44<BR>
+system.controls.KEY_C = 45<BR>
+system.controls.KEY_V = 46<BR>
+system.controls.KEY_B = 47<BR>
+system.controls.KEY_N = 48<BR>
+system.controls.KEY_M = 49<BR>
+system.controls.KEY_COMMA = 50<BR>
+system.controls.KEY_PERIOD = 51<BR>
+system.controls.KEY_SLASH = 52<BR>
+system.controls.KEY_RSHIFT = 53<BR>
+system.controls.KEY_MULTIPLY = 54<BR>
+system.controls.KEY_LMENU = 55<BR>
+system.controls.KEY_SPACE = 56<BR>
+system.controls.KEY_CAPITAL = 57<BR>
+system.controls.KEY_F1 = 58<BR>
+system.controls.KEY_F2 = 59<BR>
+system.controls.KEY_F3 = 60<BR>
+system.controls.KEY_F4 = 61<BR>
+system.controls.KEY_F5 = 62<BR>
+system.controls.KEY_F6 = 63<BR>
+system.controls.KEY_F7 = 64<BR>
+system.controls.KEY_F8 = 65<BR>
+system.controls.KEY_F9 = 66<BR>
+system.controls.KEY_F10 = 67<BR>
+system.controls.KEY_NUMLOCK = 68<BR>
+system.controls.KEY_SCROLL = 69<BR>
+system.controls.KEY_NUMPAD7 = 70<BR>
+system.controls.KEY_NUMPAD8 = 71<BR>
+system.controls.KEY_NUMPAD9 = 72<BR>
+system.controls.KEY_SUBTRACT = 73<BR>
+system.controls.KEY_NUMPAD4 = 74<BR>
+system.controls.KEY_NUMPAD5 = 75<BR>
+system.controls.KEY_NUMPAD6 = 76<BR>
+system.controls.KEY_ADD = 77<BR>
+system.controls.KEY_NUMPAD1 = 78<BR>
+system.controls.KEY_NUMPAD2 = 79<BR>
+system.controls.KEY_NUMPAD3 = 80<BR>
+system.controls.KEY_NUMPAD0 = 81<BR>
+system.controls.KEY_DECIMAL = 82<BR>
+system.controls.KEY_F11 = 83<BR>
+system.controls.KEY_F12 = 84<BR>
+system.controls.KEY_F13 = 85<BR>
+system.controls.KEY_F14 = 86<BR>
+system.controls.KEY_F15 = 87<BR>
+system.controls.KEY_KANA = 88<BR>
+system.controls.KEY_CONVERT = 89<BR>
+system.controls.KEY_NOCONVERT = 90<BR>
+system.controls.KEY_YEN = 91<BR>
+system.controls.KEY_NUMPADEQUALS = 92<BR>
+system.controls.KEY_CIRCUMFLEX = 93<BR>
+system.controls.KEY_AT = 94<BR>
+system.controls.KEY_COLON = 95<BR>
+system.controls.KEY_UNDERLINE = 96<BR>
+system.controls.KEY_KANJI = 97<BR>
+system.controls.KEY_STOP = 98<BR>
+system.controls.KEY_AX = 99<BR>
+system.controls.KEY_UNLABELED = 100<BR>
+system.controls.KEY_NUMPADENTER = 101<BR>
+system.controls.KEY_RCONTROL = 102<BR>
+system.controls.KEY_NUMPADCOMMA = 103<BR>
+system.controls.KEY_DIVIDE = 104<BR>
+system.controls.KEY_SYSRQ = 105<BR>
+system.controls.KEY_RMENU = 106<BR>
+system.controls.KEY_HOME = 107<BR>
+system.controls.KEY_UP = 108<BR>
+system.controls.KEY_PRIOR = 109<BR>
+system.controls.KEY_LEFT = 110<BR>
+system.controls.KEY_RIGHT = 111<BR>
+system.controls.KEY_END = 112<BR>
+system.controls.KEY_DOWN = 113<BR>
+system.controls.KEY_NEXT = 114<BR>
+system.controls.KEY_INSERT = 115<BR>
+system.controls.KEY_DELETE = 116<BR>
+system.controls.KEY_LWIN = 117<BR>
+system.controls.KEY_RWIN = 118<BR>
+system.controls.KEY_APPS = 119<BR>
+system.controls.KEY_JOY1_B1 = 120<BR>
+system.controls.KEY_JOY1_B2 = 121<BR>
+system.controls.KEY_JOY1_B3 = 122<BR>
+system.controls.KEY_JOY1_B4 = 123<BR>
+system.controls.KEY_JOY1_B5 = 124<BR>
+system.controls.KEY_JOY1_B6 = 125<BR>
+system.controls.KEY_JOY1_B7 = 126<BR>
+system.controls.KEY_JOY1_B8 = 127<BR>
+system.controls.KEY_JOY1_B9 = 128<BR>
+system.controls.KEY_JOY1_B10 = 129<BR>
+system.controls.KEY_JOY1_HLEFT = 130<BR>
+system.controls.KEY_JOY1_HUP = 131<BR>
+system.controls.KEY_JOY1_HRIGHT = 132<BR>
+system.controls.KEY_JOY1_HDOWN = 133<BR>
+system.controls.KEY_JOY2_B1 = 134<BR>
+system.controls.KEY_JOY2_B2 = 135<BR>
+system.controls.KEY_JOY2_B3 = 136<BR>
+system.controls.KEY_JOY2_B4 = 137<BR>
+system.controls.KEY_JOY2_B5 = 138<BR>
+system.controls.KEY_JOY2_B6 = 139<BR>
+system.controls.KEY_JOY2_B7 = 140<BR>
+system.controls.KEY_JOY2_B8 = 141<BR>
+system.controls.KEY_JOY2_B9 = 142<BR>
+system.controls.KEY_JOY2_B10 = 143<BR>
+system.controls.KEY_JOY2_HLEFT = 144<BR>
+system.controls.KEY_JOY2_HUP = 145<BR>
+system.controls.KEY_JOY2_HRIGHT = 146<BR>
+system.controls.KEY_JOY2_HDOWN = 147<BR>
+system.controls.KEY_MOUSE_B1 = 148<BR>
+system.controls.KEY_MOUSE_B2 = 149<BR>
+system.controls.KEY_MOUSE_B3 = 150<BR>
+system.controls.KEY_MOUSE_B4 = 151<BR>
+system.controls.AXIS_JOY1_X = 152<BR>
+system.controls.AXIS_JOY1_Y = 153<BR>
+system.controls.AXIS_JOY1_Z = 154<BR>
+system.controls.AXIS_JOY1_R = 155<BR>
+system.controls.AXIS_JOY1_U = 156<BR>
+system.controls.AXIS_JOY1_V = 157<BR>
+system.controls.AXIS_JOY2_X = 158<BR>
+system.controls.AXIS_JOY2_Y = 159<BR>
+system.controls.AXIS_JOY2_Z = 160<BR>
+system.controls.AXIS_JOY2_R = 161<BR>
+system.controls.AXIS_JOY2_U = 162<BR>
+system.controls.AXIS_JOY2_V = 163<BR>
+system.controls.AXIS_MOUSE_X = 164<BR>
+system.controls.AXIS_MOUSE_Y = 165<BR>
+system.controls.AXIS_MOUSE_Z = 166<BR>
+
+</FONT>
+</BODY>
+</HTML>

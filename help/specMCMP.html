@@ -1,0 +1,86 @@
+<HTML>
+<HEAD>
+   <TITLE>MCMP</TITLE>
+   <META NAME="resource-type" CONTENT="document">
+</HEAD>
+<FONT SIZE="+2" FACE="Arial">
+
+<B>MCMP</B>
+</FONT><P>
+<FONT FACE="Arial" SIZE="-1">
+MCMP contains compression info for WAV files and iMUS blocks in Grim
+Fandango. In this way, it corresponds to the COMP
+block of <I>The Dig</I> and <I>CMI</I>.<P>
+</FONT>
+
+<FONT FACE="Courier">
+<TABLE CELLSPACING=1 WIDTH="100%">
+<TR>
+  <TD WIDTH="30%" VALIGN=top>&quot;MCMP&quot;</TD>
+  <TD WIDTH="20%" VALIGN=top>dword</TD>
+  <TD WIDTH="50%"><FONT FACE="Arial" SIZE="-1">Block identifier</FONT></TD>
+</TR>
+<TR>
+  <TD VALIGN=top>nEntries</TD>
+  <TD VALIGN=top>word</TD>
+  <TD><FONT FACE="Arial" SIZE="-1">Number of entries (BE)</FONT></TD>
+</TR>
+<TR>
+  <TD>&nbsp;</TD>
+<TR>
+
+<TR>
+  <TD COLSPAN=3><FONT FACE="Arial" SIZE="-1"><B>loop nEntries</B></TD>
+</TR>
+<TR>
+  <TD VALIGN=top>&nbsp;nCodec</TD>
+  <TD VALIGN=top>byte</TD>
+  <TD><FONT FACE="Arial" SIZE="-1">Codec Number - index of the codec name in the list below.</FONT></TD>
+</TR>
+<TR>
+  <TD VALIGN=top>&nbsp;dwDecompSize</TD>
+  <TD VALIGN=top>dword</TD>
+  <TD><FONT FACE="Arial" SIZE="-1">Decompressed size (BE)</FONT></TD>
+</TR>
+<TR>
+  <TD VALIGN=top>&nbsp;dwCompSize</TD>
+  <TD VALIGN=top>dword</TD>
+  <TD><FONT FACE="Arial" SIZE="-1">Compressed size (BE)</FONT></TD>
+</TR>
+<TR>
+  <TD COLSPAN=3><FONT FACE="Arial" SIZE="-1"><B>end of loop</B></FONT></TD>
+</TR>
+<TR>
+  <TD>&nbsp;</TD>
+</TR>
+
+<TR>
+  <TD VALIGN=top>nCodecs</TD>
+  <TD VALIGN=top>word</TD>
+  <TD><FONT FACE="Arial" SIZE="-1">Number of codecs in list (LE)</FONT></TD>
+</TR>
+<TR>
+  <TD>&nbsp;</TD>
+</TR>
+
+
+<TR>
+  <TD COLSPAN=3><FONT FACE="Arial" SIZE="-1"><B>loop nCodecs</B></TD>
+</TR>
+<TR>
+  <TD VALIGN=top>&nbsp;szCodecName</TD>
+  <TD VALIGN=top>5 * char</TD>
+  <TD><FONT FACE="Arial" SIZE="-1">Codec Name - null terminated string. In Grim Fandango this is either
+      NULL (for uncompressed) or VIMA (for the Grim Fandango music compression)</FONT></TD>
+</TR>
+<TR>
+  <TD COLSPAN=3><FONT FACE="Arial" SIZE="-1"><B>end of loop</B></FONT></TD>
+</TR>
+<TR>
+  <TD>&nbsp;</TD>
+</TR>
+</TABLE>
+</FONT>
+</BODY>
+</HTML>
+

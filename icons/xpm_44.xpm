@@ -1,0 +1,38 @@
+/* XPM */
+static char *xpm_44[] = {
+/* columns rows colors chars-per-pixel */
+"16 16 16 1",
+"  c #211000",
+". c gray42",
+"X c magenta",
+"o c #848484",
+"O c #B5A5AD",
+"+ c #DED6DE",
+"@ c gray87",
+"# c #E7DEE7",
+"$ c #E7E7E7",
+"% c #EFE7EF",
+"& c #EFEFEF",
+"* c #F7EFF7",
+"= c gray97",
+"- c #FFF7FF",
+"; c gray100",
+": c None",
+/* pixels */
+"::::::::::::::::",
+":oooooooooooooo:",
+":o+@@#$$%%&&*=o:",
+":o@  O$$@ &  =o:",
+":o@@#$$%%&&*==o.",
+":o@   O%@ *  =o.",
+":o@#$$%%&&*==-o.",
+":o#    O& * =-o.",
+":o#$$%%&&*==--o.",
+":o#  O&&@ =  ;o.",
+":o$$$$&&@===;;o.",
+":o$$%%&&*==--;o.",
+":o$    O* =  ;o.",
+":o$%%&&*==-;;;o.",
+":oooooooooooooo.",
+"::.............."
+};

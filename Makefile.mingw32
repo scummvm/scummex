@@ -1,0 +1,19 @@
+CC=g++
+RC=windres
+RESSW=--define __WIN32__ --define __WIN95__ --define __GNUWIN32__
+OBJECTS=file.o scummex.o resource.o mixer.o image.o sound.o wxwindows.o resources.o descumm.o
+CFLAGS=-DMINGW32 -O -Wall -Wstrict-prototypes -Wuninitialized -Wno-long-long -Wno-multichar -Wno-unknown-pragmas -I/usr/local/include `wxmsw-2.4-config --cxxflags` `sdl-config --cflags`
+LIBS=`wxmsw-2.4-config --libs` `sdl-config --libs` -lSDL_mixer
+
+.SUFFIXES: .o .cpp
+
+all:    ${OBJECTS}
+	$(CC) -o scummex ${OBJECTS} ${LIBS} 
+
+.cpp.o: 
+	$(CC) ${CFLAGS} -c -o $@ $<
+	
+resources.o:
+	$(RC) ${RESSW} --include-dir /usr/local/include image.rc $@
+clean:
+	rm -f scummex.exe file.o scummex.o resource.o resources.o mixer.o image.o sound.o wxwindows.o descumm.o

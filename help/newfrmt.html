@@ -1,0 +1,69 @@
+<HTML>
+<HEAD>
+   <TITLE>New SCUMM File Format</TITLE>
+   <META NAME="resource-type" CONTENT="document">
+</HEAD>
+<FONT SIZE="+2" FACE="Arial">
+
+<B>New SCUMM File Format</B><BR>
+</FONT>
+<FONT FACE="Arial" SIZE="-1">
+(From <I>Monkey Island 2</I> till <I>CMI</I>)<P>
+With <I>Monkey Island 2</I> a lot of changes occured. <I>MI2</I> was the
+first game to use the <I>i</I>MUSE technology. Also, while the Amiga had
+been the development platform for the games until now, the games were now
+developed on PC and ported to Amiga and other platforms afterwards. And,
+just as important to SCUMM explorers, the file format changed substantially
+from the <A HREF="oldfrmt.html">previous format</A>. A block would now
+look more like the original IFF format:<P>
+
+<FONT SIZE="+1">
+<PRE>
+&quot;B&quot; &quot;O&quot; &quot;X&quot; &quot;D&quot; 00 00 00 0A 00 01
+</PRE>
+</FONT>
+<P>
+
+The name is still there, the size is still there, but the ordering of them
+has been changed: The name is now four characters long, rather than two,
+the size is now in big endian, rather than little endian, and the size comes
+after the name, rather than before. After these 8 bytes, the data comes.<P>
+
+Other than that, the same rules as for the <A HREF="oldfrmt.html">old
+format</A> apply. The format is still hierarchal, subblocks can be contained
+within other blocks. The scheme of the new standard block thus looks like
+this:<P>
+
+<FONT FACE="Courier">
+<TABLE CELLSPACING=1 WIDTH="100%">
+<TR>
+  <TD WIDTH="30%" VALIGN=top>sName</TD>
+  <TD WIDTH="20%" VALIGN=top>4*char</TD>
+  <TD WIDTH="50%" VALIGN=top><FONT FACE="Arial" SIZE="-1">Block name.</TD>
+</TR>
+<TR>
+  <TD VALIGN=top>dwSize</TD>
+  <TD VALIGN=top>dword</TD>
+  <TD VALIGN=top><FONT FACE="Arial" SIZE="-1">Block size (BE).</FONT></TD>
+</TR>
+<TR>
+  <TD VALIGN=top>data</TD>
+  <TD VALIGN=top>(dwSize-8)*byte</TD>
+  <TD VALIGN=top><FONT FACE="Arial" SIZE="-1">Block data.</FONT></TD>
+</TR>
+</TABLE>
+</FONT><P>
+
+So, the size still includes in it the 8 bytes starting off the block -
+mostly... Because the new format proved to be much less standardized,
+probably due to several different developers working on it. Thus, blocks
+such as the new MIDI blocks (ADL, ROL, GMD etc.) don't include the initial
+8 bytes in the size. Other blocks have the size a byte or two off etc. And
+blocks using compression often have a decompressed size given, rather than
+the size they actually have inside the resource file. A complete list of
+the found size formats for all types of SCUMM Revisited-openable files
+can be found <A HREF="sizes.html">here</A>.
+
+</FONT>
+</BODY>
+</HTML>

@@ -1,0 +1,174 @@
+<HTML>
+<HEAD>
+   <TITLE>Old SCUMM File Format</TITLE>
+   <META NAME="resource-type" CONTENT="document">
+</HEAD>
+<FONT "+2" FACE="Arial">
+
+<B>Old SCUMM File Format</B><BR>
+</FONT>
+<FONT FACE="Arial" SIZE="-1">
+(<I>Indiana Jones and the Last Crusade</I>, CDROM version of <I>Loom</I>, <I>Secret of Monkey Island</I>)<P>
+With <I>Indy3</I>, the file format used for SCUMM started to be standardized.
+Rather than just having all the data stored in a huge mess, LucasFilm Games
+started to use a format reminiscent of the IFF format (they would get
+even closer to IFF with MI2 and later games - the
+&quot;<A HREF="newfrmt.html">New SCUMM File Format</A>&quot;).<P>
+
+The file format is built up of <I>blocks</I>, each having a name and a size.
+The size is stored first, as a dword (four bytes), little endian.
+
+After that follows the block name, as two characters, for example
+&quot;LE&quot;. After these 6 bytes comes the block data.<P>
+
+The size mentioned before includes the 6 bytes making up the size and the
+name as well as the size of the data following these 6 bytes. Example:<P>
+<FONT SIZE="+1">
+<PRE>
+08 00 00 00 &quot;B&quot; &quot;X&quot; 00 01
+</PRE>
+</FONT>
+<P>
+... would be an entire block, the size is 8 - the four bytes, the two
+characters, and the two bytes of data.
+
+The new format was hierarchal, blocks could be contained within other blocks
+to give the file more structure. Storing a block within another simply meant
+putting the block within the other's data area - i.e. right after the first 6
+bytes of the parent block - or in some rare instances, a having some data and
+then a subblock. As long as the block is stored within the size of the parent
+block, we call it a subblock. Normally, additional subblocks will be stored
+right after the end of the previous block. The scheme of a standard block
+thus looks like this:<P>
+
+<FONT FACE="Courier">
+<TABLE CELLSPACING=1 WIDTH="100%">
+<TR>
+  <TD WIDTH="30%" VALIGN=top>dwSize</TD>
+  <TD WIDTH="20%" VALIGN=top>dword</TD>
+  <TD WIDTH="50%" VALIGN=top><FONT FACE="Arial" SIZE="-1">Block size (LE).</TD>
+</TR>
+<TR>
+  <TD VALIGN=top>sName</TD>
+  <TD VALIGN=top>2*char</TD>
+  <TD VALIGN=top><FONT FACE="Arial" SIZE="-1">Block name.</FONT></TD>
+</TR>
+<TR>
+  <TD VALIGN=top>data</TD>
+  <TD VALIGN=top>(dwSize-6)*byte</TD>
+  <TD VALIGN=top><FONT FACE="Arial" SIZE="-1">Block data.</FONT></TD>
+</TR>
+</TABLE>
+</FONT><P>
+In the early games, the first block is an RO (room) block, containing
+other blocks describing the room, such as BX (boxes), OI (object images)
+etc. After the RO block, within the same file, is the global scripts
+for the room (SC), the sound (SO) etc. With <I>MI1</I> the programmers
+started to bundle the files for each room into a big disc-sized file. The
+basics of the format is still the same, but rather than having a
+structure like this:<P>
+<FONT SIZE="+1">
+<PRE>
+RO
+ HD
+ CC
+ SP
+ BX
+ ...
+SC
+SC
+SO
+</PRE>
+</FONT>
+<P>
+(where HD, CC, SP etc. are subblocks of the RO block)... it would be like
+this:<P>
+
+<FONT SIZE="+1">
+<PRE>
+LE
+ FO
+ LF
+  RO
+   HD
+   CC
+   ...
+  SC
+  SC
+  SO
+ LF
+  RO
+   HD
+   ...
+etc.
+</PRE>
+</FONT>
+<P>
+
+To give an example, the start of a file structured like this would look
+something like this (taken from the disk01.lec file of the PC version of
+<I>MI1</I>):<P>
+
+<FONT FACE="Courier">
+<TABLE CELLSPACING=1 WIDTH="100%">
+<TR>
+  <TD WIDTH="40%" VALIGN=top>4A C6 10 00</TD>
+  <TD WIDTH="60%" VALIGN=top><FONT FACE="Arial" SIZE="-1">Size of LE block = 0x10C64A.</FONT></TD>
+</TR>
+<TR>
+  <TD VALIGN=top>&quot;LE&quot;</TD>
+  <TD VALIGN=top><FONT FACE="Arial" SIZE="-1">Name of block.</FONT></TD>
+</TR>
+
+<TR>
+  <TD>&nbsp;</TD>
+<TR>
+<TR>
+  <TD VALIGN=top>&nbsp;66 00 00 00</TD>
+  <TD VALIGN=top><FONT FACE="Arial" SIZE="-1">Size of FO block = 0x66 (subblock of LE)</FONT></TD>
+</TR>
+<TR>
+  <TD VALIGN=top>&nbsp;&quot;FO&quot;</TD>
+  <TD VALIGN=top><FONT FACE="Arial" SIZE="-1">Name of block.</FONT></TD>
+</TR>
+<TR>
+  <TD VALIGN=top>&nbsp;13 0A 6C 00 00 00 1C BB ...</TD>
+  <TD VALIGN=top><FONT FACE="Arial" SIZE="-1">FO block data (0x60 bytes).</FONT></TD>
+</TR>
+
+<TR>
+  <TD>&nbsp;</TD>
+<TR>
+<TR>
+  <TD VALIGN=top>&nbsp;4F DE 01 00</TD>
+  <TD VALIGN=top><FONT FACE="Arial" SIZE="-1">Size of LF block = 0x01DE4F - note that we haven't yet reached the end of the LE block, so this block is also a subblock of LE.</FONT></TD>
+</TR>
+<TR>
+  <TD VALIGN=top>&nbsp;&quot;LF&quot;</TD>
+  <TD VALIGN=top><FONT FACE="Arial" SIZE="-1">Name of block.</FONT></TD>
+</TR>
+<TR>
+  <TD VALIGN=top>&nbsp;0A 00</TD>
+  <TD VALIGN=top><FONT FACE="Arial" SIZE="-1">LF block data. We have now read 8 bytes of the LF block, but its size is 0x01DE4F, so, although the next block doesn't come right after the 6 initial bytes of this block, it still must be a subblock of LF.</FONT></TD>
+</TR>
+
+<TR>
+  <TD>&nbsp;</TD>
+<TR>
+<TR>
+  <TD VALIGN=top>&nbsp;&nbsp;2C&nbsp; DA&nbsp; 00&nbsp; 00</TD>
+  <TD VALIGN=top><FONT FACE="Arial" SIZE="-1">Size of RO block = 0x00DA2C.</FONT></TD>
+</TR>
+<TR>
+  <TD VALIGN=top>&nbsp;&nbsp;&quot;RO&quot;</TD>
+  <TD VALIGN=top><FONT FACE="Arial" SIZE="-1">Name of block.</FONT></TD>
+</TR>
+<TR>
+  <TD VALIGN=top>etc.</TD>
+  <TD VALIGN=top><FONT FACE="Arial" SIZE="-1"></FONT></TD>
+</TR>
+</TABLE>
+</FONT>
+</FONT>
+</BODY>
+</HTML>

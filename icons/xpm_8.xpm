@@ -1,0 +1,36 @@
+/* XPM */
+static char *xpm_8[] = {
+/* columns rows colors chars-per-pixel */
+"16 16 14 1",
+"  c black",
+". c #5252FF",
+"X c #525AFF",
+"o c #5A5AFF",
+"O c #5A63FF",
+"+ c #6363FF",
+"@ c #636BFF",
+"# c #6B6BFF",
+"$ c #6B73FF",
+"% c #7373FF",
+"& c #737BFF",
+"* c #7B7BFF",
+"= c magenta",
+"- c None",
+/* pixels */
+"--            --",
+"--            --",
+"--  $##@+OOo    ",
+"--  $##@+OOo    ",
+"--        OoX.  ",
+"--        OoX.  ",
+"    %$#@++OoX.  ",
+"    %$#@++OoXX  ",
+"  &%%$    OoXX  ",
+"  &%%$    OoXX  ",
+"  *&%$    OooX  ",
+"  *&%$    OooX  ",
+"    %$##@+OooX  ",
+"    %$##@+OooX  ",
+"--              ",
+"--              "
+};

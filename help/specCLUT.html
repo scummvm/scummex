@@ -1,0 +1,57 @@
+<HTML>
+<HEAD>
+   <TITLE>CLUT</TITLE>
+   <META NAME="resource-type" CONTENT="document">
+</HEAD>
+<FONT SIZE="+2" FACE="Arial">
+
+<B>CLUT</B>
+</FONT><P>
+<FONT FACE="Arial" SIZE="-1">
+CLUT contains palettes (i.e. color lookup tables) in the same format as
+<A HREF="specAPAL.html">APAL</A> and <A HREF="specNPAL.html">NPAL</A>. This
+format is simple: 256 3-byte values, one for each palette index.<P>
+</FONT>
+
+<FONT FACE="Courier">
+<TABLE CELLSPACING=1 WIDTH="100%">
+<TR>
+  <TD WIDTH="30%" VALIGN=top>&quot;CLUT&quot;</TD>
+  <TD WIDTH="20%" VALIGN=top>dword</TD>
+  <TD WIDTH="50%"><FONT FACE="Arial" SIZE="-1">Block identifier</FONT></TD>
+</TR>
+<TR>
+  <TD VALIGN=top>dwSize</TD>
+  <TD VALIGN=top>dword</TD>
+  <TD><FONT FACE="Arial" SIZE="-1">Size in bytes (BE)</FONT></TD>
+</TR>
+<TR>
+  <TD>&nbsp;</TD>
+<TR>
+
+<TR>
+  <TD COLSPAN=3><FONT FACE="Arial" SIZE="-1"><B>loop 256</B></TD>
+</TR>
+<TR>
+  <TD VALIGN=top>&nbsp;nRed</TD>
+  <TD VALIGN=top>byte</TD>
+  <TD><FONT FACE="Arial" SIZE="-1">Red intensity</FONT></TD>
+</TR>
+<TR>
+  <TD VALIGN=top>&nbsp;nGreen</TD>
+  <TD VALIGN=top>byte</TD>
+  <TD><FONT FACE="Arial" SIZE="-1">Green intensity</FONT></TD>
+</TR>
+<TR>
+  <TD VALIGN=top>&nbsp;nBlue</TD>
+  <TD VALIGN=top>byte</TD>
+  <TD><FONT FACE="Arial" SIZE="-1">Blue intensity</FONT></TD>
+</TR>
+<TR>
+  <TD COLSPAN=3><FONT FACE="Arial" SIZE="-1"><B>end of loop</B></FONT></TD>
+</TR>
+</TABLE>
+</FONT>
+</BODY>
+</HTML>
+

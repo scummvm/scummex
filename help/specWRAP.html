@@ -1,0 +1,50 @@
+<HTML>
+<HEAD>
+   <TITLE>WRAP</TITLE>
+   <META NAME="resource-type" CONTENT="document">
+</HEAD>
+<FONT SIZE="+2" FACE="Arial">
+
+<B>WRAP</B>
+</FONT><P>
+<FONT FACE="Arial" SIZE="-1">
+WRAP is a wrapper mainly used for palettes and images. The first subblock
+in a WRAP block is always the <A HREF="specOFFS.html">OFFS</A> block, which
+holds the offsets to each block that the wrapper... wraps. :)<P>
+
+</FONT>
+
+<FONT FACE="Courier">
+<TABLE CELLSPACING=1 WIDTH="100%">
+<TR>
+  <TD WIDTH="30%" VALIGN=top>&quot;WRAP&quot;</TD>
+  <TD WIDTH="20%" VALIGN=top>dword</TD>
+  <TD WIDTH="50%"><FONT FACE="Arial" SIZE="-1">Block identifier</FONT></TD>
+</TR>
+<TR>
+  <TD VALIGN=top>dwSize</TD>
+  <TD VALIGN=top>dword</TD>
+  <TD><FONT FACE="Arial" SIZE="-1">Size in bytes (BE)</FONT></TD>
+</TR>
+<TR>
+  <TD>&nbsp;</TD>
+<TR>
+
+<TR>
+  <TD VALIGN=top>blOFFS</TD>
+  <TD VALIGN=top>block</TD>
+  <TD><FONT FACE="Arial" SIZE="-1"><A HREF="specOFFS.html">OFFS</A> block</FONT></TD>
+</TR>
+
+<TR>
+  <TD>&nbsp;</TD>
+<TR>
+<TR>
+  <TD COLSPAN=3><FONT FACE="Arial" SIZE="-1"><B>followed by subblocks (e.g. <A HREF="specAPAL.html">APAL</A>, SMAP etc.)</B></FONT></TD>
+</TR>
+
+</TABLE>
+</FONT>
+</BODY>
+</HTML>
+
