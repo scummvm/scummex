@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/sound/sound.cpp,v 1.1 2003/09/28 21:49:25 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/sound/sound.cpp,v 1.2 2003/09/29 20:45:54 yoshizf Exp $
  *
  */
 
@@ -142,7 +142,6 @@ int Sound::playSOU(BlockTable *_blockTable, File& _input, int index, File& _outp
 	}
 
 	_mixer->playRaw(NULL, data, _blockTable[index].blockSize, rate, SoundMixer::FLAG_UNSIGNED | SoundMixer::FLAG_AUTOFREE);
-	free(data);	
 	return 0;
 }
 
