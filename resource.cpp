@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.24 2003/09/30 11:41:28 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.25 2003/09/30 12:28:33 yoshizf Exp $
  *
  */
 
@@ -825,6 +825,7 @@ int Resource::parseOldBlocks(char *blockName, BlockTable *_blockTable, File& _in
 			break;
 
 		case LE:
+		case SO:
 			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
 			bufindex = index;
 			index++;
@@ -882,8 +883,8 @@ int Resource::parseOldBlocks(char *blockName, BlockTable *_blockTable, File& _in
 
 int Resource::getBlockType(char *tag) {
 	
-	for (int i=0; i< numBlocks; i++) {
-		if(strstr(tag, blocksInfo[i].name)) {
+	for (int i = 0; i < numBlocks; i++) {
+		if(strncmp(tag, blocksInfo[i].name, 4) == 0) {
 			return blocksInfo[i].id;
 		}
 
@@ -895,11 +896,12 @@ int Resource::getBlockType(char *tag) {
 
 int Resource::getOldBlockType(char *tag) {
 	
-	for (int i=0; i<28; i++) {
-		if(strstr(tag, oldBlocksInfo[i].name)) {
+	for (int i = 0; i < numOldBlocks; i++) {
+		if(strncmp(tag, oldBlocksInfo[i].name, 2) == 0) {
 			return oldBlocksInfo[i].id;
 		}
 	}
+	printf("Unknown block: %s\n", tag);
 	return -1;
 }
 

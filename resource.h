@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.h,v 1.17 2003/09/30 00:38:43 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.h,v 1.18 2003/09/30 12:28:33 yoshizf Exp $
  *
  */
 
@@ -243,8 +243,12 @@ const struct blockInfo oldBlocksInfo[] = {
 	{224, "SP", "", 0, "", 47},
 	{225, "SA", "", 0, "", 40},
 	{226, "SO", "", 0, "", 59},
-	{227, "RN", "", 0, "", 47}
+	{227, "RN", "", 0, "", 47},
+	{228, "WA", "", 0, "", 31},
+	{229, "AD", "", 0, "", 31}
 };
+
+const int numOldBlocks = 30;
 
 class Resource {
 private:
