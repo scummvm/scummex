@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.17 2003/09/23 09:05:47 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.18 2003/09/23 11:35:19 yoshizf Exp $
  *
  */
 
@@ -341,6 +341,8 @@ void GUI_wxWindows::DisableToolbarTool(int tool) {
 }
 
 void GUI_wxWindows::SetButton(int blocktype) {
+	SpecButton1->Enable(TRUE);
+	SpecButton2->Enable(TRUE);
 	switch(blocktype) {
 		case cus2: // iMUSE
 			SpecButton1->SetLabel("Play");
