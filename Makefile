@@ -9,6 +9,8 @@ RM_REC  := $(RM) -r
 ZIP     := zip -q
 CP      := cp
 
+BUILD_MAC:=
+
 RESSW    := --define __WIN32__ --define __WIN95__ --define __GNUWIN32__
 REZ_CMD  := `wx-config --rezflags`
 OBJS     := file.o scummex.o resource.o image.o wxwindows.o descumm.o descumm6.o codec37.o codec47.o bomp.o scaler.o util.o
@@ -33,7 +35,7 @@ DEPDIRS := $(addsuffix /$(DEPDIR),$(MODULE_DIRS))
 # Main executable build rule
 scummex: ${OBJS}
 	$(CXX) $+ ${LIBS} -o $@
-ifdef REZ_CMD
+ifneq "$(BUILD_MAC)" ""
 	$(REZ_CMD) scummex
 endif
 
