@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.12 2003/09/21 18:42:21 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.13 2003/09/21 23:50:28 yoshizf Exp $
  *
  */
 
@@ -273,6 +273,12 @@ void ScummEX::bgDraw()
 	_image->drawBG(_input, _blockTable, _blockId, "");
 }
 
+void ScummEX::SmushFrameDraw()
+{
+	_image = new Image();
+	_image->drawSmushFrame(_blockTable, _blockId, _input);
+}
+
 void ScummEX::objectDraw()
 {
 	_image = new Image();
@@ -383,6 +389,7 @@ void ScummEX::UpdateInfosFromTree(int blockid) {
 			_gui->updateLabel("SpecLabel1", "Frame Width", _blockTable[blockid].width);
 			_gui->updateLabel("SpecLabel2", "Frame Height", _blockTable[blockid].height);
 			_gui->updateLabel("SpecLabel3", "Codec", _blockTable[blockid].variables);
+			_gui->SetButton(_blockTable[blockid].blockTypeID);
 			break;
 	}
 }

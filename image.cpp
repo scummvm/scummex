@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.5 2003/09/21 18:33:04 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.6 2003/09/21 23:50:28 yoshizf Exp $
  *
  */
 
@@ -70,6 +70,60 @@ int Image::drawPalette(BlockTable *_blockTable, int id, File& _input)
 		addindex += 16;
 	}
 
+	_gui->DrawImage();
+	return 0;
+}
+
+int Image::drawSmushFrame(BlockTable *_blockTable, int id, File& _input) {
+	int index;
+	int x = 0, y = 0;
+	byte *dst, *dstorg, *chunk_buffer;
+
+	index = _resource->findBlock(0, _blockTable, _input, id, "NPAL", "AHDR", "-1");
+	if (_blockTable[index].blockTypeID == AHDR) {
+		_input.seek(_blockTable[index].offset + 14, SEEK_SET);
+	} else {
+		_input.seek(_blockTable[index].offset + 8, SEEK_SET);
+	}
+
+	for (int j = 0; j < 256; j++) {
+		_rgbTable[j].red = _input.readByte();	// red
+		_rgbTable[j].green = _input.readByte(); // green
+		_rgbTable[j].blue = _input.readByte();	// blue
+	}
+
+	_input.seek(_blockTable[id].offset + 22, SEEK_SET);
+	_codec37.init(_blockTable[id].width, _blockTable[id].height);
+	_codec47.init(_blockTable[id].width, _blockTable[id].height);
+	chunk_buffer = (byte *)malloc(_blockTable[id].blockSize - 22);
+	dstorg = dst = (byte *)malloc(_blockTable[id].width*_blockTable[id].height);
+	_input.read(chunk_buffer, _blockTable[id].blockSize - 22);
+
+	switch (_blockTable[id].variables) {
+		case 1:
+			bompDecodeLine(dst, chunk_buffer, _blockTable[id].blockSize - 22);
+			break;
+
+		case 37:
+			_codec37.decode(dst, chunk_buffer);
+			break;
+
+		case 47:
+			_codec47.decode(dst, chunk_buffer);
+			break;
+	}
+
+	_gui->DisplayImage("SMUSH Frame", _blockTable[id].width, _blockTable[id].height);
+	
+	for (y=0; y<_blockTable[id].height; y++) {
+		for (x=0; x<_blockTable[id].width; x++) {
+			int color = *dst++;
+			_gui->PutPixel(x, y, _rgbTable[color].red, _rgbTable[color].green, _rgbTable[color].blue);
+		}
+	}
+	
+	free(chunk_buffer);
+	free(dstorg);
 	_gui->DrawImage();
 	return 0;
 }

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.h,v 1.5 2003/09/21 18:33:04 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.h,v 1.6 2003/09/21 23:50:28 yoshizf Exp $
  *
  */
 
@@ -41,9 +41,9 @@ struct BlockTable {
 	uint32 arrays;
 	uint32 characters;
 	uint32 invObjects;
-	uint32 width;
+	int32 width;
 	int trans;
-	uint32 height;
+	int32 height;
 };
 
 struct RoomTable {

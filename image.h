@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.h,v 1.4 2003/09/19 15:47:42 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.h,v 1.5 2003/09/21 23:50:28 yoshizf Exp $
  *
  */
 
@@ -24,6 +24,9 @@
 #define image_h
 
 #include "scummsys.h"
+#include "codec37.h"
+#include "codec47.h"
+#include "bomp.h"
 
 struct rgbtable {
 	int red;
@@ -41,6 +44,8 @@ private:
 	int _height;
 	Resource *_resource;
 	GUI_wxWindows *_gui;
+	Codec37Decoder _codec37;
+	Codec47Decoder _codec47;
 
 public:
 	Image();
@@ -48,6 +53,7 @@ public:
 	int drawPalette(BlockTable *_blockTable, int id, File& _input);
 	int drawBG(File& _input, BlockTable *_blockTable, int id, char* filename);
 	int drawObject(File& _input, BlockTable *_blockTable, int id);
+	int drawSmushFrame(BlockTable *_blockTable, int id, File& _input);
 	void decode_uncompressed(uint16 height, File& _input);
 	void decode_horiz(uint16 height, uint8 compr, File& _input);
 	void decode_vert(uint16 height, uint8 compr, File& _input);

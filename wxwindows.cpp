@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.10 2003/09/21 18:42:21 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.11 2003/09/21 23:50:28 yoshizf Exp $
  *
  */
 
@@ -369,6 +369,13 @@ void GUI_wxWindows::SetButton(int blocktype) {
 				(wxObjectEventFunction) &ScummEX::bgDraw );
 			break;
 
+		case FOBJ:
+			SpecButton1->SetLabel("View Frame");
+			SpecButton1->Show(TRUE);
+			SpecButton1->Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
+				(wxObjectEventFunction) &ScummEX::SmushFrameDraw );
+			break;
+			
 		case LSCR:
 		case SCRP:
 		case ENCD:

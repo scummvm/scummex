@@ -11,7 +11,7 @@ CP      := cp
 
 RESSW    := --define __WIN32__ --define __WIN95__ --define __GNUWIN32__
 REZ_CMD  := `wx-config --rezflags`
-OBJS     := file.o scummex.o resource.o mixer.o image.o sound.o wxwindows.o descumm.o descumm6.o
+OBJS     := file.o scummex.o resource.o mixer.o image.o sound.o wxwindows.o descumm.o descumm6.o codec37.o codec47.o bomp.o
 CXXFLAGS := -DOSUNIX -g -O -Wall -Wuninitialized -Wshadow -Wstrict-prototypes -Wno-unused-variable -Wno-long-long -Wno-multichar -Wno-unknown-pragmas
 CXXFLAGS += `wx-config --cxxflags` `sdl-config --cflags`
 LIBS     := `wx-config --libs` `sdl-config --libs` -lSDL_mixer
