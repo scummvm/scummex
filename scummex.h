@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.h,v 1.15 2003/09/27 14:56:11 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.h,v 1.16 2003/09/28 21:49:25 yoshizf Exp $
  *
  */
 
@@ -25,7 +25,7 @@
 
 #include "resource.h"
 #include "image.h"
-#include "sound.h"
+#include "sound/sound.h"
 #include "wxwindows.h"
 
 class ScummEX {
@@ -48,10 +48,6 @@ public:
 	~ScummEX();
 
 	void loadFile(const char *filename);
-
-	void warning(const char *s, ...);
-	void debug(int level, const char *s, ...);
-	void error(const char *s, ...);
 
 	void fileView(int blockid);
 	void FileDump(int blockid, const char *filename);

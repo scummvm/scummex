@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/file.cpp,v 1.2 2003/09/18 19:37:14 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/file.cpp,v 1.3 2003/09/28 21:49:25 yoshizf Exp $
  *
  */
 
@@ -32,47 +32,6 @@ File::File() {
 File::~File() {
 	delete [] _name;
 	close();
-}
-
-uint16 _debugLevel = 1;
-                                                                                                                                                            
-void debug(int level, const char *s, ...) {
-        char buf[1024];
-        va_list va;
-                                                                                                                                                            
-        if (level > _debugLevel)
-                return;
-                                                                                                                                                            
-        va_start(va, s);
-        vsprintf(buf, s, va);
-        va_end(va);
-        printf("%s\n", buf);
-                                                                                                                                                            
-        fflush(stdout);
-}
-
-void warning(const char *s, ...) {
-        char buf[1024];
-        va_list va;
-                                                                                                                                                            
-        va_start(va, s);
-        vsprintf(buf, s, va);
-        va_end(va);
-        printf("Warning: %s\n", buf);
-                                                                                                                                                            
-        fflush(stdout);
-}
-
-void error(const char *s, ...) {
-        char buf[1024];
-        va_list va;
-                                                                                                                                                            
-        va_start(va, s);
-        vsprintf(buf, s, va);
-        va_end(va);
-        printf("Error: %s\n", buf);
-                                                                                                                                                            
-        fflush(stdout);
 }
 
 bool File::open(const char *filename,  int mode, byte encbyte) {

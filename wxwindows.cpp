@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.29 2003/09/28 10:33:23 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.30 2003/09/28 21:49:25 yoshizf Exp $
  *
  */
 
@@ -335,6 +335,7 @@ void MainWindow::SetButton(int blocktype) {
 			break;
 
 		case Crea:
+		case AUdt:
 			SpecButton1->SetLabel("Play");
 			SpecButton2->SetLabel("Dump to WAV...");
 			SpecButton1->Show(TRUE);
@@ -537,6 +538,7 @@ void MainWindow::updateLabels(int blockid) {
 			break;
 			
 		case Crea:
+		case AUdt:
 			updateLabel(SpecLabel[0], "Sample Rate", block.variables);
 			SetButton(block.blockTypeID);
 			break;

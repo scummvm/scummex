@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/file.h,v 1.1 2003/09/18 16:26:53 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/file.h,v 1.2 2003/09/28 21:49:25 yoshizf Exp $
  *
  */
 
@@ -24,6 +24,7 @@
 
 #include "stdafx.h"
 #include "scummsys.h"
+#include "util.h"
 
 class File {
 private:

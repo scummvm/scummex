@@ -16,11 +16,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/Attic/sound.cpp,v 1.5 2003/09/23 12:56:12 khalek Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/sound/sound.cpp,v 1.1 2003/09/28 21:49:25 yoshizf Exp $
  *
  */
 
 #include "sound.h"
+#include "sound/mixer.h"
+#include "sound/voc.h"
 
 static const int16 imcTable[] = {
     0x0007, 0x0008, 0x0009, 0x000A, 0x000B, 0x000C, 0x000D, 0x000E, 0x0010,
@@ -99,7 +101,8 @@ const byte imxShortTable[] = {
 
 Sound::Sound() {
 
-	_mixer = new Mixer();
+	_mixer = new SoundMixer();
+	initializeImcTables();
 }
 
 Sound::~Sound() {
@@ -108,25 +111,42 @@ Sound::~Sound() {
 
 int Sound::playSOU(BlockTable *_blockTable, File& _input, int index, File& _output, int save)
 {
-	SDL_RWops *rw;
 	byte *data;
 
-	_input.seek(_blockTable[index].offset, SEEK_SET);
+	if (_blockTable[index].blockTypeID == AUdt)
+		_input.seek(_blockTable[index].offset+8, SEEK_SET);
+	else
+		_input.seek(_blockTable[index].offset+26, SEEK_SET);
 
-	data = (byte *)malloc(_blockTable[index].blockSize);
+	VocBlockHeader voc_block_hdr;
+
+	_input.read(&voc_block_hdr, sizeof(voc_block_hdr));
+	if (voc_block_hdr.blocktype != 1) {
+		printf("startSfxSound: Expecting block_type == 1, got %d", voc_block_hdr.blocktype);
+		return 0;
+	}
+
+	uint size = voc_block_hdr.size[0] + (voc_block_hdr.size[1] << 8) + (voc_block_hdr.size[2] << 16) - 2;
+	int rate = getSampleRateFromVOCRate(voc_block_hdr.sr);
+	int comp = voc_block_hdr.pack;
+
+	if (comp != 0) {
+		printf("playSOU: Unsupported compression type %d", comp);
+		return 0;
+	}
+
+	data = (byte *)malloc(size);
 	
-	if (_input.read(data, _blockTable[index].blockSize) != _blockTable[index].blockSize) {
+	if (_input.read(data, size) != size) {
 		printf("cannot read %d bytes", _blockTable[index].blockSize);
 	}
 
-	rw = SDL_RWFromMem(data, _blockTable[index].blockSize);
-	_mixer->playSound(rw, 1);
-	free(data);
-
+	_mixer->playRaw(NULL, data, _blockTable[index].blockSize, rate, SoundMixer::FLAG_UNSIGNED | SoundMixer::FLAG_AUTOFREE);
+	free(data);	
 	return 0;
 }
 
-void initializeImcTables()
+void Sound::initializeImcTables()
 {
     int32 destTablePos = 0;
     int32 imcTable1Pos = 0;
@@ -175,7 +195,6 @@ void initializeImcTables()
     }
 }
 
-
 #define NextBit bit = mask & 1; mask >>= 1;				\
 								if (!--bitsleft) {								\
 									mask = READ_LE_UINT16(srcptr);	\
@@ -217,10 +236,8 @@ int32 Sound::compDecode(byte * src, byte * dst)
 
 #undef NextBit
 
-
 int Sound::playiMUSE(File& _input, BlockTable *_blockTable, int index, File& _output, int save)
 {
-    SDL_RWops *rw;
     int32 i = 0;
     int tag, num, input_size, codec;
     uint32 size = 0, rate = 0, chan = 0, bits = 0, s_size = 0;
@@ -233,8 +250,6 @@ int Sound::playiMUSE(File& _input, BlockTable *_blockTable, int index, File& _ou
     int32 finalSize;
     finalSize = 0;
     int voice = 0;
-
-    initializeImcTables();
 
 	_input.seek(_blockTable[index].offset, SEEK_SET);
 	tag = _input.readUint32BE();
@@ -808,8 +823,8 @@ int Sound::playiMUSE(File& _input, BlockTable *_blockTable, int index, File& _ou
 
     if (bits == 12) {
 	s_size = (size * 4) / 3 + 3;
-	buffer = (byte *) malloc(s_size+44);
-	uint32 l = 0, ra = 44, tmp;
+	buffer = (byte *) malloc(s_size);
+	uint32 l = 0, ra = 0, tmp;
 	for (; l < size; l += 3) {
 	    tmp = (ptr[l + 1] & 0x0f) << 8;
 	    tmp = (tmp | ptr[l + 0]) << 4;
@@ -826,10 +841,9 @@ int Sound::playiMUSE(File& _input, BlockTable *_blockTable, int index, File& _ou
 	bits = 16;
     } else {
 	size &= ~1;
-	printf("bits: %d channels: %d rate: %d\n", bits, chan, rate);
 	voice = 1;
 	s_size = size;
-	buffer = (byte *) malloc(s_size+44);
+	buffer = (byte *) malloc(s_size);
     }
 
 	byte wav[44];
@@ -873,22 +887,24 @@ int Sound::playiMUSE(File& _input, BlockTable *_blockTable, int index, File& _ou
 	wav[42] = (s_size >> 16) & 0xff;
 	wav[43] = (s_size >> 24) & 0xff;
 
-	memcpy(buffer, wav, 44);
+	//memcpy(buffer, wav, 44);
 
 	if (voice)
-		memcpy(&buffer[44], ptr, s_size);
+		memcpy(buffer, ptr, s_size);
 	
 	free(CompFinal);
 	CompFinal = NULL;
 
-	if (save == 1) {
+	if (save) {
 		_output.write(buffer, s_size+44);
 		_output.close();
 	} else {
-		rw = SDL_RWFromMem(buffer, s_size+44);
-		_mixer->playSound(rw, 1);
+		if (bits == 8) {
+			_mixer->playRaw(NULL, buffer, s_size, rate, SoundMixer::FLAG_UNSIGNED | SoundMixer::FLAG_AUTOFREE, -1, 255);
+		} else if (bits == 16) {
+			_mixer->playRaw(NULL, buffer, s_size, rate, SoundMixer::FLAG_16BITS | SoundMixer::FLAG_AUTOFREE, -1, 255);
+		}
 	}
-	free(buffer);
 
     return 0;
 }

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.19 2003/09/26 23:51:36 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.20 2003/09/28 21:49:25 yoshizf Exp $
  *
  */
 
@@ -24,6 +24,7 @@
 #include "file.h"
 #include "resource.h"
 #include "scummex.h"
+#include "sound/voc.h"
 
 int v8 = 0;
 
@@ -571,6 +572,7 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 		case OBIM:
 		case SOUN:
 		case ZPLN:
+		case SBL:
 			_blockTable[index].blockSize = _input.readUint32BE();
 			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
 			bufindex = index;
@@ -659,6 +661,8 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 		case ROL:
 		case FTCH:
 		case STOR:
+		case AUhd:
+		case WVhd:
 			_blockTable[index].blockSize = _input.readUint32BE() + 8;
 			_input.seek(_blockTable[index].offset + _blockTable[index].blockSize, SEEK_SET);
 			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
@@ -695,7 +699,12 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 			break;
 
 		case Crea:
-			_input.seek(22, SEEK_CUR);
+		case AUdt:
+			if (_blockTable[index].blockTypeID == Crea)
+				_input.seek(22, SEEK_CUR);
+			else
+				_input.seek(4, SEEK_CUR);
+
 			offset = 0;
 			code = 0;
 			while (!quit) {
@@ -708,13 +717,7 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 						int rate = _input.readByte();
 						_input.readByte();
 						len -= 2;
-						if (rate == 0xa5 || rate == 0xa6) {
-							_blockTable[index].variables = 11025;
-						} else if (rate == 0xd2 || rate == 0xd3) {
-							_blockTable[index].variables = 22050;
-						} else {
-							_blockTable[index].variables = 1000000L / (256L - rate);
-						}
+						_blockTable[index].variables = getSampleRateFromVOCRate(rate);
 						// FIXME some FT samples (ex. 362) has bad length, 2 bytes too short
 						_input.seek(len, SEEK_CUR);
 						} break;
@@ -750,7 +753,7 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
 			index++;
 			break;
-			
+
 		default:
 			_blockTable[index].blockSize = _input.readUint32BE();
 			_input.seek(_blockTable[index].offset + _blockTable[index].blockSize, SEEK_SET);
@@ -856,7 +859,7 @@ int Resource::parseOldBlocks(char *blockName, BlockTable *_blockTable, File& _in
 
 int Resource::getBlockType(char *tag) {
 	
-	for (int i=0; i<119; i++) {
+	for (int i=0; i<123; i++) {
 		if(strstr(tag, blocksInfo[i].name)) {
 			return blocksInfo[i].id;
 		}

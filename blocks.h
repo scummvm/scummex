@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/blocks.h,v 1.7 2003/09/26 23:51:36 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/blocks.h,v 1.8 2003/09/28 21:49:25 yoshizf Exp $
  *
  */
 
@@ -139,7 +139,11 @@ enum {
 	MIDI,
 	GMD,
 	SBL,
-	ZSTR
+	ZSTR,
+	AUhd,
+	WVhd,
+	AUdt,
+	WVdt
 };
 
 enum {

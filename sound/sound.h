@@ -16,32 +16,32 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/Attic/sound.h,v 1.4 2003/09/23 00:47:23 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/sound/sound.h,v 1.1 2003/09/28 21:49:25 yoshizf Exp $
  *
  */
 
 #ifndef sound_h
 #define sound_h
 
-#include "SDL.h"
 #include "scummsys.h"
 #include "file.h"
 #include "resource.h"
-#include "mixer.h"
 #include "wxwindows.h"
+#include "sound/mixer.h"
 
 struct CompTable {
 	int32 offset;
 	int32 size;
 	int32 codec;
 };
-	
+
 class Sound {
 private:
-	Mixer *_mixer;
+	SoundMixer *_mixer;
 	Resource *_resource;
 
-	static int32 Sound::compDecode(byte * src, byte * dst);
+	static int32 compDecode(byte * src, byte * dst);
+	void initializeImcTables();
 
 public:
 	Sound();

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.h,v 1.12 2003/09/27 14:56:11 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.h,v 1.13 2003/09/28 21:49:25 yoshizf Exp $
  *
  */
 
@@ -181,7 +181,11 @@ const struct blockInfo blocksInfo[] = {
 	{115, "MIDI", "", 0, "", 31},
 	{116, "GMD ", "", 0, "", 31},
 	{117, "SBL ", "", 0, "", 31},
-	{118, "ZSTR", "", 0, "", 47}
+	{118, "ZSTR", "", 0, "", 47},
+	{119, "AUhd", "", 0, "", 31},
+	{120, "WVhd", "", 0, "", 31},
+	{121, "AUdt", "", 0, "", 31},
+	{122, "WVdt", "", 0, "", 31}
 };
 
 const struct blockInfo oldBlocksInfo[] = {

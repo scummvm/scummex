@@ -1,6 +1,6 @@
-/* ScummEX - Viewer for Scumm data files
- * Copyright (C) 2003 Adrien Mercier
- * Copyright (C) 2003 The ScummVM project
+/* ScummVM - Scumm Interpreter
+ * Copyright (C) 2001  Ludvig Strigeus
+ * Copyright (C) 2001-2003 The ScummVM project
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,28 +16,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/Attic/mixer.h,v 1.2 2003/09/18 19:37:14 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/sound/voc.cpp,v 1.1 2003/09/28 21:49:25 yoshizf Exp $
  *
  */
 
-#ifndef mixer_h
-#define mixer_h
+#include "stdafx.h"
+#include "util.h"
+#include "voc.h"
 
-#include "SDL.h"
-#include "SDL_mixer.h"
-#include "scummsys.h"
 
-void sampleDone(int channel);
-
-class Mixer {
-private:
-	int audioinit;
-	void initSound();
-
-public:
-	Mixer();
-	void playSound(SDL_RWops *src, int freesrc);
-	void stopSounds();
-};
-
-#endif
+int getSampleRateFromVOCRate(int vocSR) {
+	if (vocSR == 0xa5 || vocSR == 0xa6) {
+		return 11025;
+	} else if (vocSR == 0xd2 || vocSR == 0xd3) {
+		return 22050;
+	} else {
+		int sr = 1000000L / (256L - vocSR);
+		return sr;
+	}
+}
