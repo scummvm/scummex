@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.23 2003/10/01 10:06:11 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.24 2003/10/01 17:34:41 yoshizf Exp $
  *
  */
 
@@ -529,13 +529,10 @@ void Image::drawObject(File& _input, BlockTable *_blockTable, int id)
 
 void Image::GetStrip(byte *dst, const byte *src, int numLinesToProcess)
 {
-	bool horiz;	
-		
 	byte code = *src++;
 	_decomp_shr = (code % 10);
 	_decomp_mask = 0xFF >> (8 - _decomp_shr);
 				
-	horiz = 1 - ((code / 10) & 1);
 	_vertStripNextInc = _height * _width - 1;
 	
 	switch (code) 
