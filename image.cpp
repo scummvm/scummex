@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.19 2003/09/27 14:56:11 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.20 2003/09/28 09:51:07 yoshizf Exp $
  *
  */
 
@@ -70,7 +70,7 @@ void Image::drawPalette(BlockTable *_blockTable, int id, File& _input)
 	unsigned int h;
 
 	if (_blockTable[id].image == NULL)
-		_image = _blockTable[id].image = new ImageWindow("Block Palette", wxSize(384, 384), id);
+		_image = _blockTable[id].image = new ImageWindow("Block Palette", wxSize(384, 384), id, FLAG_NONE, 1);
 	else
 		_image = _blockTable[id].image;
 

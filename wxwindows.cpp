@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.27 2003/09/28 09:31:11 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.28 2003/09/28 09:51:03 yoshizf Exp $
  *
  */
 
@@ -156,7 +156,7 @@ BEGIN_EVENT_TABLE(ImageWindow, wxFrame)
 	EVT_MENU(ID_Boxes, ImageWindow::boxesDrawOverlay)
 END_EVENT_TABLE()
 
-ImageWindow::ImageWindow(const wxString& title, const wxSize& size, int blockId, byte flags)
+ImageWindow::ImageWindow(const wxString& title, const wxSize& size, int blockId, byte flags, int scaleFactor)
 	: wxFrame(_gui->_mainWindow, -1, title, wxPoint(-1,-1), size, wxDEFAULT_FRAME_STYLE & (wxMINIMIZE_BOX | wxSYSTEM_MENU | wxCAPTION))
 {
 	wxMenuBar *menuBar = new wxMenuBar;
@@ -181,9 +181,14 @@ ImageWindow::ImageWindow(const wxString& title, const wxSize& size, int blockId,
 	}
 	
 	SetMenuBar(menuBar);
-	
-	_scaleFactor = 1;
-	_gui->readConfigValue("Scaler", &_scaleFactor);
+
+	if (scaleFactor == 0) {
+		_scaleFactor = 1;
+		_gui->readConfigValue("Scaler", &_scaleFactor);
+	} else {
+		_scaleFactor = scaleFactor;
+	}
+
 	SetClientSize(size.GetWidth() * _scaleFactor, size.GetHeight() * _scaleFactor);
 	_image = new wxImage(size.GetWidth() * _scaleFactor, size.GetHeight() * _scaleFactor);
 	_sbmp = NULL;

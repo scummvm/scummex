@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.h,v 1.14 2003/09/27 15:55:45 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.h,v 1.15 2003/09/28 09:51:07 yoshizf Exp $
  *
  */
 
@@ -106,7 +106,7 @@ class ImageWindow : public wxFrame {
 public:
 	int _scaleFactor;
 	
-	ImageWindow(const wxString& title, const wxSize& size, int blockId, byte flags = FLAG_NONE);
+	ImageWindow(const wxString& title, const wxSize& size, int blockId, byte flags = FLAG_NONE, int scaleFactor = 0);
 	void DrawImage();
 	void PutPixel(int x, int y, int red, int green, int blue);
 
