@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.6 2003/09/19 11:15:05 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.7 2003/09/19 15:47:42 fingolfin Exp $
  *
  */
 
@@ -36,7 +36,8 @@ ScummEX::ScummEX() {
 }
 
 void ScummEX::getFileType(const char *filename) {
-	encbyte = 0;
+	uint32 tag;
+	_encbyte = 0;
 	char buf[256];
 	
 	if (_input.isOpen()) {
@@ -45,7 +46,7 @@ void ScummEX::getFileType(const char *filename) {
 		_input.close();
 	}
 		
-	_input.open(filename, 1, encbyte);
+	_input.open(filename, 1, _encbyte);
 
 	sprintf(buf, "ScummEX - %s", filename);
 	_gui->SetTitle(buf);
@@ -53,7 +54,7 @@ void ScummEX::getFileType(const char *filename) {
 	_gui->EnableToolbarTool(ID_Close);
 	_gui->EnableToolbarTool(ID_FileInfo);
 
-	tag = _input.readUint32LE();
+	_input.read(&tag, 4);
 
 	switch (tag) {
 		case MKID('LB83'):
@@ -65,7 +66,7 @@ void ScummEX::getFileType(const char *filename) {
 			_resource->searchBlocks(_blockTable, _input);
 			return;
 			
-		case 542461779: //SOU
+		case MKID('SOU '):
 			_input.seek(0, SEEK_SET);
 			_sound->parseSOU(_blockTable, _input);
 			return;
@@ -85,11 +86,11 @@ void ScummEX::getFileType(const char *filename) {
 	
 	_input.close();
 	
-	encbyte = 0x69;
+	_encbyte = 0x69;
 	
-	_input.open(filename, 1, encbyte);
+	_input.open(filename, 1, _encbyte);
 
-	tag = _input.readUint32LE();
+	_input.read(&tag, 4);
 
 	switch (tag) {
 		case MKID('RNAM'):
@@ -273,7 +274,7 @@ void ScummEX::objectDraw()
 void ScummEX::FileInfo() {
 	int fsize;
 	fsize = _input.size();
-	_gui->FileInfoDialog(fsize, encbyte);
+	_gui->FileInfoDialog(fsize, _encbyte);
 }
 	
 void ScummEX::UpdateInfosFromTree(int blockid) {

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.3 2003/09/19 11:15:05 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.4 2003/09/19 15:47:41 fingolfin Exp $
  *
  */
 
@@ -27,9 +27,9 @@
 uint32 offset;
 
 Image::Image() {
-	transp = 0;
-	width = 0;
-	height = 0;
+	_transp = 0;
+	_width = 0;
+	_height = 0;
 	_resource = new Resource();
 }
 
@@ -39,36 +39,36 @@ Image::~Image() {
 
 int Image::drawPalette(BlockTable *_blockTable, int id, File& _input)
 {
-    int addindex = 0;
-    int index = 0;
+	int addindex = 0;
+	int index = 0;
 
-    _gui->DisplayImage("Block Palette", 384, 384);
+	_gui->DisplayImage("Block Palette", 384, 384);
 
-    _input.seek(_blockTable[id].offset + 8, SEEK_SET);
+	_input.seek(_blockTable[id].offset + 8, SEEK_SET);
 
-    for (int j = 0; j < 256; j++) {
-	_rgbTable[j].red = _input.readByte();	// red
-	_rgbTable[j].green = _input.readByte();	// green
-	_rgbTable[j].blue = _input.readByte();	// blue
-    }
-
-    int x = 0, y = 0;
-    for (int v = 0; v < 16; v++) {
-	for (int k = 0; k < 384 / 16; k++) {
-	    for (int l = 0; l < 16; l++) {
-		for (int j = 0; j < 384 / 16; j++) {
-		    index = l + addindex;
-		    _gui->PutPixel(x++, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
-		}
-	    }
-	    y++;
-	    x = 0;
+	for (int j = 0; j < 256; j++) {
+		_rgbTable[j].red = _input.readByte();	// red
+		_rgbTable[j].green = _input.readByte(); // green
+		_rgbTable[j].blue = _input.readByte();	// blue
 	}
-	addindex += 16;
-    }
 
-    _gui->DrawImage();
-    return 0;
+	int x = 0, y = 0;
+	for (int v = 0; v < 16; v++) {
+		for (int k = 0; k < 384 / 16; k++) {
+			for (int l = 0; l < 16; l++) {
+				for (int j = 0; j < 384 / 16; j++) {
+					index = l + addindex;
+					_gui->PutPixel(x++, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
+				}
+			}
+			y++;
+			x = 0;
+		}
+		addindex += 16;
+	}
+
+	_gui->DrawImage();
+	return 0;
 }
 
 int Image::drawBG(File& _input, BlockTable *_blockTable, int id, char* filename)
@@ -80,18 +80,18 @@ int Image::drawBG(File& _input, BlockTable *_blockTable, int id, char* filename)
 	} else {
 		RMHDindex = _resource->findBlock(0, _blockTable, _input, id, "RMHD", "-1");
 	}
-	width = _blockTable[RMHDindex].width;
-	height = _blockTable[RMHDindex].height;
+	_width = _blockTable[RMHDindex].width;
+	_height = _blockTable[RMHDindex].height;
 
-	_gui->DisplayImage("Room Image", width, height);
+	_gui->DisplayImage("Room Image", _width, _height);
 	
 	if (_blockTable[id].blockTypeID != 209) {
 		TRNSindex = _resource->findBlock(0, _blockTable, _input, id, "TRNS", "-1");
-		transp = _blockTable[TRNSindex].trans;
+		_transp = _blockTable[TRNSindex].trans;
 		CLUTindex = _resource->findBlock(0, _blockTable, _input, id, "CLUT", "APAL", "NPAL", "-1");
 		_input.seek(_blockTable[CLUTindex].offset + 8, SEEK_SET);
 	} else {
-		transp = 260;
+		_transp = 260;
 		CLUTindex = _resource->findBlock(0, _blockTable, _input, id, "PA", "-1");
 		_input.seek(_blockTable[CLUTindex].offset + 8, SEEK_SET);
 	}
@@ -108,7 +108,7 @@ int Image::drawBG(File& _input, BlockTable *_blockTable, int id, char* filename)
 		SMAPindex = id;
 	}
 
-	offsets = new uint32[width/8];
+	_offsets = new uint32[_width/8];
 	
 	if (_blockTable[id].blockTypeID != 209) {
 		_input.seek(_blockTable[SMAPindex].offset + 8, SEEK_SET);
@@ -116,10 +116,10 @@ int Image::drawBG(File& _input, BlockTable *_blockTable, int id, char* filename)
 		_input.seek(_blockTable[SMAPindex].offset + 10, SEEK_SET);
 	}
 
-	for (int x = 0; x < width/8; x++) 
-		offsets[x] = _input.readUint32LE() + _blockTable[SMAPindex].offset;
+	for (int x = 0; x < _width/8; x++) 
+		_offsets[x] = _input.readUint32LE() + _blockTable[SMAPindex].offset;
 
-	for (uint8 x = 0; x < width/8; x++)
+	for (int x = 0; x < _width/8; x++)
 	{
 		offset = x*8;
 
@@ -137,14 +137,14 @@ int Image::drawObject(File& _input, BlockTable *_blockTable, int id)
 
 	RMHDindex = _resource->findBlock(1, _blockTable, _input, id, "IMHD", "-1");
 	
-	width = _blockTable[RMHDindex].width;
-	height = _blockTable[RMHDindex].height;
+	_width = _blockTable[RMHDindex].width;
+	_height = _blockTable[RMHDindex].height;
 	
-	_gui->DisplayImage("Object", width, height);
+	_gui->DisplayImage("Object", _width, _height);
 	
 	TRNSindex = _resource->findBlock(0, _blockTable, _input, id, "TRNS", "-1");
 
-	transp = _blockTable[TRNSindex].trans;
+	_transp = _blockTable[TRNSindex].trans;
 	
 	CLUTindex = _resource->findBlock(0, _blockTable, _input, id, "CLUT", "APAL", "NPAL", "-1");
 
@@ -158,13 +158,13 @@ int Image::drawObject(File& _input, BlockTable *_blockTable, int id)
 	
 	SMAPindex = _resource->findBlock(1, _blockTable, _input, id, "SMAP", "-1");
 
-	offsets = new uint32[width/8];
+	_offsets = new uint32[_width/8];
 	
 	_input.seek(_blockTable[SMAPindex].offset + 8, SEEK_SET);
-	for (int x = 0; x < width/8; x++) 
-		offsets[x] = _input.readUint32LE() + _blockTable[SMAPindex].offset;
+	for (int x = 0; x < _width/8; x++) 
+		_offsets[x] = _input.readUint32LE() + _blockTable[SMAPindex].offset;
 
-	for (uint8 x = 0; x < width/8; x++)
+	for (int x = 0; x < _width/8; x++)
 	{
 		offset = x*8;
 
@@ -180,7 +180,7 @@ void Image::GetStrip( uint8 pos, File& _input)
 	uint8 compr_method, parameter;
 	bool horiz;	
 		
-	_input.seek(offsets[pos], SEEK_SET);
+	_input.seek(_offsets[pos], SEEK_SET);
 	
 	/* Initializes bit stream */
 	_input.getbit(0);
@@ -195,7 +195,7 @@ void Image::GetStrip( uint8 pos, File& _input)
 	{
 		case 0:
 			/* Uncompressed */
-			decode_uncompressed(height, _input);
+			decode_uncompressed(_height, _input);
 			break;
 					
 		case 1:
@@ -205,17 +205,17 @@ void Image::GetStrip( uint8 pos, File& _input)
 	 	
 			/* 1st compression method */
 			if (horiz)
-				decode_horiz(height, parameter, _input);
+				decode_horiz(_height, parameter, _input);
 			else 
-				decode_vert(height, parameter, _input);
+				decode_vert(_height, parameter, _input);
 			break;
 	 
 		default:
 			/* 2nd compression method */
-	  		if ((compr_method >= 0x54) && (compr_method <= 0x60))
-	  			decode2transp(height, parameter, _input); 
+			if ((compr_method >= 0x54) && (compr_method <= 0x60))
+				decode2transp(_height, parameter, _input); 
 			else
-				decode2(height, parameter, _input);
+				decode2(_height, parameter, _input);
 			break;
 	}
 	
@@ -304,7 +304,7 @@ void Image::decode2transp(uint16 height, uint8 parameter, File& _input)
 			if (y == 0) 
 			{ 
 				index = _input.readByte();
-				if (index != transp)
+				if (index != _transp)
 					_gui->PutPixel(0 + offset, 0, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue); 
 				x++;
 			}	
@@ -318,7 +318,7 @@ void Image::decode2transp(uint16 height, uint8 parameter, File& _input)
 						index = 0;
 						for (uint8 cx = 0; cx < parameter; cx++) 
 							index += (_input.getbit(1) << cx);
-						if (index != transp)
+						if (index != _transp)
 							_gui->PutPixel(x + offset, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue); 
 						x++;
 					}
@@ -330,7 +330,7 @@ void Image::decode2transp(uint16 height, uint8 parameter, File& _input)
 						if (command < 4) 
 						{
 							index -= 4-command;
-							if (index != transp)
+							if (index != _transp)
 								_gui->PutPixel(x + offset, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue); 
 							x++;
 						}
@@ -346,7 +346,7 @@ void Image::decode2transp(uint16 height, uint8 parameter, File& _input)
 									x = 0; 
 									y++; 
 								}
-								if (index != transp)
+								if (index != _transp)
 									_gui->PutPixel(x + offset, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue); 
 								x++;
 						 		
@@ -355,7 +355,7 @@ void Image::decode2transp(uint16 height, uint8 parameter, File& _input)
 						else 
 						{
 						 	index += command-4;
-							if (index != transp)
+							if (index != _transp)
 								_gui->PutPixel(x + offset, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue); 
 							x++;
 						}							
@@ -399,8 +399,8 @@ void Image::decode_horiz(uint16 height, uint8 parameter, File& _input)
 						_gui->PutPixel(x + offset, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
 					}	
 					else
-				  	{
-				  		subt =- subt;
+					{
+						subt =- subt;
 						index -= subt;
 						_gui->PutPixel(x + offset, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
 					}
@@ -445,8 +445,8 @@ void Image::decode_vert(uint16 height, uint8 parameter, File& _input)
 						_gui->PutPixel(y + offset, x, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
 					}	
 					else
-				  	{
-				  		subt =- subt;
+					{
+						subt =- subt;
 						index -= subt;
 						_gui->PutPixel(y + offset, x, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
 					}
@@ -468,12 +468,12 @@ void Image::decode_horiz_transp(uint16 height, uint8 parameter, File& _input)
 			if ((y == 0) && (x == 0)) 
 			{
 				index = _input.readByte();
-				if (index != transp)
+				if (index != _transp)
 					_gui->PutPixel(0 + offset, 0, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue); 
 				x++;
 			}				
 			if (_input.getbit(1) == 0) 
-				if (index != transp)
+				if (index != _transp)
 					_gui->PutPixel(x + offset, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
 			else 
 			{
@@ -483,7 +483,7 @@ void Image::decode_horiz_transp(uint16 height, uint8 parameter, File& _input)
 				 	for (uint8 cx = 0; cx < parameter; cx++) 
 						index += (_input.getbit(1) << cx );
 					subt = 1;
-				 	if (index != transp)
+				 	if (index != _transp)
 				 		_gui->PutPixel(x + offset, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
 				}
 				else
@@ -491,14 +491,14 @@ void Image::decode_horiz_transp(uint16 height, uint8 parameter, File& _input)
 				 	if (_input.getbit(1) == 0) 
 				 	{						 
 						index -= subt;
-						if (index != transp)
+						if (index != _transp)
 							_gui->PutPixel(x + offset, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
 					}	
 					else
-				  	{
-				  		subt =- subt;
+					{
+						subt =- subt;
 						index -= subt;
-						if (index != transp)
+						if (index != _transp)
 							_gui->PutPixel(x + offset, y, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
 					}
 				} 
@@ -519,12 +519,12 @@ void Image::decode_vert_transp(uint16 height, uint8 parameter, File& _input)
 			if ((y == 0) && (x == 0)) 
 			{
 				index = _input.readByte();
-				if (index != transp)
+				if (index != _transp)
 					_gui->PutPixel(0 + offset, 0, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue); 
 				x++;
 			}				
 			if (_input.getbit(1) == 0) 
-				if (index != transp)
+				if (index != _transp)
 					_gui->PutPixel(y + offset, x, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
 			else 
 			{
@@ -534,7 +534,7 @@ void Image::decode_vert_transp(uint16 height, uint8 parameter, File& _input)
 				 	for (uint8 cx = 0; cx < parameter; cx++) 
 						index += (_input.getbit(1) << cx );
 					subt = 1;
-				 	if (index != transp)
+				 	if (index != _transp)
 				 		_gui->PutPixel(y + offset, x, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
 				}
 				else
@@ -542,14 +542,14 @@ void Image::decode_vert_transp(uint16 height, uint8 parameter, File& _input)
 				 	if (_input.getbit(1) == 0) 
 				 	{						 
 						index -= subt;
-						if (index != transp)
+						if (index != _transp)
 							_gui->PutPixel(y + offset, x, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
 					}	
 					else
-				  	{
-				  		subt =- subt;
+					{
+						subt =- subt;
 						index -= subt;
-						if (index != transp)
+						if (index != _transp)
 							_gui->PutPixel(y + offset, x, _rgbTable[index].red, _rgbTable[index].green, _rgbTable[index].blue);
 					}
 				} 

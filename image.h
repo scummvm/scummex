@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.h,v 1.3 2003/09/19 11:15:05 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.h,v 1.4 2003/09/19 15:47:42 fingolfin Exp $
  *
  */
 
@@ -34,11 +34,11 @@ struct rgbtable {
 class Image {
 private:
 	struct rgbtable _rgbTable[256];
-	uint32 palette[256];
-	int transp;
-	uint32 *offsets;
-	int width;
-	int height;
+	uint32 _palette[256];
+	int _transp;
+	uint32 *_offsets;
+	int _width;
+	int _height;
 	Resource *_resource;
 	GUI_wxWindows *_gui;
 
