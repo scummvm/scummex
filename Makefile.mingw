@@ -9,24 +9,65 @@ SDL_LIBS=-L$(SRC)/sdl/lib -lSDLmain -lSDL -lSDL_mixer
 WX_CFLAGS= -I/usr/local/include `wxmsw-2.4-config --cxxflags`
 WX_LIBS=`wxmsw-2.4-config --libs`
 
-CC=g++
-OBJECTS= bomp.o codec37.o codec47.o descumm.o descumm6.o file.o image.o mixer.o resource.o resources.o \
-	 scaler.o scummex.o sound.o wxwindows.o
-CFLAGS= $(SDL_CFLAGS) $(WX_CFLAGS) -O -Wall -Wstrict-prototypes -Wuninitialized -Wno-long-long -Wno-multichar -Wno-unknown-pragmas
-LIBS= $(SDL_LIBS) $(WX_LIBS) -lmingw32
+CXX     := c++
+AR      := ar cru
+RANLIB  := ranlib
+MKDIR   := mkdir -p
+ECHO    := echo -n
+CAT     := cat
+RM      := rm -f
+RM_REC  := $(RM) -r
+ZIP     := zip -q
+CP      := cp
 
-.SUFFIXES: .o .cpp
+OBJS     := bomp.o codec37.o codec47.o descumm.o descumm6.o file.o image.o resource.o resources.o scaler.o scummex.o \
+	util.o wxwindows.o
+CXXFLAGS := -g -O -Wall -Wuninitialized -Wstrict-prototypes -Wno-unused-variable -Wno-long-long -Wno-multichar -Wno-unknown-pragmas
+CXXFLAGS += $(SDL_CFLAGS) $(WX_CFLAGS)
+LIBS     := $(SDL_LIBS) $(WX_LIBS) -lmingw32
+INCLUDES := -I.
+CXXFLAGS += $(INCLUDES)
 
-all:    ${OBJECTS}
-	$(CC) -o scummex ${OBJECTS} ${LIBS} 
+MODULE_DIRS :=
+MODULES := sound
 
-.cpp.o: 
-	$(CC) ${CFLAGS} -c -o $@ $<
-	
+# Default build rule
+all: scummex
+
+-include $(addsuffix /module.mk,$(MODULES))
+
+# The name for the directory used for depenency tracking
+DEPDIR  := .deps
+DEPDIRS := $(addsuffix /$(DEPDIR),$(MODULE_DIRS))
+
+# Main executable build rule
+scummex: ${OBJS}
+	$(CXX) $+ ${LIBS} -o $@
+
 resources.o:
 	windres --include-dir /usr/local/include image.rc $@
+
 clean:
-	rm -f scummex.exe *.o
+	rm -f scummex $(OBJS)
+
+distclean: clean
+	$(RM_REC) $(DEPDIRS)
+
+.PHONY: all clean distclean mac
+.SUFFIXES: .o .cpp
+
+
+# C++ build rule with dependency tracking (requires GCC)
+.cpp.o:
+	$(MKDIR) $(*D)/$(DEPDIR)
+	$(CXX) -Wp,-MMD,"$(*D)/$(DEPDIR)/$(*F).d2" $(CXXFLAGS) $(CPPFLAGS) -c $(<) -o $*.o
+	$(ECHO) "$(*D)/" > $(*D)/$(DEPDIR)/$(*F).d
+	$(CAT) "$(*D)/$(DEPDIR)/$(*F).d2" >> "$(*D)/$(DEPDIR)/$(*F).d"
+	$(RM) "$(*D)/$(DEPDIR)/$(*F).d2"
+
+# Include the dependency tracking files. We add /dev/null at the end
+# of the list to avoid a warning/error if no .d file exist
+-include $(wildcard $(addsuffix /*.d,$(DEPDIRS))) /dev/null
 
 # Some additional targets
 install:   all
