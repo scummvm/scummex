@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.12 2003/09/22 08:31:59 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.13 2003/09/22 15:23:56 yoshizf Exp $
  *
  */
 
@@ -824,6 +824,14 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 			index++;
 			break;
 
+		case BOXD:
+			_blockTable[index].blockSize = _input.readUint32BE();
+			_blockTable[index].numFiles = _input.readUint16LE(); // Number of walkboxes
+			_input.seek(_blockTable[index].offset + _blockTable[index].blockSize, SEEK_SET);
+			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
+			index++;
+			break;
+			
 		default:
 			_blockTable[index].blockSize = _input.readUint32BE();
 			_input.seek(_blockTable[index].offset + _blockTable[index].blockSize, SEEK_SET);

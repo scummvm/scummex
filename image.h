@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.h,v 1.5 2003/09/21 23:50:28 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.h,v 1.6 2003/09/22 15:23:56 yoshizf Exp $
  *
  */
 
@@ -34,9 +34,15 @@ struct rgbtable {
 	int blue;
 };
 
+struct points {
+	int x;
+	int y;
+};
+
 class Image {
 private:
 	struct rgbtable _rgbTable[256];
+	struct points _points[40][4];
 	uint32 _palette[256];
 	int _transp;
 	uint32 *_offsets;
@@ -47,6 +53,8 @@ private:
 	Codec37Decoder _codec37;
 	Codec47Decoder _codec47;
 
+	void drawLine(int xStart, int yStart, int xEnd, int yEnd, int red, int green, int blue);
+
 public:
 	Image();
 	~Image();
@@ -54,6 +62,7 @@ public:
 	int drawBG(File& _input, BlockTable *_blockTable, int id, char* filename);
 	int drawObject(File& _input, BlockTable *_blockTable, int id);
 	int drawSmushFrame(BlockTable *_blockTable, int id, File& _input);
+	int drawBoxes(BlockTable *_blockTable, int id, File& _input, int newWindow = 1);
 	void decode_uncompressed(uint16 height, File& _input);
 	void decode_horiz(uint16 height, uint8 compr, File& _input);
 	void decode_vert(uint16 height, uint8 compr, File& _input);

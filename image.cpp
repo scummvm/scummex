@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.6 2003/09/21 23:50:28 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.7 2003/09/22 15:23:56 yoshizf Exp $
  *
  */
 
@@ -71,6 +71,81 @@ int Image::drawPalette(BlockTable *_blockTable, int id, File& _input)
 	}
 
 	_gui->DrawImage();
+	return 0;
+}
+
+void Image::drawLine(int xStart, int yStart, int xEnd, int yEnd, int red, int green, int blue) {
+
+	int i, len, xlen, ylen;
+	double x, xinc, y, yinc;
+
+	if (xStart == xEnd && yStart == yEnd) {
+		_gui->PutPixel(xEnd, yEnd, red, green, blue);
+		return;
+	}
+
+	xlen = xEnd - xStart;
+	ylen = yEnd - yStart;
+
+	if (abs(xlen) > abs(ylen)) {
+		len = abs(xlen);
+	} else {
+		len = abs(ylen);
+	}
+
+	xinc = xlen / (double) len;
+	yinc = ylen / (double) len;
+	x = xStart + 0.5;
+	y = yStart + 0.5;
+
+	for (i=0; i<=len; ++i) { 
+		_gui->PutPixel((int)x, (int)y, red, green, blue);
+		x += xinc;
+		y += yinc;
+	}
+
+}
+
+int Image::drawBoxes(BlockTable *_blockTable, int id, File& _input, int newWindow) {
+	int nBox, RMHDindex, width, height;
+
+	RMHDindex = _resource->findBlock(0, _blockTable, _input, id, "RMHD", "-1");
+	width = _blockTable[RMHDindex].width;
+	height = _blockTable[RMHDindex].height;
+	
+	_input.seek(_blockTable[id].offset + 10, SEEK_SET);
+	
+	nBox = _blockTable[id].numFiles;
+
+	for (int i=0; i<nBox; i++) {
+		_points[i][0].x = _input.readUint16LE();
+		_points[i][0].y = _input.readUint16LE();
+		_points[i][1].x = _input.readUint16LE();
+		_points[i][1].y = _input.readUint16LE();
+		_points[i][2].x = _input.readUint16LE();
+		_points[i][2].y = _input.readUint16LE();
+		_points[i][3].x = _input.readUint16LE();
+		_points[i][3].y = _input.readUint16LE();
+		_input.readUint16LE();
+		_input.readUint16LE();
+	}
+
+	if (newWindow == 1) {
+		_gui->DisplayImage("Boxes", width, height);
+	}
+	
+	for (int i=0; i<nBox; i++) {
+		for (int j=0; j<3; j++) {
+			drawLine(_points[i][j].x, _points[i][j].y, _points[i][j+1].x, _points[i][j+1].y, 255, 255, 255);
+		}
+		drawLine(_points[i][3].x, _points[i][3].y, _points[i][0].x, _points[i][0].y, 255, 255, 255);
+	}
+	
+	if (newWindow == 1) {
+		_gui->DrawImage();
+	} else {
+		_gui->UpdateImage();
+	}
 	return 0;
 }
 

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.11 2003/09/21 23:50:28 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.12 2003/09/22 15:23:57 yoshizf Exp $
  *
  */
 
@@ -227,6 +227,12 @@ void GUI_wxWindows::DrawImage() {
 	imageFrame->DrawImage();
 }
 
+void GUI_wxWindows::UpdateImage() {
+	wxBitmap bitmap = wxBitmap(image);
+	imageFrame->_sbmp->SetBitmap(bitmap);
+	imageFrame->Refresh();
+}
+
 ImageWindow::ImageWindow(const wxString& title, const wxPoint& pos, const wxSize& size)
 	: wxFrame(frame,ID_ImageWindow,title,pos,size, wxDEFAULT_FRAME_STYLE & (wxMINIMIZE_BOX | wxSYSTEM_MENU | wxCAPTION))
 {
@@ -251,9 +257,9 @@ void ImageWindow::DrawImage() {
 		
 	wxBoxSizer *vertSizer = new wxBoxSizer( wxVERTICAL );
 
-	wxStaticBitmap *sbmp = new wxStaticBitmap(this, -1, bitmap);
+	_sbmp = new wxStaticBitmap(this, -1, bitmap);
 	
-	vertSizer->Add(sbmp, 0, wxALL, 0 );
+	vertSizer->Add(_sbmp, 0, wxALL, 0 );
 	
 	Show(TRUE);
 }
@@ -392,6 +398,12 @@ void GUI_wxWindows::SetButton(int blocktype) {
 				(wxObjectEventFunction) &ScummEX::Descumm );
 			break;
 
+		case BOXD:
+			SpecButton1->SetLabel("View Boxes...");
+			SpecButton1->Show(TRUE);
+			SpecButton1->Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
+				(wxObjectEventFunction) &ScummEX::boxesDraw );
+			break;
 	}
 
 }
