@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.h,v 1.4 2003/09/21 15:04:14 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.h,v 1.5 2003/09/21 18:33:04 yoshizf Exp $
  *
  */
 
@@ -166,7 +166,7 @@ const struct blockInfo blocksInfo[] = {
 	{101, "FOBJ", "SMUSH Frame Object", 0, "", 32},
 	{102, "IACT", "iMUSE Action", 0, "", 24},
 	{103, "NPAL", "New Palette", 0, "", 34},
-	{104, "TRES", "Text Resource"},
+	{104, "TRES", "Text Resource", 0, "", 47},
 	{105, "PSAD", "", 0, "", 24},
 	{106, "SAUD", "", 0, "", 24},
 	{107, "STRK", "", 0, "", 24},

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.10 2003/09/21 15:04:14 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.11 2003/09/21 18:33:04 yoshizf Exp $
  *
  */
 
@@ -340,6 +340,7 @@ void ScummEX::UpdateInfosFromTree(int blockid) {
 		case APAL:
 		case 208: // PA
 		case NPAL:
+		case AHDR:
 			_gui->SetButton(_blockTable[blockid].blockTypeID);
 			break;
 
@@ -381,6 +382,7 @@ void ScummEX::UpdateInfosFromTree(int blockid) {
 		case FOBJ:
 			_gui->updateLabel("SpecLabel1", "Frame Width", _blockTable[blockid].width);
 			_gui->updateLabel("SpecLabel2", "Frame Height", _blockTable[blockid].height);
+			_gui->updateLabel("SpecLabel3", "Codec", _blockTable[blockid].variables);
 			break;
 	}
 }

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.4 2003/09/19 15:47:41 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.5 2003/09/21 18:33:04 yoshizf Exp $
  *
  */
 
@@ -45,6 +45,9 @@ int Image::drawPalette(BlockTable *_blockTable, int id, File& _input)
 	_gui->DisplayImage("Block Palette", 384, 384);
 
 	_input.seek(_blockTable[id].offset + 8, SEEK_SET);
+
+	if (_blockTable[id].blockTypeID == AHDR)
+		_input.seek(6, SEEK_CUR);
 
 	for (int j = 0; j < 256; j++) {
 		_rgbTable[j].red = _input.readByte();	// red

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.10 2003/09/21 15:04:14 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.11 2003/09/21 18:33:04 yoshizf Exp $
  *
  */
 
@@ -747,7 +747,7 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 		case FOBJ:
 			_blockTable[index].blockSize = _input.readUint32BE() + 8;
 			
-			_input.readUint16LE(); // Codec
+			_blockTable[index].variables = _input.readUint16LE(); // Codec
 			_input.readUint16BE(); // Left
 			_input.readUint16BE(); // Top
 			_blockTable[index].width = _input.readUint16LE(); // Width

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.8 2003/09/21 15:22:51 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.9 2003/09/21 18:33:04 yoshizf Exp $
  *
  */
 
@@ -354,6 +354,7 @@ void GUI_wxWindows::SetButton(int blocktype) {
 		case APAL:
 		case 208: // Palettes
 		case NPAL:
+		case AHDR:
 			SpecButton1->SetLabel("View Palette");
 			SpecButton1->Show(TRUE);
 			SpecButton1->Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
