@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.28 2004/01/30 02:07:51 sev Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.29 2004/02/14 20:51:10 sev Exp $
  *
  */
 
@@ -78,6 +78,7 @@ int Resource::searchOldBlocks(BlockTable *_blockTable, File& _input, int index, 
 int Resource::searchBlocks(BlockTable *_blockTable, File& _input, int index, int level, int size) {
 	int32 curpos = 0;
 	int called = 0;
+	int number = 0;
 	if (size != 0)
 		called = 1;
 		
@@ -95,6 +96,7 @@ int Resource::searchBlocks(BlockTable *_blockTable, File& _input, int index, int
 			_blockTable[index].offset = _input.pos() - 4;
 			//printf("block: %s offset: %x\n", _blockTable[index].blockName, _blockTable[index].offset);
 			_blockTable[index].blockTypeID = getBlockType(_blockTable[index].blockName);
+			_blockTable[index].number = number;
 			if (_blockTable[index].blockTypeID != -1) {
 				index = parseBlocks(_blockTable[index].blockName, _blockTable, _input, index, level);
 				curpos = _input.pos();
@@ -114,6 +116,7 @@ int Resource::searchBlocks(BlockTable *_blockTable, File& _input, int index, int
 			}
 
 			curpos = _input.pos();
+			number++;
 	}
 
 	return index;
@@ -423,7 +426,7 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 			
 		case MAXS:
 			_blockTable[index].blockSize = _input.readUint32BE();
-			_blockTable[index].variables = _input.readUint16LE();
+			_blockTable[index].variables[0] = _input.readUint16LE();
 			_input.readUint16LE();
 			_blockTable[index].bitVariables = _input.readUint16LE();
 			_blockTable[index].localObjects = _input.readUint16LE();
@@ -620,22 +623,22 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 			break;
 
 		case IACT:
-			_blockTable[index].blockSize = _input.readUint32BE() + 8;
+			_blockTable[index].blockSize = _input.readUint32BE();
 			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
 			bufindex = index;
 			index++;
-			level++;
-			index = searchBlocks(_blockTable, _input, index, level, _blockTable[index-1].blockSize + _blockTable[index-1].offset);
-			_input.seek(_blockTable[bufindex].offset + _blockTable[bufindex].blockSize, SEEK_SET);
-			_input.read(_blockTable[index+1].blockName, 4);
-			_blockTable[index+1].blockName[4] = '\0';
-			_blockTable[index+1].blockTypeID = getBlockType(_blockTable[index+1].blockName);
-			//if (_blockTable[index+1].blockTypeID != -1) {
-			//	_input.seek(-4, SEEK_CUR);
-			//} else {
-			//	_blockTable[bufindex].blockSize += 1;
-			//	_input.seek(-3, SEEK_CUR);
-			//}
+			if (_blockTable[bufindex].blockSize > 36) { // in FT IACT do not have subchunks
+				level++;
+				_input.seek(_blockTable[bufindex].offset + 26, SEEK_SET);
+				index = searchBlocks(_blockTable, _input, index, level, _blockTable[bufindex].blockSize+_blockTable[bufindex].offset);
+			} else {
+				_blockTable[bufindex].blockSize += 8;
+				_blockTable[bufindex].blockTypeID = IaCt; // INSANE Action
+				strcpy(_blockTable[bufindex].blockDescription, blocksInfo[_blockTable[bufindex].blockTypeID].description);
+				_input.seek(_blockTable[bufindex].offset + 8, SEEK_SET);
+				for (int i = 0; i < 5; i++)
+					_blockTable[bufindex].variables[i] = _input.readUint16LE();
+			}
 			_input.seek(_blockTable[bufindex].offset + _blockTable[bufindex].blockSize, SEEK_SET);
 			break;
 
@@ -692,7 +695,7 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 		case FOBJ:
 			_blockTable[index].blockSize = _input.readUint32BE() + 8;
 			
-			_blockTable[index].variables = _input.readUint16LE(); // Codec
+			_blockTable[index].variables[0] = _input.readUint16LE(); // Codec
 			_input.readUint16BE(); // Left
 			_input.readUint16BE(); // Top
 			_blockTable[index].width = _input.readUint16LE(); // Width
@@ -730,7 +733,7 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 						int rate = _input.readByte();
 						_input.readByte();
 						len -= 2;
-						_blockTable[index].variables = getSampleRateFromVOCRate(rate);
+						_blockTable[index].variables[0] = getSampleRateFromVOCRate(rate);
 						// FIXME some FT samples (ex. 362) has bad length, 2 bytes too short
 						_input.seek(len, SEEK_CUR);
 						} break;
@@ -767,8 +770,24 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 			index++;
 			break;
 
-		default:
+		case AKHD:
+			_blockTable[index].blockSize = _input.readUint32BE();
+			_blockTable[index].variables[0] = _input.readUint16LE(); // Codec
+			_input.seek(_blockTable[index].offset + _blockTable[index].blockSize, SEEK_SET);
+			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
+			index++;
+			break;
+
+		case SKIP:
 			_blockTable[index].blockSize = _input.readUint32BE() + 8;
+			_blockTable[index].variables[0] = _input.readUint16LE(); // Parameter
+			_input.seek(_blockTable[index].offset + _blockTable[index].blockSize, SEEK_SET);
+			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
+			index++;
+			break;
+
+		default:
+			_blockTable[index].blockSize = _input.readUint32BE();
 			_input.seek(_blockTable[index].offset + _blockTable[index].blockSize, SEEK_SET);
 			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
 			index++;

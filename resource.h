@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.h,v 1.20 2004/01/30 02:07:51 sev Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.h,v 1.21 2004/02/14 20:51:11 sev Exp $
  *
  */
 
@@ -35,7 +35,7 @@ struct BlockTable {
 	uint32 offset;
 	int numFiles;
 	uint32 blockSize;
-	uint32 variables;
+	uint32 variables[10];
 	uint32 bitVariables;
 	uint32 localObjects;
 	uint32 arrays;
@@ -44,6 +44,7 @@ struct BlockTable {
 	int32 width;
 	int trans;
 	int32 height;
+	int number;
 	ImageWindow *image;
 };
 
@@ -148,16 +149,16 @@ const struct blockInfo blocksInfo[] = {
 	{82, "IM10", "Image", 0, "", 25},
 	{83, "BOMP", "", 0, "", 47},
 	{84, "IMAG", "", 0, "", 25},
-	{85, "AKOS", "", 0, "", 47},
+	{85, "AKOS", "Animated Costume", 0, "", 47},
 	{86, "ZP04", "", 0, "", 52},
 	{87, "RMSC", "", 1, "help/specRMSC.html", 57},
 	{88, "BSTR", "", 0, "", 42},
 	{89, "ZPLN", "", 0, "", 52},
-	{90, "AKHD", "", 0, "", 47},
-	{91, "AKPL", "", 0, "", 47},
+	{90, "AKHD", "AKOS Header", 0, "", 47},
+	{91, "AKPL", "AKOS Palette", 0, "", 47},
 	{92, "RGBS", "", 0, "", 47},
-	{93, "AKOF", "", 0, "", 47},
-	{94, "AKCI", "", 0, "", 47},
+	{93, "AKOF", "AKOS Offset", 0, "", 47},
+	{94, "AKCI", "AKOS Costume Info", 0, "", 47},
 	{95, "AKCD", "", 0, "", 47},
 	{96, "AKSQ", "", 0, "", 47},
 	{97, "AKCH", "", 0, "", 47},
@@ -211,10 +212,11 @@ const struct blockInfo blocksInfo[] = {
 	{145, "POLD", "", 0, "", 47},
 	{146, "LSC2", "", 0, "", 47},
 	{147, "FMUS", "Music header?", 0, "", 47},
-	{148, "SKIP", "SMUSH Skip", 0, "", 47}
+	{148, "SKIP", "SMUSH Skip", 0, "", 47},
+	{149, "IaCt", "INSANE Action", 0, "", 24} // small letters are intentional
 };
 
-const int numBlocks = 149;
+const int numBlocks = 150;
 
 const struct blockInfo oldBlocksInfo[] = {
 	{200, "0R", "Directory of Rooms", 0, "", 18},

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.h,v 1.17 2003/10/01 10:06:12 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.h,v 1.18 2004/02/14 20:51:11 sev Exp $
  *
  */
 
@@ -56,7 +56,7 @@ private:
 	wxStaticBitmap *BigIcon;
 	wxPanel *panel, *infospanel, *htmlpanel, *searchpanel;
 	int htmlflag;
-	wxStaticText *_GenLabel[4][2];
+	wxStaticText *_GenLabel[5][2];
 	wxStaticText *_SpecLabel[6][2];
 	wxButton *SpecButton1, *SpecButton2;
 	wxTreeItemId iter[11];

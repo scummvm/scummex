@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.25 2003/11/08 02:38:00 khalek Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.26 2004/02/14 20:51:10 sev Exp $
  *
  */
 
@@ -273,7 +273,7 @@ void Image::drawSmushFrame(BlockTable *_blockTable, int id, File& _input) {
 	dstorg = dst = (byte *)malloc(_width * _height + 1000);
 	_input.read(chunk_buffer, _blockTable[id].blockSize - 22);
 
-	switch (_blockTable[id].variables) {
+	switch (_blockTable[id].variables[0]) {
 		case 1:
 			decodeCodec1(dst, chunk_buffer, _height);
 			break;

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.36 2003/10/01 14:12:52 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.37 2004/02/14 20:51:11 sev Exp $
  *
  */
 
@@ -560,17 +560,20 @@ void MainWindow::updateLabels(int blockid) {
 	
 	_GenLabel[0][1]->SetLabel(block.blockType);
 
-	sprintf(buf, "%d (0x%08X)", block.offset, block.offset);
+	sprintf(buf, "%d", block.number);
 	_GenLabel[1][1]->SetLabel(buf);
 
-	sprintf(buf, "%d (0x%08X)", block.blockSize, block.blockSize);
+	sprintf(buf, "%d (0x%08X)", block.offset, block.offset);
 	_GenLabel[2][1]->SetLabel(buf);
 
-	_GenLabel[3][1]->SetLabel(block.blockDescription);
+	sprintf(buf, "%d (0x%08X)", block.blockSize, block.blockSize);
+	_GenLabel[3][1]->SetLabel(buf);
+
+	_GenLabel[4][1]->SetLabel(block.blockDescription);
 
 	switch(block.blockTypeID) {
 		case MAXS:
-			updateLabel(_SpecLabel[0], "Num. of variables:", block.variables);
+			updateLabel(_SpecLabel[0], "Num. of variables:", block.variables[0]);
 			updateLabel(_SpecLabel[1], "Num. of bit variables:", block.bitVariables);
 			updateLabel(_SpecLabel[2], "Num. of local objects:", block.localObjects);
 			updateLabel(_SpecLabel[3], "Num. of arrays:", block.arrays);
@@ -615,13 +618,13 @@ void MainWindow::updateLabels(int blockid) {
 			
 		case Crea:
 		case AUdt:
-			updateLabel(_SpecLabel[0], "Sample Rate:", block.variables);
+			updateLabel(_SpecLabel[0], "Sample Rate:", block.variables[0]);
 			break;
 
 		case FOBJ:
 			updateLabel(_SpecLabel[0], "Frame Width:", block.width);
 			updateLabel(_SpecLabel[1], "Frame Height:", block.height);
-			updateLabel(_SpecLabel[2], "Codec:", block.variables);
+			updateLabel(_SpecLabel[2], "Codec:", block.variables[0]);
 			break;
 
 		case BOXD:
@@ -639,6 +642,20 @@ void MainWindow::updateLabels(int blockid) {
 			updateLabel(_SpecLabel[2], "Object Height:", block.height);
 			break;
 
+		case AKHD:
+			updateLabel(_SpecLabel[0], "Codec:", block.variables[0]);
+			break;
+
+		case SKIP:
+			updateLabel(_SpecLabel[0], "Parameter:", block.variables[0]);
+			break;
+
+		case IaCt:
+			for (int i = 0; i < 5; i++) {
+				sprintf(buf, "Var%d:", i+1);
+				updateLabel(_SpecLabel[i], buf, block.variables[i]);
+			}
+			break;
 	}
 	SetButton(block.blockTypeID);
 }
@@ -785,15 +802,16 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 	GenInfosHSizer->Add(GenInfosSizer2, 1, wxLEFT|wxEXPAND,	12);
 
 	_GenLabel[0][0] = new wxStaticText(infospanel, -1, "Type:", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE);
-	_GenLabel[1][0] = new wxStaticText(infospanel, -1, "Offset:", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE);
-	_GenLabel[2][0] = new wxStaticText(infospanel, -1, "Size:", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE);
-	_GenLabel[3][0] = new wxStaticText(infospanel, -1, "Description:", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE);
+	_GenLabel[1][0] = new wxStaticText(infospanel, -1, "Number:", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE);
+	_GenLabel[2][0] = new wxStaticText(infospanel, -1, "Offset:", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE);
+	_GenLabel[3][0] = new wxStaticText(infospanel, -1, "Size:", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE);
+	_GenLabel[4][0] = new wxStaticText(infospanel, -1, "Description:", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE);
 	
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 5; i++) {
 		GenInfosSizer->Add(_GenLabel[i][0], 0, wxALL|wxEXPAND, 1);
 	}
 		
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 5; i++) {
 		_GenLabel[i][1] = new wxStaticText(infospanel, -1, "n/a", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE);
 		GenInfosSizer2->Add(_GenLabel[i][1], 0, wxALL|wxEXPAND, 1);
 	}				
