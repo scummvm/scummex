@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.10 2003/09/22 21:31:18 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.11 2003/09/23 00:47:23 fingolfin Exp $
  *
  */
 
@@ -109,16 +109,16 @@ void Image::drawLine(int xStart, int yStart, int xEnd, int yEnd, int red, int gr
 int Image::drawBoxes(BlockTable *_blockTable, int id, File& _input, int newWindow) {
 	int nBox, RMHDindex, width, height, v8 = 0;
 
-	RMHDindex = _resource->findBlock(0, _blockTable, id, "RMHD", "-1");
+	RMHDindex = _resource->findBlock(0, _blockTable, id, "RMHD", NULL);
 	width = _blockTable[RMHDindex].width;
 	height = _blockTable[RMHDindex].height;
 
 	if (newWindow == 0) {
-		if ( _resource->findBlock(0, _blockTable, id, "IMAG", "-1") != -1) {
+		if ( _resource->findBlock(0, _blockTable, id, "IMAG", NULL) != -1) {
 			v8 = 1;
-			id = _resource->findBlock(1, _blockTable, id, "BOXD", "-1");
+			id = _resource->findBlock(1, _blockTable, id, "BOXD", NULL);
 		} else {
-			id = _resource->findBlock(0, _blockTable, id, "BOXD", "-1");
+			id = _resource->findBlock(0, _blockTable, id, "BOXD", NULL);
 		}
 	}
 	
@@ -182,7 +182,7 @@ int Image::drawSmushFrame(BlockTable *_blockTable, int id, File& _input) {
 	int x = 0, y = 0;
 	byte *dst, *dstorg, *chunk_buffer;
 
-	index = _resource->findBlock(0, _blockTable, id, "NPAL", "AHDR", "-1");
+	index = _resource->findBlock(0, _blockTable, id, "NPAL", "AHDR", NULL);
 	if (_blockTable[index].blockTypeID == AHDR) {
 		_input.seek(_blockTable[index].offset + 14, SEEK_SET);
 	} else {
@@ -236,11 +236,11 @@ int Image::drawBG(File& _input, BlockTable *_blockTable, int id)
 	int RMHDindex, CLUTindex, SMAPindex, TRNSindex;
 	
 	if (_blockTable[id].blockTypeID == BM) {
-		RMHDindex = _resource->findBlock(0, _blockTable, id, "HD", "-1");
+		RMHDindex = _resource->findBlock(0, _blockTable, id, "HD", NULL);
 	} else if (_blockTable[id-1].blockTypeID == IMHD) {
 		RMHDindex = id-1;
 	} else {
-		RMHDindex = _resource->findBlock(0, _blockTable, id, "RMHD", "-1");
+		RMHDindex = _resource->findBlock(0, _blockTable, id, "RMHD", NULL);
 	}
 	_width = _blockTable[RMHDindex].width;
 	_height = _blockTable[RMHDindex].height;
@@ -248,13 +248,13 @@ int Image::drawBG(File& _input, BlockTable *_blockTable, int id)
 	_gui->DisplayImage("Room Image", _width, _height, IMAGE_BOXES);
 	
 	if (_blockTable[id].blockTypeID != BM) {
-		TRNSindex = _resource->findBlock(0, _blockTable, id, "TRNS", "-1");
+		TRNSindex = _resource->findBlock(0, _blockTable, id, "TRNS", NULL);
 		_transp = _blockTable[TRNSindex].trans;
-		CLUTindex = _resource->findBlock(0, _blockTable, id, "CLUT", "APAL", "NPAL", "-1");
+		CLUTindex = _resource->findBlock(0, _blockTable, id, "CLUT", "APAL", "NPAL", NULL);
 		_input.seek(_blockTable[CLUTindex].offset + 8, SEEK_SET);
 	} else {
 		_transp = 260;
-		CLUTindex = _resource->findBlock(0, _blockTable, id, "PA", "-1");
+		CLUTindex = _resource->findBlock(0, _blockTable, id, "PA", NULL);
 		_input.seek(_blockTable[CLUTindex].offset + 8, SEEK_SET);
 	}
 
@@ -265,13 +265,13 @@ int Image::drawBG(File& _input, BlockTable *_blockTable, int id)
 	}
 	
 	if (_blockTable[id].blockTypeID != BM) {
-		SMAPindex = _resource->findBlock(1, _blockTable, id, "SMAP", "-1");
+		SMAPindex = _resource->findBlock(1, _blockTable, id, "SMAP", NULL);
 	} else {
 		SMAPindex = id;
 	}
 
 	if (_blockTable[id].blockTypeID == IMAG) {
-		SMAPindex = _resource->findBlock(1, _blockTable, SMAPindex, "OFFS", "-1");
+		SMAPindex = _resource->findBlock(1, _blockTable, SMAPindex, "OFFS", NULL);
 	}
 
 	_offsets = new uint32[_width/8];
@@ -301,18 +301,18 @@ int Image::drawObject(File& _input, BlockTable *_blockTable, int id)
 {
 	int RMHDindex, CLUTindex, SMAPindex, TRNSindex;
 
-	RMHDindex = _resource->findBlock(1, _blockTable, id, "IMHD", "-1");
+	RMHDindex = _resource->findBlock(1, _blockTable, id, "IMHD", NULL);
 	
 	_width = _blockTable[RMHDindex].width;
 	_height = _blockTable[RMHDindex].height;
 	
 	_gui->DisplayImage("Object", _width, _height);
 	
-	TRNSindex = _resource->findBlock(0, _blockTable, id, "TRNS", "-1");
+	TRNSindex = _resource->findBlock(0, _blockTable, id, "TRNS", NULL);
 
 	_transp = _blockTable[TRNSindex].trans;
 	
-	CLUTindex = _resource->findBlock(0, _blockTable, id, "CLUT", "APAL", "NPAL", "-1");
+	CLUTindex = _resource->findBlock(0, _blockTable, id, "CLUT", "APAL", "NPAL", NULL);
 
 	_input.seek(_blockTable[CLUTindex].offset + 8, SEEK_SET);
 
@@ -322,7 +322,7 @@ int Image::drawObject(File& _input, BlockTable *_blockTable, int id)
 		_rgbTable[j].blue = _input.readByte();	// blue
 	}
 	
-	SMAPindex = _resource->findBlock(1, _blockTable, id, "SMAP", "-1");
+	SMAPindex = _resource->findBlock(1, _blockTable, id, "SMAP", NULL);
 
 	_offsets = new uint32[_width/8];
 	

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.h,v 1.7 2003/09/22 18:25:16 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.h,v 1.8 2003/09/23 00:47:23 fingolfin Exp $
  *
  */
 
@@ -49,7 +49,6 @@ private:
 	int _width;
 	int _height;
 	Resource *_resource;
-	GUI_wxWindows *_gui;
 	Codec37Decoder _codec37;
 	Codec47Decoder _codec47;
 

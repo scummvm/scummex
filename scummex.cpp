@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.18 2003/09/22 23:43:29 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.19 2003/09/23 00:47:23 fingolfin Exp $
  *
  */
 
@@ -26,9 +26,9 @@
 #include "descumm.h"
 
 ScummEX::ScummEX() {
-    _image = new Image();
-    _sound = new Sound();
-    _resource = new Resource();
+	_image = new Image();	// FIXME - where is this deleted?
+	_sound = new Sound();
+	_resource = new Resource();
 }
 
 void ScummEX::getFileType(const char *filename) {
@@ -45,7 +45,7 @@ void ScummEX::getFileType(const char *filename) {
 	sprintf(buf, "ScummEX - %s", filename);
 	_gui->SetTitle(buf);
 
-	_gui->EnableToolbarTool(ID_Close);
+	_gui->EnableToolbarTool(wxID_CLOSE);
 	_gui->EnableToolbarTool(ID_FileInfo);
 
 	_input.read(&tag, 4);
@@ -104,7 +104,7 @@ void ScummEX::getFileType(const char *filename) {
 	}
 
 	_gui->SetTitle("ScummEX");
-	_gui->DisableToolbarTool(ID_Close);
+	_gui->DisableToolbarTool(wxID_CLOSE);
 	_gui->DisableToolbarTool(ID_FileInfo);
 	_gui->DisplayDialog("Unknown file type!", "Error");
 }
@@ -257,37 +257,37 @@ void ScummEX::SOUPlay()
 
 void ScummEX::paletteDraw()
 {
-	_image = new Image();
+	_image = new Image();	// FIXME - where is this deleted?
 	_image->drawPalette(_blockTable, _blockId, _input);
 }
 
 void ScummEX::bgDraw()
 {
-	_image = new Image();
+	_image = new Image();	// FIXME - where is this deleted?
 	_image->drawBG(_input, _blockTable, _blockId);
 }
 
 void ScummEX::SmushFrameDraw()
 {
-	_image = new Image();
+	_image = new Image();	// FIXME - where is this deleted?
 	_image->drawSmushFrame(_blockTable, _blockId, _input);
 }
 
 void ScummEX::objectDraw()
 {
-	_image = new Image();
+	_image = new Image();	// FIXME - where is this deleted?
 	_image->drawObject(_input, _blockTable, _blockId);
 }
 
 void ScummEX::boxesDraw()
 {
-	_image = new Image();
+	_image = new Image();	// FIXME - where is this deleted?
 	_image->drawBoxes(_blockTable, _blockId, _input);
 }
 
 void ScummEX::boxesDrawOverlay()
 {
-	_image = new Image();
+	_image = new Image();	// FIXME - where is this deleted?
 	_image->drawBoxes(_blockTable, _blockId, _input, 0);
 }
 
@@ -411,6 +411,6 @@ void ScummEX::UpdateInfosFromTree(int blockid) {
 	ScummEX *_scummex;
 	_scummex = new ScummEX();
 
-    return 0;
+	return 0;
 
 }*/

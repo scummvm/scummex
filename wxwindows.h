@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.h,v 1.5 2003/09/22 18:25:16 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.h,v 1.6 2003/09/23 00:47:23 fingolfin Exp $
  *
  */
 
@@ -69,17 +69,19 @@ public:
 
 	void DrawImage();
 	void OnQuit(wxCommandEvent& event);
-	ImageWindow(const wxString& title, const wxPoint& pos, const wxSize& size, byte flags);
+	ImageWindow(MainWindow *parent, const wxString& title, const wxPoint& pos, const wxSize& size, byte flags);
 };
 
 class ViewerWindow : public wxFrame {
 public:
 	void OnQuit(wxCommandEvent& event);
-	ViewerWindow(const wxString& title, const wxString& text, const wxPoint& pos, const wxSize& size);
+	ViewerWindow(MainWindow *parent, const wxString& title, const wxString& text, const wxPoint& pos, const wxSize& size);
 };
 
 class GUI_wxWindows : public wxApp {
 private:
+	MainWindow *_mainWindow;
+	ImageWindow *_imageWindow;
 
 public:
 	GUI_wxWindows();
@@ -115,10 +117,7 @@ class TreeItemData : public wxTreeItemData {
 		
 enum
 {
-	ID_Quit=1,
-	ID_About,
-	ID_Open,
-	ID_Browse,
+	ID_Browse = 1,
 	ID_SoundStop,
 	ID_Dump,
 	ID_View,
@@ -130,7 +129,6 @@ enum
 	Button_Save,
 	Button_Options,
 	ID_Help,
-	ID_Close,
 	ID_FileInfo,
 	ID_Hex,
 	ID_ImageWindow,
@@ -139,5 +137,7 @@ enum
 	ID_Boxes,
 	Tree
 };
+
+extern GUI_wxWindows *_gui;
 
 #endif

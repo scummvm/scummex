@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/descumm.h,v 1.2 2003/09/19 19:57:07 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/descumm.h,v 1.3 2003/09/23 00:47:23 fingolfin Exp $
  *
  */
 
@@ -113,8 +113,6 @@ struct StackEnt {
 
 class DeScumm {
 private:
-	GUI_wxWindows *_gui;
-
 	char *strecpy(char *buf, const char *src);
 	int get_curoffs();
 	int get_byte();

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummsys.h,v 1.1 2003/09/18 16:26:58 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummsys.h,v 1.2 2003/09/23 00:47:23 fingolfin Exp $
  *
  */
 #ifndef SCUMMSYS_H
@@ -283,19 +283,6 @@ FORCEINLINE uint16 SWAP_BYTES_16(uint16 a) {
 	FORCEINLINE uint32 READ_BE_UINT32(const void *ptr) {
 		return *(const uint32 *)(ptr);
 	}
-#endif
-
-
-/* Initialized operator new */
-// FIXME - get rid of these new/delete overrides!!! They conflict with the
-// Standard C++ library, and they are only there to support lazy programmers anyway.
-#ifndef __PALM_OS__
-void * operator new(size_t size);
-void operator delete(void *ptr);
-// Temporary hack until we fully remove the new/delete operators:
-// Since 'new' now returns a memory block inited to 0xE7E7E7E7 we might
-// get some invocations of free() with that param. We check for those here.
-// That allows us to set a debugger breakpoint to catch it.
 #endif
 
 #endif

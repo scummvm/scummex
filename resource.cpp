@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.14 2003/09/22 19:47:58 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.15 2003/09/23 00:47:23 fingolfin Exp $
  *
  */
 
@@ -877,13 +877,13 @@ int Resource::findBlock(int direction, BlockTable * _blockTable, int id, ...)
 
 	va_start(arg_ptr, id);
 
-	while (strcmp(test = (va_arg(arg_ptr, char *)) , "-1")) {
+	while ((test = (va_arg(arg_ptr, char *)))) {
 		id = tempid;
 		if (direction == 0) {
 			id -= 1;
 			while (id >= 0) {
 				if(strstr(test, _blockTable[id].blockName)) {
-					return id;
+					goto the_end;
 				}
 				id--;
 			}
@@ -891,16 +891,18 @@ int Resource::findBlock(int direction, BlockTable * _blockTable, int id, ...)
 
 		if (direction == 1) {
 			id += 1;
+			// FIXME: Loop till infinity?? that can hardly be correct
 			while (1) {
 				if(strstr(test, _blockTable[id].blockName)) {
-					return id;
+					goto the_end;
 				}
 				id++;
 			}
 		}
 	}
 	
+the_end:
 	va_end(arg_ptr);
-	return -1;
+	return test ? id : -1;
 }
 
