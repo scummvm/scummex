@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.14 2003/09/22 15:23:57 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.15 2003/09/22 15:43:24 yoshizf Exp $
  *
  */
 
@@ -25,6 +25,10 @@
 #include "scummex.h"
 #include "descumm.h"
 
+File _input;
+File _output;
+uint32 _blockId;
+	
 struct RoomTable _roomTable[200];
 
 struct BlockTable _blockTable[60000];
