@@ -1,0 +1,41 @@
+# Where is scummvm will be installed
+SCUMMEXPATH=C:/scummex
+SRC=.
+
+### Modify these paths
+SDL_CFLAGS=-I$(SRC)/sdl/include
+SDL_LIBS=-L$(SRC)/sdl/lib -lSDLmain -lSDL -lSDL_mixer
+
+WX_CFLAGS= -I/usr/local/include `wxmsw-2.4-config --cxxflags`
+WX_LIBS=`wxmsw-2.4-config --libs`
+
+CC=g++
+OBJECTS= bomp.o codec37.o codec47.o descumm.o descumm6.o file.o image.o mixer.o resource.o resources.o \
+	 scummex.o sound.o wxwindows.o
+CFLAGS= $(SDL_CFLAGS) $(WX_CFLAGS) -O -Wall -Wstrict-prototypes -Wuninitialized -Wno-long-long -Wno-multichar -Wno-unknown-pragmas
+LIBS= $(SDL_LIBS) $(WX_LIBS) -lmingw32
+
+.SUFFIXES: .o .cpp
+
+all:    ${OBJECTS}
+	$(CC) -o scummex ${OBJECTS} ${LIBS} 
+
+.cpp.o: 
+	$(CC) ${CFLAGS} -c -o $@ $<
+	
+resources.o:
+	windres --include-dir /usr/local/include image.rc $@
+clean:
+	rm -f scummex.exe *.o
+
+# Some additional targets
+install:   all
+	mkdir -p $(SCUMMEXPATH)
+	mkdir -p $(SCUMMEXPATH)/help
+	strip scummex.exe -o $(SCUMMEXPATH)/scummex.exe
+
+dist:   install
+	cp help/*.html $(SCUMMEXPATH)/help
+	cp help/help.* $(SCUMMEXPATH)/help
+	cp SDL/lib/SDL.dll $(SCUMMEXPATH)
+	cp SDL/lib/SDL_Mixer.dll $(SCUMMEXPATH)

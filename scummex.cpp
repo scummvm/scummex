@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.24 2003/09/25 07:32:19 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.25 2003/09/26 00:39:50 kirben Exp $
  *
  */
 
@@ -125,7 +125,7 @@ void ScummEX::FileDump(int blockid, const char *filename) {
 }
 
 void ScummEX::fileView(int blockid) {
-	int j, i;
+	int /* j, */ i;
 	char *text;
 	char title[256];
 	char buf[256];
