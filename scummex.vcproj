@@ -109,7 +109,22 @@
 				RelativePath="blocks.h">
 			</File>
 			<File
-				RelativePath="bundle.h">
+				RelativePath="bomp.cpp">
+			</File>
+			<File
+				RelativePath="bomp.h">
+			</File>
+			<File
+				RelativePath="codec37.cpp">
+			</File>
+			<File
+				RelativePath="codec37.h">
+			</File>
+			<File
+				RelativePath="codec47.cpp">
+			</File>
+			<File
+				RelativePath="codec47.h">
 			</File>
 			<File
 				RelativePath="descumm.cpp">
