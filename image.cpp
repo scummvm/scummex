@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.13 2003/09/23 09:05:47 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.14 2003/09/23 12:56:12 khalek Exp $
  *
  */
 
@@ -41,7 +41,7 @@ int Image::drawPalette(BlockTable *_blockTable, int id, File& _input)
 {
 	int addindex = 0;
 	int index = 0;
-	int h;
+	unsigned int h;
 
 	_gui->DisplayImage("Block Palette", 384, 384);
 

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/descumm.cpp,v 1.2 2003/09/19 19:57:07 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/descumm.cpp,v 1.3 2003/09/23 12:56:12 khalek Exp $
  *
  */
 
@@ -1193,33 +1193,33 @@ void DeScumm::do_print_ego(char *buf, byte opcode)
 	}
 
 	do {
-		int opcode = get_byte();
-		if (opcode == 0xFF)
+		int subopcode = get_byte();
+		if (subopcode == 0xFF)
 			break;
 
 		if (!first)
 			buf = strecpy(buf, ",");
 		first = 0;
 
-		switch (opcode & 0x1f) {
+		switch (subopcode & 0x1f) {
 		case 0x0:
-			buf = do_tok(buf, "Pos", ((opcode & 0x80) ? A1V : A1W) | ((opcode & 0x40) ? A2V : A2W));
+			buf = do_tok(buf, "Pos", ((subopcode & 0x80) ? A1V : A1W) | ((subopcode & 0x40) ? A2V : A2W));
 			break;
 		case 0x1:
-			buf = do_tok(buf, "Color", ((opcode & 0x80) ? A1V : A1B));
+			buf = do_tok(buf, "Color", ((subopcode & 0x80) ? A1V : A1B));
 			break;
 		case 0x2:
-			buf = do_tok(buf, "Clipped", ((opcode & 0x80) ? A1V : A1W));
+			buf = do_tok(buf, "Clipped", ((subopcode & 0x80) ? A1V : A1W));
 			break;
 		case 0x3:
-			buf = do_tok(buf, "Erase?", ((opcode & 0x80) ? A1V : A1W) | ((opcode & 0x40) ? A2V : A2W));
+			buf = do_tok(buf, "Erase?", ((subopcode & 0x80) ? A1V : A1W) | ((subopcode & 0x40) ? A2V : A2W));
 			break;
 		case 0x4:
 			buf = do_tok(buf, "Center", 0);
 			break;
 		case 0x6:
 			if (GF_UNBLOCKED)
-				buf = do_tok(buf, "Spacing?", ((opcode & 0x80) ? A1V: A1W));
+				buf = do_tok(buf, "Spacing?", ((subopcode & 0x80) ? A1V: A1W));
 			else
 				buf = do_tok(buf, "Left", 0);
 			break;
@@ -1227,7 +1227,7 @@ void DeScumm::do_print_ego(char *buf, byte opcode)
 			buf = do_tok(buf, "Overhead", 0);
 			break;
 		case 0x8:
-			buf = do_tok(buf, "PlayCDTrack", ((opcode & 0x80) ? A1V : A1W) | ((opcode & 0x40) ? A2V : A2W));
+			buf = do_tok(buf, "PlayCDTrack", ((subopcode & 0x80) ? A1V : A1W) | ((subopcode & 0x40) ? A2V : A2W));
 			break;
 		case 0xF:{
 				buf = strecpy(buf, "Text(\"");
@@ -1249,7 +1249,7 @@ void DeScumm::do_print_ego(char *buf, byte opcode)
 			}
 			goto exit_proc;
 		default:
-			buf += sprintf(buf, "Unknown%.2X()", opcode);
+			buf += sprintf(buf, "Unknown%.2X()", subopcode);
 			goto exit_proc;
 		}
 	} while (1);
@@ -2399,16 +2399,16 @@ void DeScumm::get_tok_V345(char *buf)
 		break;
 
 	case 0xAE:{
-			byte opcode;
+			byte subopcode;
 			if (IndyFlag)
-				opcode = 2;
+				subopcode = 2;
 			else
-				opcode = get_byte();
+				subopcode = get_byte();
 
-			switch (opcode) {
+			switch (subopcode) {
 			case 0x01:
 			case 0x81:
-				do_tok(buf, "WaitForActor", ((opcode & 0x80) ? A1V : A1B));
+				do_tok(buf, "WaitForActor", ((subopcode & 0x80) ? A1V : A1B));
 				break;
 			case 0x02:
 				do_tok(buf, "WaitForMessage", 0);

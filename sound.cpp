@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/Attic/sound.cpp,v 1.4 2003/09/21 00:45:16 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/Attic/sound.cpp,v 1.5 2003/09/23 12:56:12 khalek Exp $
  *
  */
 
@@ -661,11 +661,11 @@ int Sound::playiMUSE(File& _input, BlockTable *_blockTable, int index, File& _ou
 		    }
 		} else {
 		    startPos = 1;
-		    for (int i = 0; i < channels; i++) {
-			sByte[i] = *(src++);
-			sDWord1[i] = READ_BE_UINT32(src);
+		    for (int ch = 0; ch < channels; ch++) {
+			sByte[ch] = *(src++);
+			sDWord1[ch] = READ_BE_UINT32(src);
 			src += 4;
-			sDWord2[i] = READ_BE_UINT32(src);
+			sDWord2[ch] = READ_BE_UINT32(src);
 			src += 4;
 		    }
 		}
@@ -809,19 +809,19 @@ int Sound::playiMUSE(File& _input, BlockTable *_blockTable, int index, File& _ou
     if (bits == 12) {
 	s_size = (size * 4) / 3 + 3;
 	buffer = (byte *) malloc(s_size+44);
-	uint32 l = 0, r = 44, tmp;
+	uint32 l = 0, ra = 44, tmp;
 	for (; l < size; l += 3) {
 	    tmp = (ptr[l + 1] & 0x0f) << 8;
 	    tmp = (tmp | ptr[l + 0]) << 4;
 	    tmp -= 0x8000;
-	    buffer[r++] = (uint8) (tmp & 0xff);
-	    buffer[r++] = (uint8) ((tmp >> 8) & 0xff);
+	    buffer[ra++] = (uint8) (tmp & 0xff);
+	    buffer[ra++] = (uint8) ((tmp >> 8) & 0xff);
 
 	    tmp = (ptr[l + 1] & 0xf0) << 4;
 	    tmp = (tmp | ptr[l + 2]) << 4;
 	    tmp -= 0x8000;
-	    buffer[r++] = (uint8) (tmp & 0xff);
-	    buffer[r++] = (uint8) ((tmp >> 8) & 0xff);
+	    buffer[ra++] = (uint8) (tmp & 0xff);
+	    buffer[ra++] = (uint8) ((tmp >> 8) & 0xff);
 	}
 	bits = 16;
     } else {

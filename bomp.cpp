@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/bomp.cpp,v 1.1 2003/09/21 23:50:28 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/bomp.cpp,v 1.2 2003/09/23 12:56:12 khalek Exp $
  *
  */
 
@@ -25,12 +25,12 @@
 byte defaultScaleTable[768];
 byte revBitMask[8];
 
-static void bompScaleFuncX(byte *line_buffer, byte *scaling_x_ptr, byte skip, int32 size);
+//static void bompScaleFuncX(byte *line_buffer, byte *scaling_x_ptr, byte skip, int32 size);
 
 static void bompApplyShadow0(const byte *line_buffer, byte *dst, int32 size, byte transparency);
 static void bompApplyShadow1(const byte *shadowPalette, const byte *line_buffer, byte *dst, int32 size, byte transparency);
 static void bompApplyShadow3(const byte *shadowPalette, const byte *line_buffer, byte *dst, int32 size, byte transparency);
-static void bompApplyActorPalette(byte *actorPalette, byte *line_buffer, int32 size);
+//static void bompApplyActorPalette(byte *actorPalette, byte *line_buffer, int32 size);
 
 
 
@@ -163,6 +163,7 @@ void bompApplyShadow3(const byte *shadowPalette, const byte *line_buffer, byte *
 	}
 }
 
+/* FIXME can this be deleted?
 void bompApplyActorPalette(byte *actorPalette, byte *line_buffer, int32 size) {
 	if (actorPalette != 0) {
 		actorPalette[255] = 255;
@@ -191,6 +192,7 @@ void bompScaleFuncX(byte *line_buffer, byte *scaling_x_ptr, byte skip, int32 siz
 		}
 	}
 }
+*/
 
 /*void Scumm::drawBomp(const BompDrawData &bd, bool mirror) {
 	const byte *src;
