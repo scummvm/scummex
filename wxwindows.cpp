@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.9 2003/09/21 18:33:04 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.10 2003/09/21 18:42:21 yoshizf Exp $
  *
  */
 
@@ -317,7 +317,7 @@ void GUI_wxWindows::DisableToolbarTool(int tool) {
 
 void GUI_wxWindows::SetButton(int blocktype) {
 	switch(blocktype) {
-		case 25: // iMUSE
+		case cus2: // iMUSE
 			SpecButton1->SetLabel("Play");
 			SpecButton2->SetLabel("Decompress to WAV...");
 			SpecButton1->Show(TRUE);
@@ -336,7 +336,7 @@ void GUI_wxWindows::SetButton(int blocktype) {
 				(wxObjectEventFunction) &ScummEX::objectDraw );
 			break;
 
-		case 48: // SOU
+		case Crea:
 			SpecButton1->SetLabel("Play");
 			SpecButton2->SetLabel("Decompress to WAV...");
 			SpecButton1->Show(TRUE);
@@ -352,7 +352,7 @@ void GUI_wxWindows::SetButton(int blocktype) {
 
 		case CLUT:
 		case APAL:
-		case 208: // Palettes
+		case PA:
 		case NPAL:
 		case AHDR:
 			SpecButton1->SetLabel("View Palette");
@@ -361,7 +361,7 @@ void GUI_wxWindows::SetButton(int blocktype) {
 				(wxObjectEventFunction) &ScummEX::paletteDraw );
 			break;
 		
-		case 209:
+		case BM:
 		case RMIM:
 			SpecButton1->SetLabel("View Image");
 			SpecButton1->Show(TRUE);

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.11 2003/09/21 18:33:04 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.12 2003/09/21 18:42:21 yoshizf Exp $
  *
  */
 
@@ -309,7 +309,7 @@ void ScummEX::UpdateInfosFromTree(int blockid) {
 			break;
 
 		case RMHD:
-		case 206: // HD
+		case HD:
 			_gui->updateLabel("SpecLabel1", "Room Width", _blockTable[blockid].width);
 			_gui->updateLabel("SpecLabel2", "Room Height", _blockTable[blockid].height);
 			_gui->updateLabel("SpecLabel3", "Number of Objects", _blockTable[blockid].localObjects);
@@ -328,7 +328,7 @@ void ScummEX::UpdateInfosFromTree(int blockid) {
 			_gui->updateLabel("SpecLabel1", "Number of items", _blockTable[blockid].numFiles);
 			break;
 
-		case 25:
+		case cus2:
 			_gui->SetButton(_blockTable[blockid].blockTypeID);
 			break;
 			
@@ -338,14 +338,14 @@ void ScummEX::UpdateInfosFromTree(int blockid) {
 
 		case CLUT:
 		case APAL:
-		case 208: // PA
+		case PA:
 		case NPAL:
 		case AHDR:
 			_gui->SetButton(_blockTable[blockid].blockTypeID);
 			break;
 
 		case RMIM:
-		case 209:
+		case BM:
 			_gui->SetButton(_blockTable[blockid].blockTypeID);
 			break;
 
