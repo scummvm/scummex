@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.22 2003/09/30 11:41:28 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.23 2003/10/01 10:06:11 yoshizf Exp $
  *
  */
 
@@ -168,7 +168,7 @@ void Image::drawBoxes(BlockTable *_blockTable, int id, File& _input) {
 	}
 
 	if (_blockTable[id].image == NULL)
-		_image = _blockTable[id].image = new ImageWindow("Boxes", wxSize(_width, _height), id);
+		_image = _blockTable[id].image = new ImageWindow("Boxes", wxSize(_width, _height), id, IMAGE_SCALE);
 	else
 		_image = _blockTable[id].image;
 
@@ -262,7 +262,7 @@ void Image::drawSmushFrame(BlockTable *_blockTable, int id, File& _input) {
 	_height = _blockTable[id].height;
 
 	if (_blockTable[id].image == NULL)
-		_image = _blockTable[id].image = new ImageWindow("SMUSH Frame", wxSize(_width, _height), id);
+		_image = _blockTable[id].image = new ImageWindow("SMUSH Frame", wxSize(_width, _height), id, IMAGE_SCALE);
 	else
 		_image = _blockTable[id].image;
 
@@ -333,7 +333,7 @@ void Image::drawBG(File& _input, BlockTable *_blockTable, int id)
 	_height = _blockTable[headerID].height;
 
 	if (_blockTable[id].image == NULL)
-		_image = _blockTable[id].image = new ImageWindow("Room Image", wxSize(_width, _height), id, IMAGE_BOXES);
+		_image = _blockTable[id].image = new ImageWindow("Room Image", wxSize(_width, _height), id, IMAGE_BOXES|IMAGE_SCALE);
 	else
 		_image = _blockTable[id].image;
 
@@ -453,7 +453,7 @@ void Image::drawObject(File& _input, BlockTable *_blockTable, int id)
 	_height = _blockTable[headerID].height;
 
 	if (_blockTable[id].image == NULL)
-		_image = _blockTable[id].image = new ImageWindow("Object", wxSize(_width, _height), id);
+		_image = _blockTable[id].image = new ImageWindow("Object", wxSize(_width, _height), id, IMAGE_SCALE);
 	else
 		_image = _blockTable[id].image;
 

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.26 2003/09/30 12:36:20 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.27 2003/10/01 10:06:11 yoshizf Exp $
  *
  */
 
@@ -34,6 +34,10 @@ Resource::Resource() {
 
 int Resource::searchOldBlocks(BlockTable *_blockTable, File& _input, int index, int level, int size) {
 	int32 curpos = 0;
+	int called = 0;
+	if (size != 0)
+		called = 1;
+		
 	if (size == 0)
 		size = _input.size();
 
@@ -59,6 +63,9 @@ int Resource::searchOldBlocks(BlockTable *_blockTable, File& _input, int index, 
 					_input.seek(size, SEEK_SET);
 					return index;
 				}
+			} else if (called) {
+					_input.seek(size, SEEK_SET);
+					return index;
 			}
 
 			curpos = _input.pos();

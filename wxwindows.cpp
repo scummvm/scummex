@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.34 2003/09/30 11:41:28 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.35 2003/10/01 10:06:11 yoshizf Exp $
  *
  */
 
@@ -149,20 +149,38 @@ bool GUI_wxWindows::writeConfigValue(const char* key, wxString& string) {
 	return result;
 }
 
+BEGIN_EVENT_TABLE(ImageScrolledWindow, wxScrolledWindow)
+	EVT_PAINT(ImageScrolledWindow::OnPaint)
+END_EVENT_TABLE()
+
+ImageScrolledWindow::ImageScrolledWindow(ImageWindow *imageWindow) : wxScrolledWindow (imageWindow, -1) {
+	_imageWindow = imageWindow;
+}
+
+void ImageScrolledWindow::OnPaint(wxPaintEvent &event) {
+	wxPaintDC dc(this);
+	PrepareDC(dc);
+	dc.DrawBitmap(wxBitmap(_imageWindow->_image), 0, 0);
+}
+
 BEGIN_EVENT_TABLE(ImageWindow, wxFrame)
 	EVT_CLOSE(ImageWindow::OnQuit)
 	EVT_MENU(Viewer_Quit, ImageWindow::OnQuit)
 	EVT_MENU(ID_BMP, ImageWindow::SaveImage)
 	EVT_MENU(ID_Boxes, ImageWindow::boxesDrawOverlay)
+	EVT_MENU(ID_Scale1x, ImageWindow::Scale1x)
+	EVT_MENU(ID_Scale2x, ImageWindow::Scale2x)
+	EVT_MENU(ID_Scale3x, ImageWindow::Scale3x)
 END_EVENT_TABLE()
 
 ImageWindow::ImageWindow(const wxString& title, const wxSize& size, int blockId, byte flags, int scaleFactor)
-	: wxFrame(_gui->_mainWindow, -1, title, wxPoint(-1,-1), size, wxDEFAULT_FRAME_STYLE & (wxMINIMIZE_BOX | wxSYSTEM_MENU | wxCAPTION))
+	: wxFrame(_gui->_mainWindow, -1, title, wxPoint(-1,-1), size)
 {
 	wxMenuBar *menuBar = new wxMenuBar;
 	wxMenu *menuFile = new wxMenu;
 	_blockId = blockId;
 	_boxesDisplayed = 0;
+	_clientSize = size;
 	
 	wxMenuItem *BMPItem = new wxMenuItem(menuFile, ID_BMP, "Save to BMP...", "Save image to .BMP", wxITEM_NORMAL, NULL );
 	wxBitmap SaveIcon = wxBitmap(save_icon);
@@ -173,14 +191,7 @@ ImageWindow::ImageWindow(const wxString& title, const wxSize& size, int blockId,
 	
 	menuBar->Append(menuFile,"&File");
 
-	if (flags & IMAGE_BOXES) {
-		wxMenu *menuView = new wxMenu;
-		wxMenuItem *BoxesItem = new wxMenuItem(menuView, ID_Boxes, "Display Boxes", "Display Boxes", wxITEM_CHECK, NULL );
-		menuView->Append(BoxesItem);
-		menuBar->Append(menuView,"View");
-	}
-	
-	SetMenuBar(menuBar);
+	wxMenu *menuView = new wxMenu;
 
 	if (scaleFactor == 0) {
 		_scaleFactor = 1;
@@ -188,24 +199,122 @@ ImageWindow::ImageWindow(const wxString& title, const wxSize& size, int blockId,
 	} else {
 		_scaleFactor = scaleFactor;
 	}
+	
+	if (flags & IMAGE_BOXES) {
+		menuView->AppendCheckItem(ID_Boxes, "Display Boxes", "Display Boxes");
+	}
 
-	SetClientSize(size.GetWidth() * _scaleFactor, size.GetHeight() * _scaleFactor);
+	if (flags & IMAGE_SCALE) {
+		menuZoom = new wxMenu;
+		menuZoom->AppendCheckItem(ID_Scale1x, "100%", "100%");
+		menuZoom->AppendCheckItem(ID_Scale2x, "200%", "200%");
+		menuZoom->AppendCheckItem(ID_Scale3x, "300%", "300%");
+		menuView->Append(ID_Zoom, "Zoom", menuZoom, "Zoom");
+		switch(_scaleFactor) {
+			case 1:
+				menuZoom->Check(ID_Scale1x, TRUE);
+				break;
+
+			case 2:
+				menuZoom->Check(ID_Scale2x, TRUE);
+				break;
+
+			case 3:
+				menuZoom->Check(ID_Scale3x, TRUE);
+				break;
+		}
+	}
+	
+	menuBar->Append(menuView,"View");
+	SetMenuBar(menuBar);
+
+	SetClientSize(size.GetWidth() * _scaleFactor+20, size.GetHeight() * _scaleFactor+20);
 	_image = new wxImage(size.GetWidth() * _scaleFactor, size.GetHeight() * _scaleFactor);
-	_sbmp = NULL;
+	
+	_imageScrolledWindow = new ImageScrolledWindow(this);
+
+	_imageScrolledWindow->SetVirtualSize(size.GetWidth() * _scaleFactor, size.GetHeight() * _scaleFactor);
+	_imageScrolledWindow->SetScrollRate(10, 10);
+	SetSizeHints(130, 80, wxSystemSettings::GetMetric(wxSYS_SCREEN_X) - 25, wxSystemSettings::GetMetric(wxSYS_SCREEN_Y) - 25);
 }
 
 void ImageWindow::DrawImage() {
-	wxBitmap bitmap = wxBitmap(_image);
-	
-	if (_sbmp == NULL) {
-		wxBoxSizer *vertSizer = new wxBoxSizer( wxVERTICAL );
+	wxClientDC dc(this);
+	dc.DrawBitmap(wxBitmap(_image), 0, 0);
+	Show(TRUE);
+	Refresh();
+}
 
-		_sbmp = new wxStaticBitmap(this, -1, bitmap);
-		vertSizer->Add(_sbmp, 0, wxALL, 0 );
-		Show(TRUE);
-	} else {
-		_sbmp->SetBitmap(bitmap);
-		Refresh();
+void ImageWindow::Scale1x(wxEvent& event) {
+	_scaleFactor = 1;
+	menuZoom->Check(ID_Scale2x, FALSE);
+	menuZoom->Check(ID_Scale3x, FALSE);
+	Scale();
+}
+
+void ImageWindow::Scale2x(wxEvent& event) {
+	_scaleFactor = 2;
+	menuZoom->Check(ID_Scale1x, FALSE);
+	menuZoom->Check(ID_Scale3x, FALSE);
+	Scale();
+}
+
+void ImageWindow::Scale3x(wxEvent& event) {
+	_scaleFactor = 3;
+	menuZoom->Check(ID_Scale1x, FALSE);
+	menuZoom->Check(ID_Scale2x, FALSE);
+	Scale();
+}
+
+void ImageWindow::Scale() {
+	delete _image;
+	_image = new wxImage(_clientSize.GetWidth() * _scaleFactor, _clientSize.GetHeight() * _scaleFactor);
+
+	SetClientSize(_clientSize.GetWidth() * _scaleFactor+20, _clientSize.GetHeight() * _scaleFactor+20);
+	_imageScrolledWindow->SetVirtualSize(_clientSize.GetWidth() * _scaleFactor, _clientSize.GetHeight() * _scaleFactor);
+	
+	switch (g_scummex->getBlockTable(_blockId).blockTypeID) {
+		case IM01:
+		case IM02:
+		case IM03:
+		case IM04:
+		case IM05:
+		case IM06:
+		case IM07:
+		case IM08:
+		case IM09:
+		case IM0A:
+		case IM0B:
+		case IM0C:
+		case IM0D:
+		case IM0E:
+		case IM0F:
+		case OI:
+		case OBIM:
+			g_scummex->objectDraw(_blockId);
+			break;
+
+		case CLUT:
+		case APAL:
+		case PA:
+		case NPAL:
+		case AHDR:
+		case RGBS:
+			g_scummex->paletteDraw(_blockId);
+			break;
+
+		case BM:
+		case RMIM:
+		case IMAG:
+			g_scummex->bgDraw(_blockId);
+			if (_boxesDisplayed)
+				g_scummex->boxesDraw(_blockId);
+			break;
+
+		case BOXD:
+		case BX:
+			g_scummex->boxesDraw(_blockId);
+			break;
 	}
 }
 

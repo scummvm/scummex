@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.h,v 1.16 2003/09/30 00:38:43 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.h,v 1.17 2003/10/01 10:06:12 yoshizf Exp $
  *
  */
 
@@ -41,9 +41,12 @@
 
 enum {
 	FLAG_NONE = 1 << 0,
-	IMAGE_BOXES = 1 << 1
+	IMAGE_BOXES = 1 << 1,
+	IMAGE_SCALE = 1 << 2
 };
-	
+
+class ImageScrolledWindow;
+
 class MainWindow : public wxFrame {
 private:
 	wxHtmlHelpController *HtmlHelp;
@@ -105,21 +108,38 @@ protected:
 class ImageWindow : public wxFrame {
 public:
 	int _scaleFactor;
+	wxSize _clientSize;
+	wxImage *_image;
+	wxMenu *menuZoom;
 	
 	ImageWindow(const wxString& title, const wxSize& size, int blockId, byte flags = FLAG_NONE, int scaleFactor = 0);
 	void DrawImage();
 	void PutPixel(int x, int y, int red, int green, int blue);
 
 protected:
-	wxStaticBitmap *_sbmp;
-	wxImage *_image;
+	ImageScrolledWindow *_imageScrolledWindow;
+	
 	int _blockId;
 	int _boxesDisplayed;
 
 	void OnQuit(wxCommandEvent& event);
-
 	void SaveImage(wxEvent& event);
 	void boxesDrawOverlay(wxEvent& event);
+	void Scale1x(wxEvent& event);
+	void Scale2x(wxEvent& event);
+	void Scale3x(wxEvent& event);
+	void Scale();
+
+	DECLARE_EVENT_TABLE()
+};
+
+class ImageScrolledWindow : public wxScrolledWindow {
+public:
+	ImageScrolledWindow(ImageWindow *imageWindow);
+
+protected:
+	ImageWindow *_imageWindow;
+	void OnPaint(wxPaintEvent &event);
 
 	DECLARE_EVENT_TABLE()
 };
@@ -185,7 +205,11 @@ enum
 	ID_ViewerWindow,
 	ID_BMP,
 	ID_Boxes,
-	ID_Tree
+	ID_Tree,
+	ID_Scale1x,
+	ID_Scale2x,
+	ID_Scale3x,
+	ID_Zoom
 };
 
 extern GUI_wxWindows *_gui;
