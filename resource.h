@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.h,v 1.15 2003/09/29 10:04:01 khalek Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.h,v 1.16 2003/09/29 10:58:20 khalek Exp $
  *
  */
 
@@ -186,24 +186,34 @@ const struct blockInfo blocksInfo[] = {
 	{120, "WVhd", "", 0, "", 31},
 	{121, "AUdt", "", 0, "", 31},
 	{122, "WVdt", "", 0, "", 31},
-	{123, "TLKB", "", 0, "", 47},
-	{124, "TALK", "", 0, "", 47},
-	{125, "HSHD", "", 0, "", 47},
+	{123, "TLKB", "Talkie ?", 0, "", 47},
+	{124, "TALK", "Talkie Sounds", 0, "", 47},
+	{125, "HSHD", "Humongous Sound HeaDer", 0, "", 47},
 	{126, "DIRI", "", 0, "", 47},
-	{127, "DIRR", "", 0, "", 47},
-	{128, "DIRN", "", 0, "", 47},
-	{129, "DIRC", "", 0, "", 47},
-	{130, "DIRM", "", 0, "", 47},
-	{131, "DLFL", "", 0, "", 47},
-	{132, "DIRS", "", 0, "", 47},
-	{133, "SONG", "", 0, "", 47},
-	{134, "SGHD", "", 0, "", 47},
-	{135, "SGEN", "", 0, "", 47},
-	{136, "DIGI", "", 0, "", 47},
-	{137, "RMDA", "", 0, "", 47}
+	{127, "DIRR", "Directory of Rooms", 0, "", 47},
+	{128, "DIRN", "Directory of Sounds", 0, "", 47},
+	{129, "DIRC", "Directory of Costumes", 0, "", 47},
+	{130, "DIRF", "Directory of Charsets", 0, "", 47},
+	{131, "DIRM", "", 0, "", 47},
+	{132, "DLFL", "Directory of LFLs", 0, "", 47},
+	{133, "DIRS", "", 0, "", 47},
+	{134, "SONG", "", 0, "", 47},
+	{135, "SGHD", "Song Header", 0, "", 47},
+	{136, "SGEN", "Song ?", 0, "", 47},
+	{137, "DIGI", "Digital Sound", 0, "", 47},
+	{138, "RMDA", "Room Data", 0, "", 47},
+	{139, "BMAP", "Bitmap Image", 0, "", 47},
+	{140, "WIZH", "", 0, "", 47},
+	{141, "AWIZ", "", 0, "", 47},
+	{142, "WIZD", "", 0, "", 47},
+	{143, "SPOT", "", 0, "", 47},
+	{144, "CNVS", "", 0, "", 47},
+	{145, "POLD", "", 0, "", 47},
+	{146, "LSC2", "", 0, "", 47},
+	{147, "FMUS", "Music header?", 0, "", 47}
 };
 
-const int numBlocks = 138;
+const int numBlocks = 148;
 
 const struct blockInfo oldBlocksInfo[] = {
 	{200, "0R", "Directory of Rooms", 0, "", 18},

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.30 2003/09/28 21:49:25 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.31 2003/09/29 10:58:20 khalek Exp $
  *
  */
 
@@ -1182,22 +1182,27 @@ void MainWindow::OnSelChanged(wxTreeEvent& event) {
 			break;
 			
 		case DROO:
+		case DIRR:
 			bigIconBitmap = wxBitmap(xpm_18_big);
 			break;
 			
 		case DSCR:
+		case DIRS:
 			bigIconBitmap = wxBitmap(xpm_19_big);
 			break;
 			
 		case DSOU:
+		case DIRN:
 			bigIconBitmap = wxBitmap(xpm_20_big);
 			break;
 			
 		case DCOS:
+		case DIRC:
 			bigIconBitmap = wxBitmap(xpm_14_big);
 			break;
 			
 		case DCHR:
+		case DIRF:
 			bigIconBitmap = wxBitmap(xpm_13_big);
 			break;
 			

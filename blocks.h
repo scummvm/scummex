@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/blocks.h,v 1.10 2003/09/29 10:04:01 khalek Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/blocks.h,v 1.11 2003/09/29 10:58:20 khalek Exp $
  *
  */
 
@@ -159,7 +159,16 @@ enum {
 	SGHD,
 	SGEN,
 	DIGI,
-	RMDA
+	RMDA,
+	BMAP,
+	WIZH,
+	AWIZ,
+	WIZD,
+	SPOT,
+	CNVS,
+	POLD,
+	LSC2,
+	FMUS
 };
 
 enum {
