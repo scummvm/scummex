@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.h,v 1.10 2003/09/24 12:38:45 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.h,v 1.11 2003/09/26 23:51:36 yoshizf Exp $
  *
  */
 
@@ -176,7 +176,11 @@ const struct blockInfo blocksInfo[] = {
 	{111, "SPK ", "", 1, "help/specSPK.html", 31},
 	{112, "ROL ", "", 1, "help/specROL.html", 31},
 	{113, "FTCH", "", 0, "", 47},
-	{114, "STOR", "", 0, "", 47}
+	{114, "STOR", "", 0, "", 47},
+	{115, "MIDI", "", 0, "", 31},
+	{116, "GMD ", "", 0, "", 31},
+	{117, "SBL ", "", 0, "", 31},
+	{118, "ZSTR", "", 0, "", 47}
 };
 
 const struct blockInfo oldBlocksInfo[] = {

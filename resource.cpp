@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.18 2003/09/26 00:39:50 kirben Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.19 2003/09/26 23:51:36 yoshizf Exp $
  *
  */
 
@@ -856,7 +856,7 @@ int Resource::parseOldBlocks(char *blockName, BlockTable *_blockTable, File& _in
 
 int Resource::getBlockType(char *tag) {
 	
-	for (int i=0; i<115; i++) {
+	for (int i=0; i<119; i++) {
 		if(strstr(tag, blocksInfo[i].name)) {
 			return blocksInfo[i].id;
 		}
