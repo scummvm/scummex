@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.h,v 1.3 2003/09/18 20:50:56 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.h,v 1.4 2003/09/21 15:04:14 yoshizf Exp $
  *
  */
 
@@ -178,18 +178,34 @@ const struct blockInfo blocksInfo[] = {
 };
 
 const struct blockInfo oldBlocksInfo[] = {
-	{200, "0R", "Directory of Rooms"},
-	{201, "0S", ""},
-	{202, "0N", ""},
-	{203, "0C", ""},
-	{204, "0O", "Directory of Objects"},
-	{205, "RO", ""},
-	{206, "HD", ""},
-	{207, "BX", ""},
-	{208, "PA", ""},
-	{209, "BM", ""},
-	{210, "OI", ""},
-	{211, "OC", ""}
+	{200, "0R", "Directory of Rooms", 0, "", 18},
+	{201, "0S", "", 0, "", 19},
+	{202, "0N", "", 0, "", 47},
+	{203, "0C", "", 0, "", 14},
+	{204, "0O", "Directory of Objects", 0, "", 17},
+	{205, "RO", "", 0, "", 38},
+	{206, "HD", "", 0, "", 35},
+	{207, "BX", "", 0, "", 4},
+	{208, "PA", "", 0, "", 34},
+	{209, "BM", "", 0, "", 37},
+	{210, "OI", "", 0, "", 33},
+	{211, "OC", "", 0, "", 41},
+	{212, "NL", "", 0, "", 41},
+	{213, "SL", "", 0, "", 47},
+	{214, "EX", "", 0, "", 22},
+	{215, "EN", "", 0, "", 21},
+	{216, "LC", "", 0, "", 47},
+	{217, "LS", "", 0, "", 41},
+	{218, "SC", "", 0, "", 41},
+	{219, "CO", "", 0, "", 11},
+	{220, "LE", "LucasArts Entertainment Company Files", 0, "", 6},
+	{221, "FO", "", 0, "", 44},
+	{222, "LF", "", 0, "", 58},
+	{223, "CC", "", 0, "", 12},
+	{224, "SP", "", 0, "", 47},
+	{225, "SA", "", 0, "", 40},
+	{226, "SO", "", 0, "", 59},
+	{227, "RN", "", 0, "", 47}
 };
 
 class Resource {

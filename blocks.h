@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/blocks.h,v 1.4 2003/09/21 06:47:15 aquadran Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/blocks.h,v 1.5 2003/09/21 15:04:14 yoshizf Exp $
  *
  */
 
@@ -135,3 +135,35 @@ enum {
 	SPK,
 	ROL
 };
+
+enum {
+	b0R = 200,
+	b0S,
+	b0N,
+	b0C,
+	b0O,
+	RO,
+	HD,
+	BX,
+	PA,
+	BM,
+	OI,
+	OC,
+	NL,
+	SL,
+	EX,
+	EN,
+	LC,
+	LS,
+	SC,
+	CO,
+	LE,
+	FO,
+	LF,
+	CC,
+	SP,
+	SA,
+	SO,
+	RN
+};
+

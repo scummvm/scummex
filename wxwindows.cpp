@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.6 2003/09/21 06:47:15 aquadran Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.7 2003/09/21 15:04:14 yoshizf Exp $
  *
  */
 
@@ -373,6 +373,11 @@ void GUI_wxWindows::SetButton(int blocktype) {
 		case ENCD:
 		case EXCD:
 		case VERB:
+		case LS:
+		case SC:
+		case EN:
+		case EX:
+		case OC:
 			SpecButton1->SetLabel("Decompile Script");
 			SpecButton1->Show(TRUE);
 			SpecButton1->Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
@@ -388,12 +393,12 @@ void GUI_wxWindows::add_tree_elements(char *itemName, int blockid, int level, in
 	assert(level <= 10);
 	itemid = iter[level] = tree->AppendItem(iter[level-1], itemName, -1, -1, new TreeItemData(blockid, type));
 
-	if (blocksInfo[type].iconid != 0) {
-		tree->SetItemImage(itemid, blocksInfo[type].iconid);
-		tree->SetItemImage(itemid, blocksInfo[type].iconid, wxTreeItemIcon_Selected);
+	if (type < 200) {
+			tree->SetItemImage(itemid, blocksInfo[type].iconid);
+			tree->SetItemImage(itemid, blocksInfo[type].iconid, wxTreeItemIcon_Selected);
 	} else {
-		tree->SetItemImage(itemid, 47);
-		tree->SetItemImage(itemid, 47, wxTreeItemIcon_Selected);
+			tree->SetItemImage(itemid, oldBlocksInfo[type-200].iconid);
+			tree->SetItemImage(itemid, oldBlocksInfo[type-200].iconid, wxTreeItemIcon_Selected);
 	}
 	
 	if (blockid == 1) {
@@ -865,27 +870,33 @@ void MainWindow::OnSelChanged(wxTreeEvent& event) {
 		case LECF:
 		case LABN:
 		case LB83:
+		case LE:
 			bigIconBitmap = wxBitmap(xpm_6_big);
 			break;
 			
 		case LOFF:
 		case OFFS:
+		case FO:
 			bigIconBitmap = wxBitmap(xpm_44_big);
 			break;
 			
 		case LFLF:
+		case LF:
 			bigIconBitmap = wxBitmap(xpm_58_big);
 			break;
 			
 		case ROOM:
+		case RO:
 			bigIconBitmap = wxBitmap(xpm_38_big);
 			break;
 			
 		case RMHD:
+		case HD:
 			bigIconBitmap = wxBitmap(xpm_35_big);
 			break;
 			
 		case CYCL:
+		case CC:
 			bigIconBitmap = wxBitmap(xpm_12_big);
 			break;
 			
@@ -898,10 +909,12 @@ void MainWindow::OnSelChanged(wxTreeEvent& event) {
 		case APAL:
 		case NPAL:
 		case XPAL:
+		case PA:
 			bigIconBitmap = wxBitmap(xpm_34_big);
 			break;
 			
 		case BOXD:
+		case BX:
 			bigIconBitmap = wxBitmap(xpm_4_big);
 			break;
 			
@@ -910,24 +923,32 @@ void MainWindow::OnSelChanged(wxTreeEvent& event) {
 			break;
 			
 		case SCAL:
+		case SA:
 			bigIconBitmap = wxBitmap(xpm_40_big);
 			break;
 			
 		case RMIM:
+		case BM:
 			bigIconBitmap = wxBitmap(xpm_37_big);
 			break;
 			
 		case EXCD:
+		case EX:
 			bigIconBitmap = wxBitmap(xpm_22_big);
 			break;
 
 		case ENCD:
+		case EN:
 			bigIconBitmap = wxBitmap(xpm_21_big);
 			break;
 			
 		case NLSC:
 		case SCRP:
 		case LSCR:
+		case OC:
+		case NL:
+		case LS:
+		case SC:
 			bigIconBitmap = wxBitmap(xpm_41_big);
 			break;
 			
@@ -936,6 +957,7 @@ void MainWindow::OnSelChanged(wxTreeEvent& event) {
 		case iMUS:
 		case cus2:
 		case IMC:
+		case SO:
 			bigIconBitmap = wxBitmap(xpm_59_big);
 			break;
 			
@@ -963,6 +985,7 @@ void MainWindow::OnSelChanged(wxTreeEvent& event) {
 			break;
 			
 		case OBIM:
+		case OI:
 			bigIconBitmap = wxBitmap(xpm_33_big);
 			break;
 			
@@ -1063,6 +1086,7 @@ void MainWindow::OnSelChanged(wxTreeEvent& event) {
 			break;
 			
 		case COST:
+		case CO:
 			bigIconBitmap = wxBitmap(xpm_11_big);
 			break;
 		

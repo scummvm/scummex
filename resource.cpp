@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.9 2003/09/21 06:47:15 aquadran Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.10 2003/09/21 15:04:14 yoshizf Exp $
  *
  */
 
@@ -142,9 +142,8 @@ int Resource::searchOldBlocks(BlockTable *_blockTable, File& _input, int index, 
 					_input.seek(size, SEEK_SET);
 					return index;
 				}
-
-
 			}
+
 			curpos = _input.pos();
 	}
 
@@ -830,16 +829,16 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 
 int Resource::parseOldBlocks(char *blockName, BlockTable *_blockTable, File& _input, int index, int level) {
 	
-	int numFiles, offset, number;
+	int numFiles, offset, number, bufindex;
 
-	strcpy(_blockTable[index].blockDescription, oldBlocksInfo[_blockTable[index].blockTypeID].description);
+	strcpy(_blockTable[index].blockDescription, oldBlocksInfo[_blockTable[index].blockTypeID - 200].description);
 
 	switch(_blockTable[index].blockTypeID) {
 
-		case 200: // 0R
-		case 201: // OS
-		case 202: // ON
-		case 203: // OC
+		case b0R:
+		case b0S:
+		case b0N:
+		case b0C:
 			numFiles = _input.readUint16LE();
 			_blockTable[index].numFiles = numFiles;
 			
@@ -852,19 +851,19 @@ int Resource::parseOldBlocks(char *blockName, BlockTable *_blockTable, File& _in
 			index++;
 			break;
 
-		case 204: // 00
+		case b0O:
 			numFiles = _input.readUint16LE();
 			_blockTable[index].numFiles = numFiles;
 			
 			for (int i=0; i<numFiles; i++) {
 				_input.readByte(); // Owner of object
 			}
-			
+			_input.seek(_blockTable[index].blockSize + _blockTable[index].offset, SEEK_SET);
 			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
 			index++;
 			break;
 
-		case 205: // RO
+		case RO:
 			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
 			index++;
 			level++;
@@ -873,7 +872,7 @@ int Resource::parseOldBlocks(char *blockName, BlockTable *_blockTable, File& _in
 
 			break;
 			
-		case 206: // HD
+		case HD:
 			_blockTable[index].width = _input.readUint16LE();
 			_blockTable[index].height = _input.readUint16LE();
 			_blockTable[index].localObjects = _input.readUint16LE();
@@ -881,11 +880,26 @@ int Resource::parseOldBlocks(char *blockName, BlockTable *_blockTable, File& _in
 			index++;
 			break;
 
-		case 207: // BX
-		case 208:
-		case 209:
-		case 210:
-		case 212:
+		case LE:
+			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
+			bufindex = index;
+			index++;
+			level++;
+			index = searchOldBlocks(_blockTable, _input, index, level, _blockTable[index-1].blockSize + _blockTable[index-1].offset);
+			_input.seek(_blockTable[bufindex].offset + _blockTable[bufindex].blockSize, SEEK_SET);
+			break;
+
+		case LF:
+			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
+			_input.seek(2, SEEK_CUR);
+			bufindex = index;
+			index++;
+			level++;
+			index = searchOldBlocks(_blockTable, _input, index, level, _blockTable[index-1].blockSize + _blockTable[index-1].offset);
+			_input.seek(_blockTable[bufindex].offset + _blockTable[bufindex].blockSize, SEEK_SET);
+			break;
+		
+		default:
 			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
 			_input.seek(_blockTable[index].blockSize + _blockTable[index].offset, SEEK_SET);
 			index++;
@@ -912,12 +926,11 @@ int Resource::getBlockType(char *tag) {
 
 int Resource::getOldBlockType(char *tag) {
 	
-	for (int i=0; i<12; i++) {
+	for (int i=0; i<28; i++) {
 		if(strstr(tag, oldBlocksInfo[i].name)) {
 			return oldBlocksInfo[i].id;
 		}
 	}
-	
 	return -1;
 }
 

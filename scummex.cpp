@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.9 2003/09/21 00:45:16 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.10 2003/09/21 15:04:14 yoshizf Exp $
  *
  */
 
@@ -68,12 +68,14 @@ void ScummEX::getFileType(const char *filename) {
 			return;
 
 	}
-	
-	tag = _input.readUint16LE();
+
+	tag = 0;
+	_input.read(&tag, 2);
 
 	switch(tag) {
 		case 21040: // OR
 		case 20306: // RO
+		case 20050: // RN
 			_input.seek(0, SEEK_SET);
 			_resource->searchOldBlocks(_blockTable, _input);
 			return;
@@ -81,11 +83,8 @@ void ScummEX::getFileType(const char *filename) {
 	}
 	
 	_input.close();
-	
 	_encbyte = 0x69;
-	
 	_input.open(filename, 1, _encbyte);
-
 	_input.read(&tag, 4);
 
 	switch (tag) {
@@ -98,13 +97,22 @@ void ScummEX::getFileType(const char *filename) {
 			_input.seek(0, SEEK_SET);
 			_resource->searchBlocks(_blockTable, _input);
 			return;
-
-		default:
-			_gui->SetTitle("ScummEX");
-			_gui->DisableToolbarTool(ID_Close);
-			_gui->DisableToolbarTool(ID_FileInfo);
-			_gui->DisplayDialog("Unknown file type!", "Error");
 	}
+
+	tag = 0;
+	_input.read(&tag, 2);
+
+	switch(tag) {
+		case 17740: // LE
+			_input.seek(0, SEEK_SET);
+			_resource->searchOldBlocks(_blockTable, _input);
+			return;
+	}
+
+	_gui->SetTitle("ScummEX");
+	_gui->DisableToolbarTool(ID_Close);
+	_gui->DisableToolbarTool(ID_FileInfo);
+	_gui->DisplayDialog("Unknown file type!", "Error");
 }
 
 void ScummEX::Descumm() {
@@ -362,6 +370,11 @@ void ScummEX::UpdateInfosFromTree(int blockid) {
 		case ENCD:
 		case EXCD:
 		case VERB:
+		case LS:
+		case SC:
+		case EN:
+		case EX:
+		case OC:
 			_gui->SetButton(_blockTable[blockid].blockTypeID);
 			break;
 
