@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.25 2003/09/27 14:56:11 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.26 2003/09/27 15:55:45 yoshizf Exp $
  *
  */
 
@@ -233,12 +233,6 @@ void ImageWindow::boxesDrawOverlay(wxEvent& event) {
 
 void ImageWindow::PutPixel(int x, int y, int red, int green, int blue) {
 	_image->SetRGB(x, y, (unsigned char) red, (unsigned char) green, (unsigned char) blue);
-}
-
-void ImageWindow::UpdateImage() {
-	wxBitmap bitmap = wxBitmap(_image);
-	_sbmp->SetBitmap(bitmap);
-	Refresh();
 }
 
 void GUI_wxWindows::DisplayViewer(char *title, int width, int height, char *text) {
