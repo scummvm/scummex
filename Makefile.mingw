@@ -76,6 +76,8 @@ install:   all
 	strip scummex.exe -o $(SCUMMEXPATH)/scummex.exe
 
 dist:   install
+	cp COPYING $(SCUMMEXPATH)/copying.txt
+	cp README $(SCUMMEXPATH)/readme.txt
 	cp help/*.html $(SCUMMEXPATH)/help
 	cp help/help.* $(SCUMMEXPATH)/help
 	cp SDL/lib/SDL.dll $(SCUMMEXPATH)
