@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.15 2003/09/24 11:49:30 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.cpp,v 1.16 2003/09/24 19:12:16 yoshizf Exp $
  *
  */
 
@@ -218,16 +218,21 @@ int Image::drawSmushFrame(BlockTable *_blockTable, int id, File& _input) {
 	_codec37.init(_blockTable[id].width, _blockTable[id].height);
 	_codec47.init(_blockTable[id].width, _blockTable[id].height);
 	chunk_buffer = (byte *)malloc(_blockTable[id].blockSize - 22);
-	dstorg = dst = (byte *)malloc(_blockTable[id].width*_blockTable[id].height);
+	dstorg = dst = (byte *)malloc(_blockTable[id].width * _blockTable[id].height + 1000);
 	_input.read(chunk_buffer, _blockTable[id].blockSize - 22);
 
 	switch (_blockTable[id].variables) {
 		case 1:
-			bompDecodeLine(dst, chunk_buffer, _blockTable[id].blockSize - 22);
+			decodeCodec1(dst, chunk_buffer, _blockTable[id].height);
 			break;
 
 		case 37:
 			_codec37.decode(dst, chunk_buffer);
+			break;
+
+		case 44:
+		case 22:
+			decodeCodec44(dst, chunk_buffer, _blockTable[id].blockSize - 22);
 			break;
 
 		case 47:
@@ -748,5 +753,67 @@ void Image::decode_vert_transp(uint16 height, uint8 parameter, File& _input)
 				} 
 			} 
 		} 
+	}
+}
+
+void Image::decodeCodec44(byte *dst, const byte *src, uint32 length) {
+	byte val;
+	uint16 size_line, num;
+
+	do {
+		size_line = READ_LE_UINT16(src);
+		src += 2;
+		length -= 2;
+
+		while (size_line != 0) {
+			num = *src++;
+			val = *src++;
+			memset(dst, val, num);
+			dst += num;
+			length -= 2;
+			size_line -= 2;
+			if (size_line != 0) {
+				num = READ_LE_UINT16(src) + 1;
+				src += 2;
+				memcpy(dst, src, num);
+				dst += num;
+				src += num;
+				length -= num + 2;
+				size_line -= num + 2;
+			}
+		}
+		dst--;
+
+	} while (length > 1);
+}
+
+void Image::decodeCodec1(byte *dst, byte *src, int height) {
+	byte val, code;
+	int32 length;
+	int h = height, size_line;
+
+	for (h = 0; h < height; h++) {
+		size_line = READ_LE_UINT16(src);
+		src += 2;
+		while (size_line > 0) {
+			code = *src++;
+			size_line--;
+			length = (code >> 1) + 1;
+			if (code & 1) {
+				val = *src++;
+				size_line--;
+				if (val)
+					memset(dst, val, length);
+				dst += length;
+			} else {
+				size_line -= length;
+				while (length--) {
+					val = *src++;
+					if (val)
+						*dst = val;
+					dst++;
+				}
+			}
+		}
 	}
 }

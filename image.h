@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.h,v 1.9 2003/09/24 11:49:30 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/image.h,v 1.10 2003/09/24 19:12:17 yoshizf Exp $
  *
  */
 
@@ -71,6 +71,8 @@ public:
 	void decode2(uint16 height, uint8 compr, File& _input);
 	void decode2transp(uint16 height, uint8 compr, File& _inpuit);
 	void GetStrip( uint8 pos, File& _input);
+	void decodeCodec44(byte *dst, const byte *src, uint32 length);
+	void decodeCodec1(byte *dst, byte *src, int height);
 };
 
 #endif
