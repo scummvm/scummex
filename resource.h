@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.h,v 1.18 2003/09/30 12:28:33 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.h,v 1.19 2003/10/01 00:17:16 yoshizf Exp $
  *
  */
 
@@ -109,7 +109,7 @@ const struct blockInfo blocksInfo[] = {
 	{43, "NLSC", "Non Local Script", 0, "", 41},
 	{44, "OBIM", "Object Image", 0, "", 33},
 	{45, "IMHD", "Image Header", 0, "", 26},
-	{46, "SOU", "Sound", 0, "", 59},
+	{46, "SOU ", "Sound", 0, "", 59},
 	{47, "VCTL", "", 0, "", 15},
 	{48, "Crea", "", 0, "", 16},
 	{49, "VTLK", "", 0, "", 15},
