@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.7 2003/09/21 15:04:14 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.8 2003/09/21 15:22:51 yoshizf Exp $
  *
  */
 
@@ -834,7 +834,7 @@ void MainWindow::OnQuit(wxCommandEvent& WXUNUSED(event))
 
 void MainWindow::OnAbout(wxCommandEvent& WXUNUSED(event))
 {
-	wxMessageDialog *dialog = new wxMessageDialog(this, "\nScummEX 0.1.0 by Adrien Mercier <yosh@yosh.biz>\n","About", wxOK|wxCENTRE);
+	wxMessageDialog *dialog = new wxMessageDialog(this, "\nScummEX 0.1.0cvs (C) 2003 The ScummVM project\n","About", wxOK|wxCENTRE);
 	dialog->ShowModal();
 }
 
