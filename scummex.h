@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.h,v 1.12 2003/09/23 01:28:15 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.h,v 1.13 2003/09/23 12:26:09 fingolfin Exp $
  *
  */
 
@@ -32,7 +32,6 @@ class ScummEX {
 private:
 	File _input;
 	File _output;
-	uint32 _blockId;
 		
 	BlockTable _blockTable[60000];
 	
@@ -48,29 +47,30 @@ public:
 	ScummEX();
 	~ScummEX();
 
-	void fileView();
-	void FileInfo();
-	void UpdateInfosFromTree(int blockid); 
-	void getFileType(const char *filename);
-	void updateLabel(char *label, char *title, uint32 text);
-	void add_tree_elements(char *itemName, int blockid, int level);
+	void loadFile(const char *filename);
+
 	void warning(const char *s, ...);
 	void debug(int level, const char *s, ...);
 	void error(const char *s, ...);
-	void FileDump(const char *filename);
-	void iMUSEDump(const char *filename);
 
-	void Descumm();
-	void iMUSEPlay();
-	void SOUPlay();
-	void paletteDraw();
-	void bgDraw();
-	void SmushFrameDraw();
-	void objectDraw();
-	void boxesDraw();
-	void boxesDrawOverlay();
+	void fileView(int blockid);
+	void FileDump(int blockid, const char *filename);
+	void iMUSEDump(int blockid, const char *filename);
+
+	void Descumm(int blockid);
+	void iMUSEPlay(int blockid);
+	void SOUPlay(int blockid);
+	void paletteDraw(int blockid);
+	void bgDraw(int blockid);
+	void SmushFrameDraw(int blockid);
+	void objectDraw(int blockid);
+	void boxesDraw(int blockid);
+	void boxesDrawOverlay(int blockid);
 	
 	const BlockTable &getBlockTable(int blockid) const { return _blockTable[blockid]; }
+	
+	int getInputFileSize() { return _input.size(); }
+	byte getEncByte() const { return _encbyte; }
 };
 
 #endif

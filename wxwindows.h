@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.h,v 1.8 2003/09/23 11:55:45 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.h,v 1.9 2003/09/23 12:26:09 fingolfin Exp $
  *
  */
 
@@ -57,11 +57,18 @@ private:
 	wxStaticText *TypeLabel, *OffsetLabel, *SizeLabel, *DescriptionLabel;
 	wxStaticText *SpecLabel[6];
 	wxButton *SpecButton1, *SpecButton2;
+	wxTreeItemId iter[11];
+	wxTreeCtrl *tree;
+
+	const char *_filename;
+
+	uint32 _blockId;
 
 public:
 	MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size);
 
 	void SetButton(int blocktype);
+	void add_tree_elements(char *itemName, int blockid, int level, int type);
 
 protected:
 	void OnQuit(wxCommandEvent& event);
@@ -87,6 +94,8 @@ protected:
 
 	void updateLabels(int blockid);
 	void updateLabel(wxStaticText *label, const char *title, uint32 text);
+
+	void FileInfoDialog(int size, int encbyte);
 
 	DECLARE_EVENT_TABLE()
 };
@@ -129,7 +138,6 @@ public:
 	void EnableToolbarTool(int tool);
 	void DisableToolbarTool(int tool);
 	void AppendText(char *text);
-	void FileInfoDialog(int size, int encbyte);
 	void DrawImage();
 	void UpdateImage();
 	void DisplayHelp();

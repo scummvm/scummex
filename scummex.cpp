@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.20 2003/09/23 01:28:14 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.21 2003/09/23 12:26:09 fingolfin Exp $
  *
  */
 
@@ -37,7 +37,7 @@ ScummEX::~ScummEX() {
 	delete _image;
 }
 
-void ScummEX::getFileType(const char *filename) {
+void ScummEX::loadFile(const char *filename) {
 	uint32 tag;
 	_encbyte = 0;
 	char buf[256];
@@ -115,24 +115,24 @@ void ScummEX::getFileType(const char *filename) {
 	_gui->DisplayDialog("Unknown file type!", "Error");
 }
 
-void ScummEX::Descumm() {
+void ScummEX::Descumm(int blockid) {
 	
-	_input.seek(_blockTable[_blockId].offset, SEEK_SET);
+	_input.seek(_blockTable[blockid].offset, SEEK_SET);
 	_scummVersion = _gui->getScummVersionDialog();
 	if (_scummVersion != 0) {
-		DeScumm(_input, _blockTable[_blockId].blockSize, _scummVersion);
+		DeScumm(_input, _blockTable[blockid].blockSize, _scummVersion);
 	}
 }
 
-void ScummEX::FileDump(const char *filename) {
+void ScummEX::FileDump(int blockid, const char *filename) {
 
 	uint32 size = 0, tot_size = 0;
 	char fbuf2[2048];
 
 	_output.open(filename, 2, 0);
-	_input.seek(_blockTable[_blockId].offset, SEEK_SET);
+	_input.seek(_blockTable[blockid].offset, SEEK_SET);
 
-	while (tot_size < _blockTable[_blockId].blockSize) {
+	while (tot_size < _blockTable[blockid].blockSize) {
 		size = _input.read(fbuf2, 1);
 		tot_size += size;
 		_output.write(fbuf2, 1);
@@ -140,7 +140,7 @@ void ScummEX::FileDump(const char *filename) {
 	_output.close();
 }
 
-void ScummEX::fileView() {
+void ScummEX::fileView(int blockid) {
 	int j, i;
 	char *text;
 	char title[256];
@@ -150,8 +150,8 @@ void ScummEX::fileView() {
 	int len, offset, nlines, bytes_per_line;
 	byte c;
 	
-	len = _blockTable[_blockId].blockSize;
-	offset = _blockTable[_blockId].offset;
+	len = _blockTable[blockid].blockSize;
+	offset = _blockTable[blockid].offset;
 	bytes_per_line = 16;
 	nlines = len / bytes_per_line;
 	
@@ -160,16 +160,16 @@ void ScummEX::fileView() {
 	if (text == NULL)
 		return;
 
-	sprintf(title, "%s Block at offset %d", _blockTable[_blockId].blockName, _blockTable[_blockId].offset);
+	sprintf(title, "%s Block at offset %d", _blockTable[blockid].blockName, _blockTable[blockid].offset);
 	
-	_input.seek(_blockTable[_blockId].offset, SEEK_SET);
+	_input.seek(_blockTable[blockid].offset, SEEK_SET);
 
-	dataorg = data = (byte*) malloc(_blockTable[_blockId].blockSize);
+	dataorg = data = (byte*) malloc(_blockTable[blockid].blockSize);
 
 	if (data == NULL)
 		return;
 
-	_input.read(data, _blockTable[_blockId].blockSize);
+	_input.read(data, _blockTable[blockid].blockSize);
 
 	while (len >= bytes_per_line) {
 		sprintf(buf, "%06X: ", offset);
@@ -244,62 +244,49 @@ void ScummEX::fileView() {
 
 }
 
-void ScummEX::iMUSEPlay()
+void ScummEX::iMUSEPlay(int blockid)
 {
-	_sound->playiMUSE(_input, _blockTable, _blockId, _input);
+	_sound->playiMUSE(_input, _blockTable, blockid, _input);
 }
 
-void ScummEX::iMUSEDump(const char *filename)
+void ScummEX::iMUSEDump(int blockid, const char *filename)
 {
 	_output.open(filename, 2, 0);
 
-	_sound->playiMUSE(_input, _blockTable, _blockId, _output, 1);
+	_sound->playiMUSE(_input, _blockTable, blockid, _output, 1);
 }
 
-void ScummEX::SOUPlay()
+void ScummEX::SOUPlay(int blockid)
 {
-	_sound->playSOU(_blockTable, _input, _blockId, _input);
+	_sound->playSOU(_blockTable, _input, blockid, _input);
 }
 
-void ScummEX::paletteDraw()
+void ScummEX::paletteDraw(int blockid)
 {
-	_image->drawPalette(_blockTable, _blockId, _input);
+	_image->drawPalette(_blockTable, blockid, _input);
 }
 
-void ScummEX::bgDraw()
+void ScummEX::bgDraw(int blockid)
 {
-	_image->drawBG(_input, _blockTable, _blockId);
+	_image->drawBG(_input, _blockTable, blockid);
 }
 
-void ScummEX::SmushFrameDraw()
+void ScummEX::SmushFrameDraw(int blockid)
 {
-	_image->drawSmushFrame(_blockTable, _blockId, _input);
+	_image->drawSmushFrame(_blockTable, blockid, _input);
 }
 
-void ScummEX::objectDraw()
+void ScummEX::objectDraw(int blockid)
 {
-	_image->drawObject(_input, _blockTable, _blockId);
+	_image->drawObject(_input, _blockTable, blockid);
 }
 
-void ScummEX::boxesDraw()
+void ScummEX::boxesDraw(int blockid)
 {
-	_image->drawBoxes(_blockTable, _blockId, _input);
+	_image->drawBoxes(_blockTable, blockid, _input);
 }
 
-void ScummEX::boxesDrawOverlay()
+void ScummEX::boxesDrawOverlay(int blockid)
 {
-	_image->drawBoxes(_blockTable, _blockId, _input, 0);
-}
-
-void ScummEX::FileInfo() {
-	int fsize;
-	fsize = _input.size();
-	_gui->FileInfoDialog(fsize, _encbyte);
-}
-	
-void ScummEX::UpdateInfosFromTree(int blockid) {
-	// TODO: This method should eventuall be removed, likewise _blockId.
-	// Instead pass the proper block id, or even the BlockTable struct,
-	// as a paramter to the methods using it.
-	_blockId = blockid;
+	_image->drawBoxes(_blockTable, blockid, _input, 0);
 }

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.19 2003/09/23 11:55:45 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.20 2003/09/23 12:26:09 fingolfin Exp $
  *
  */
 
@@ -25,11 +25,8 @@
 #include "scummex.h"
 #include "icons.h"
 
-wxTreeItemId iter[11];
-wxTreeCtrl *tree = 0;
 ScummEX *g_scummex = 0;
 wxImage *image = 0;
-const char *g_filename = 0;
 wxTextCtrl *hexdata = 0;
 wxToolBar *ToolBar = 0;
 
@@ -127,25 +124,6 @@ int GUI_wxWindows::getScummVersionDialog() {
 	return 0;
 }
 
-void GUI_wxWindows::FileInfoDialog(int size, int encbyte) {
-	char buf[256];
-	char msg[512];
-	const char *fname;
-	const char *fpath;
-	wxFileName *filename = new wxFileName(g_filename);
-	
-	fname = filename->GetFullName();
-	fpath = filename->GetFullPath();
-	sprintf(msg, "Filename: \t\t %s\n", fname);
-	sprintf(buf, "Full Path: \t\t %s\n", fpath);
-	strcat(msg, buf);
-	sprintf(buf, "Size: \t\t %d\n", size);
-	strcat(msg, buf);
-	sprintf(buf, "XOR byte: \t %d (0x%02X)\n", encbyte, encbyte);
-	strcat(msg, buf);
-	wxMessageBox(msg, "File Info", wxOK, _mainWindow);
-}
-
 void GUI_wxWindows::PutPixel(int x, int y, int red, int green, int blue) {
 	image->SetRGB(x, y, (unsigned char) red, (unsigned char) green, (unsigned char) blue);
 }
@@ -227,8 +205,15 @@ void ImageWindow::SaveImage(wxEvent& event) {
 }
 
 void ImageWindow::boxesDrawOverlay(wxEvent& event) {
-	g_scummex->boxesDrawOverlay();
+// FIXME: need to pass the current block ID here. I could add a hack to do
+// that, however, the truth is that ImageWindow and Image are not quite nice
+// anyway... We probably should just rewrite them in a cleaner fashion.
+// Also it feels odd to reuse a single ImageWindow for everything, after all
+// one may want to compare multiple palettes/rooms etc. side-by-side.
+// 
+//	g_scummex->boxesDrawOverlay();
 }
+
 void GUI_wxWindows::DisplayViewer(char *title, int width, int height, char *text) {
 
 	ViewerWindow *viewerFrame = new ViewerWindow(_mainWindow, title, text, wxPoint(50,50), wxSize(width, height));
@@ -279,6 +264,10 @@ void GUI_wxWindows::EnableToolbarTool(int tool) {
 
 void GUI_wxWindows::DisableToolbarTool(int tool) {
 	ToolBar->EnableTool(tool, FALSE);
+}
+
+void GUI_wxWindows::add_tree_elements(char *itemName, int blockid, int level, int type) {
+	_mainWindow->add_tree_elements(itemName, blockid, level, type);
 }
 
 void MainWindow::SetButton(int blocktype) {
@@ -372,7 +361,7 @@ void MainWindow::SetButton(int blocktype) {
 
 }
 
-void GUI_wxWindows::add_tree_elements(char *itemName, int blockid, int level, int type) {
+void MainWindow::add_tree_elements(char *itemName, int blockid, int level, int type) {
 
 	wxTreeItemId itemid;
 	assert(level <= 10);
@@ -532,7 +521,8 @@ END_EVENT_TABLE()
 
 
 MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size)
-	: wxFrame((wxFrame*)NULL,-1,title,pos,size)
+	: wxFrame((wxFrame*)NULL,-1,title,pos,size),
+	_filename(0), _blockId(0)
 {
 	htmlflag = 0;
 	
@@ -930,9 +920,9 @@ void MainWindow::OnOpen(wxCommandEvent& WXUNUSED(event))
 		"Directory Files|*.000;*.la0;*.lfl;*.sm0",
 		wxOPEN);
 	if (dialog->ShowModal() == wxID_OK) {
-		g_filename = (const char*)dialog->GetPath();
+		_filename = (const char*)dialog->GetPath();
 		tree->DeleteChildren(iter[0]);
-		g_scummex->getFileType(g_filename);
+		g_scummex->loadFile(_filename);
 	}
 }
 
@@ -1229,18 +1219,38 @@ void MainWindow::OnSelChanged(wxTreeEvent& event) {
 		
 	BigIcon->SetBitmap(bigIconBitmap);
 	
-	updateLabels(item->_blockId);
-	g_scummex->UpdateInfosFromTree(item->_blockId);
+	_blockId = item->_blockId;
+	updateLabels(_blockId);
 	event.Skip();
 }
 
 void MainWindow::FileView(wxEvent& event) {
-	g_scummex->fileView();
+	g_scummex->fileView(_blockId);
 }
 
 void MainWindow::FileInfo(wxEvent& event) {
-	g_scummex->FileInfo();
+	FileInfoDialog(g_scummex->getInputFileSize(), g_scummex->getEncByte());
 }
+
+void MainWindow::FileInfoDialog(int size, int encbyte) {
+	char buf[256];
+	char msg[512];
+	const char *fname;
+	const char *fpath;
+	wxFileName *filename = new wxFileName(_filename);
+	
+	fname = filename->GetFullName();
+	fpath = filename->GetFullPath();
+	sprintf(msg, "Filename: \t\t %s\n", fname);
+	sprintf(buf, "Full Path: \t\t %s\n", fpath);
+	strcat(msg, buf);
+	sprintf(buf, "Size: \t\t %d\n", size);
+	strcat(msg, buf);
+	sprintf(buf, "XOR byte: \t %d (0x%02X)\n", encbyte, encbyte);
+	strcat(msg, buf);
+	wxMessageBox(msg, "File Info", wxOK, this);
+}
+
 
 void MainWindow::BlockDump(wxEvent& event) {
 	wxFileDialog *dialog = new wxFileDialog(this, "Please select an output file.", "", "",
@@ -1248,7 +1258,7 @@ void MainWindow::BlockDump(wxEvent& event) {
 		wxSAVE);
 	if (dialog->ShowModal() == wxID_OK) {
 		const char *filename = (const char*)dialog->GetPath();
-		g_scummex->FileDump(filename);
+		g_scummex->FileDump(_blockId, filename);
 	}
 	
 }
@@ -1259,7 +1269,7 @@ void MainWindow::SaveSOU(wxEvent& event) {
 		wxSAVE);
 	if (dialog->ShowModal() == wxID_OK) {
 		const char *filename = (const char*)dialog->GetPath();
-		g_scummex->iMUSEDump(filename);
+		g_scummex->iMUSEDump(_blockId, filename);
 	}
 	
 }
@@ -1270,32 +1280,32 @@ void MainWindow::SaveiMUSE(wxEvent& event) {
 		wxSAVE);
 	if (dialog->ShowModal() == wxID_OK) {
 		const char *filename = (const char*)dialog->GetPath();
-		g_scummex->iMUSEDump(filename);
+		g_scummex->iMUSEDump(_blockId, filename);
 	}
 	
 }
 
 void MainWindow::Descumm(wxEvent& event) {
-	g_scummex->Descumm();
+	g_scummex->Descumm(_blockId);
 }
 void MainWindow::iMUSEPlay(wxEvent& event) {
-	g_scummex->iMUSEPlay();
+	g_scummex->iMUSEPlay(_blockId);
 }
 void MainWindow::SOUPlay(wxEvent& event) {
-	g_scummex->SOUPlay();
+	g_scummex->SOUPlay(_blockId);
 }
 void MainWindow::paletteDraw(wxEvent& event) {
-	g_scummex->paletteDraw();
+	g_scummex->paletteDraw(_blockId);
 }
 void MainWindow::bgDraw(wxEvent& event) {
-	g_scummex->bgDraw();
+	g_scummex->bgDraw(_blockId);
 }
 void MainWindow::SmushFrameDraw(wxEvent& event) {
-	g_scummex->SmushFrameDraw();
+	g_scummex->SmushFrameDraw(_blockId);
 }
 void MainWindow::objectDraw(wxEvent& event) {
-	g_scummex->objectDraw();
+	g_scummex->objectDraw(_blockId);
 }
 void MainWindow::boxesDraw(wxEvent& event) {
-	g_scummex->boxesDraw();
+	g_scummex->boxesDraw(_blockId);
 }
