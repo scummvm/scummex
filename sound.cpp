@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/Attic/sound.cpp,v 1.2 2003/09/18 19:37:14 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/Attic/sound.cpp,v 1.3 2003/09/18 22:13:12 yoshizf Exp $
  *
  */
 
@@ -200,8 +200,14 @@ void Sound::parseSOU(BlockTable *_blockTable, File& _input) {
 			printf("Unsupported compression type %d\n", comp);
 			return;
 		}
-
-		real_rate = 1000000 / (256 - rate);
+		
+		if (rate == 0xa5 || rate == 0xa6) {
+			_blockTable[index].variables = 11025;
+		} else if (rate == 0xd2 || rate == 0xd3) {
+			_blockTable[index].variables = 22050;
+		} else {
+			_blockTable[index].variables = 1000000L / (256L - rate);
+		}
 
 		_input.seek(_blockTable[index].blockSize + _blockTable[index].offset + 5, SEEK_SET);
 	

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.3 2003/09/18 19:37:14 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.4 2003/09/18 22:13:12 yoshizf Exp $
  *
  */
 
@@ -356,7 +356,8 @@ void ScummEX::UpdateInfosFromTree(int blockid) {
 			_gui->updateLabel("SpecLabel3", "Number of Images", _blockTable[blockid].numFiles);
 			break;
 			
-		case 48:
+		case Crea:
+			_gui->updateLabel("SpecLabel1", "Sample Rate", _blockTable[blockid].variables);
 			_gui->SetButton(_blockTable[blockid].blockTypeID);
 			break;
 

@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.4 2003/09/18 20:50:56 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/resource.cpp,v 1.5 2003/09/18 22:13:12 yoshizf Exp $
  *
  */
 
@@ -204,6 +204,7 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 	int numFiles, offset, number;
 	int bufindex;
 	uint blockOffset, blockSize;
+	byte temp[8];
 
 	strcpy(_blockTable[index].blockDescription, blocksInfo[_blockTable[index].blockTypeID].description);
 
@@ -760,6 +761,25 @@ int Resource::parseBlocks(char *blockName, BlockTable *_blockTable, File& _input
 		case SDAT:
 			_blockTable[index].blockSize = _input.readUint32BE();
 			stopflag = 1;
+			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
+			index++;
+			break;
+
+		case Crea:
+			_input.seek(23, SEEK_CUR);
+			_input.read(temp, 3);
+			_blockTable[index].blockSize = (temp[0] | (temp[1] << 8) | (temp[2] << 16)) - 2;
+			_blockTable[index].blockSize += 28;
+			number = _input.readByte();
+			if (number == 0xa5 || number == 0xa6) {
+				_blockTable[index].variables = 11025;
+			} else if (number == 0xd2 || number == 0xd3) {
+				_blockTable[index].variables = 22050;
+			} else {
+				_blockTable[index].variables = 1000000L / (256L - number);
+			}
+
+			_input.seek(_blockTable[index].offset + _blockTable[index].blockSize, SEEK_SET);
 			_gui->add_tree_elements(_blockTable[index].blockName, index, level, _blockTable[index].blockTypeID);
 			index++;
 			break;
