@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.h,v 1.11 2003/09/23 00:47:23 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.h,v 1.12 2003/09/23 01:28:15 fingolfin Exp $
  *
  */
 
@@ -34,7 +34,7 @@ private:
 	File _output;
 	uint32 _blockId;
 		
-	struct BlockTable _blockTable[60000];
+	BlockTable _blockTable[60000];
 	
 	byte _encbyte;
 	
@@ -46,8 +46,9 @@ public:
 	int _scummVersion;
 
 	ScummEX();
+	~ScummEX();
+
 	void fileView();
-	void Descumm();
 	void FileInfo();
 	void UpdateInfosFromTree(int blockid); 
 	void getFileType(const char *filename);
@@ -57,8 +58,10 @@ public:
 	void debug(int level, const char *s, ...);
 	void error(const char *s, ...);
 	void FileDump(const char *filename);
-	void iMUSEPlay();
 	void iMUSEDump(const char *filename);
+
+	void Descumm();
+	void iMUSEPlay();
 	void SOUPlay();
 	void paletteDraw();
 	void bgDraw();
@@ -66,6 +69,8 @@ public:
 	void objectDraw();
 	void boxesDraw();
 	void boxesDrawOverlay();
+	
+	const BlockTable &getBlockTable(int blockid) const { return _blockTable[blockid]; }
 };
 
 #endif

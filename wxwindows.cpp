@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.15 2003/09/23 00:47:23 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.16 2003/09/23 01:28:15 fingolfin Exp $
  *
  */
 
@@ -30,7 +30,7 @@ wxTreeCtrl *tree = 0;
 wxStaticText *TypeLabel, *OffsetLabel, *SizeLabel, *DescriptionLabel;
 wxStaticText *SpecLabel[6];
 wxButton *SpecButton1 = 0, *SpecButton2 = 0;
-ScummEX *_scummex = 0;
+ScummEX *g_scummex = 0;
 wxImage *image = 0;
 const char *g_filename = 0;
 wxTextCtrl *hexdata = 0;
@@ -43,8 +43,12 @@ IMPLEMENT_APP(GUI_wxWindows)
 
 GUI_wxWindows::GUI_wxWindows()
 	: _mainWindow(0), _imageWindow(0) {
-	_scummex = new ScummEX();
+	g_scummex = new ScummEX();
 	_gui = this; // FIXME - ugly quick workaround for previously broken code
+}
+
+GUI_wxWindows::~GUI_wxWindows() {
+	delete g_scummex;
 }
 
 bool GUI_wxWindows::OnInit()
@@ -62,7 +66,7 @@ printf("GUI_wxWindows::OnInit\n");
 	_mainWindow->Connect( ID_Browse, wxEVT_COMMAND_BUTTON_CLICKED,
 		(wxObjectEventFunction) &MainWindow::OnOpen );
 	_mainWindow->Connect( ID_View, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction) &ScummEX::fileView );
+		(wxObjectEventFunction) &ScummEX::fileView );	// FIXME: This is bogus, it calls a ScummEX method on a MainWindow object
 	_mainWindow->Connect( ID_Dump, wxEVT_COMMAND_MENU_SELECTED,
 		(wxObjectEventFunction) &GUI_wxWindows::BlockDump );
 	_mainWindow->Connect( Tree, wxEVT_COMMAND_TREE_SEL_CHANGING,
@@ -70,7 +74,7 @@ printf("GUI_wxWindows::OnInit\n");
 	_mainWindow->Connect( wxID_HELP, wxEVT_COMMAND_MENU_SELECTED,
 		(wxObjectEventFunction) &MainWindow::OnHelp );
 	_mainWindow->Connect( ID_FileInfo, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction) &ScummEX::FileInfo );
+		(wxObjectEventFunction) &ScummEX::FileInfo );	// FIXME: This is bogus, it calls a ScummEX method on a MainWindow object
 		
 	_mainWindow->Show(TRUE);
 	SetTopWindow(_mainWindow);
@@ -176,7 +180,7 @@ void GUI_wxWindows::BlockDump() {
 		wxSAVE);
 	if (dialog->ShowModal() == wxID_OK) {
 		const char *filename = (const char*)dialog->GetPath();
-		_scummex->FileDump(filename);
+		g_scummex->FileDump(filename);
 	}
 	
 }
@@ -187,7 +191,7 @@ void GUI_wxWindows::SaveSOU() {
 		wxSAVE);
 	if (dialog->ShowModal() == wxID_OK) {
 		const char *filename = (const char*)dialog->GetPath();
-		_scummex->iMUSEDump(filename);
+		g_scummex->iMUSEDump(filename);
 	}
 	
 }
@@ -198,7 +202,7 @@ void GUI_wxWindows::SaveiMUSE() {
 		wxSAVE);
 	if (dialog->ShowModal() == wxID_OK) {
 		const char *filename = (const char*)dialog->GetPath();
-		_scummex->iMUSEDump(filename);
+		g_scummex->iMUSEDump(filename);
 	}
 	
 }
@@ -225,7 +229,7 @@ void GUI_wxWindows::DisplayImage(char* title, int width, int height, byte flags)
 	_imageWindow->Connect( ID_BMP, wxEVT_COMMAND_MENU_SELECTED,
 		(wxObjectEventFunction) &GUI_wxWindows::SaveImage );
 	_imageWindow->Connect( ID_Boxes, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction) &ScummEX::boxesDrawOverlay );
+		(wxObjectEventFunction) &GUI_wxWindows::boxesDrawOverlay );
 	_imageWindow->Connect( ID_ImageWindow, wxEVT_CLOSE_WINDOW,
 		(wxObjectEventFunction) &ImageWindow::OnQuit );
 }
@@ -345,7 +349,7 @@ void GUI_wxWindows::SetButton(int blocktype) {
 			SpecButton1->Enable(FALSE); // FIXME Mixer not working anymore?
 			SpecButton2->Show(TRUE);
 			SpecButton1->Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
-				(wxObjectEventFunction) &ScummEX::iMUSEPlay );
+				(wxObjectEventFunction) &GUI_wxWindows::iMUSEPlay );
 			SpecButton2->Connect( ID_SpecButton2, wxEVT_COMMAND_BUTTON_CLICKED,
 				(wxObjectEventFunction) &GUI_wxWindows::SaveiMUSE );
 			break;
@@ -354,7 +358,7 @@ void GUI_wxWindows::SetButton(int blocktype) {
 			SpecButton1->SetLabel("View Object");
 			SpecButton1->Show(TRUE);
 			SpecButton1->Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
-				(wxObjectEventFunction) &ScummEX::objectDraw );
+				(wxObjectEventFunction) &GUI_wxWindows::objectDraw );
 			break;
 
 		case Crea:
@@ -365,7 +369,7 @@ void GUI_wxWindows::SetButton(int blocktype) {
 			SpecButton2->Show(TRUE);
 			SpecButton2->Enable(FALSE);
 			SpecButton1->Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
-				(wxObjectEventFunction) &ScummEX::SOUPlay );
+				(wxObjectEventFunction) &GUI_wxWindows::SOUPlay );
 			SpecButton2->Connect( ID_SpecButton2, wxEVT_COMMAND_BUTTON_CLICKED,
 				(wxObjectEventFunction) &GUI_wxWindows::SaveSOU );
 			break;
@@ -378,8 +382,9 @@ void GUI_wxWindows::SetButton(int blocktype) {
 		case AHDR:
 			SpecButton1->SetLabel("View Palette");
 			SpecButton1->Show(TRUE);
+printf("Connect: SpecButton1 = %d, this = %d\n", (int)SpecButton1, (int)this);
 			SpecButton1->Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
-				(wxObjectEventFunction) &ScummEX::paletteDraw );
+				(wxObjectEventFunction) &GUI_wxWindows::paletteDraw );
 			break;
 		
 		case BM:
@@ -388,14 +393,14 @@ void GUI_wxWindows::SetButton(int blocktype) {
 			SpecButton1->SetLabel("View Image");
 			SpecButton1->Show(TRUE);
 			SpecButton1->Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
-				(wxObjectEventFunction) &ScummEX::bgDraw );
+				(wxObjectEventFunction) &GUI_wxWindows::bgDraw );
 			break;
 
 		case FOBJ:
 			SpecButton1->SetLabel("View Frame");
 			SpecButton1->Show(TRUE);
 			SpecButton1->Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
-				(wxObjectEventFunction) &ScummEX::SmushFrameDraw );
+				(wxObjectEventFunction) &GUI_wxWindows::SmushFrameDraw );
 			break;
 			
 		case LSCR:
@@ -411,14 +416,14 @@ void GUI_wxWindows::SetButton(int blocktype) {
 			SpecButton1->SetLabel("Decompile Script");
 			SpecButton1->Show(TRUE);
 			SpecButton1->Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
-				(wxObjectEventFunction) &ScummEX::Descumm );
+				(wxObjectEventFunction) &GUI_wxWindows::Descumm );
 			break;
 
 		case BOXD:
 			SpecButton1->SetLabel("View Boxes...");
 			SpecButton1->Show(TRUE);
 			SpecButton1->Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
-				(wxObjectEventFunction) &ScummEX::boxesDraw );
+				(wxObjectEventFunction) &GUI_wxWindows::boxesDraw );
 			break;
 	}
 
@@ -443,50 +448,161 @@ void GUI_wxWindows::add_tree_elements(char *itemName, int blockid, int level, in
 	}
 }
 
-void GUI_wxWindows::updateLabel(char *label, char *title, uint32 text) {
+void GUI_wxWindows::updateLabel(wxStaticText *label, const char *title, uint32 text) {
 	char buf[256];
-	if (strstr(label, "TypeLabel")) {
-		sprintf(buf, "%s: \t\t %s", title, (char*)text);
-		TypeLabel->SetLabel(buf);
-	}
-	if (strstr(label, "OffsetLabel")) {
-		sprintf(buf, "%s: \t\t %d (0x%08X)", title, text, text);
-		OffsetLabel->SetLabel(buf);
-	}
-	if (strstr(label, "DescriptionLabel")) {
-		sprintf(buf, "%s: \t %s", title, (char*)text);
-		DescriptionLabel->SetLabel(buf);
-	}
-	if (strstr(label, "SizeLabel")) {
-		sprintf(buf, "%s: \t\t %d (0x%08X)", title, text, text);
-		SizeLabel->SetLabel(buf);
-	}
-	if (strstr(label, "SpecLabel1")) {
-		sprintf(buf, "%s:    \t\t %d", title, text);
-		SpecLabel[0]->SetLabel(buf);
-	}
-	if (strstr(label, "SpecLabel2")) {
-		sprintf(buf, "%s:    \t\t %d", title, text);
-		SpecLabel[1]->SetLabel(buf);
-	}
-	if (strstr(label, "SpecLabel3")) {
-		sprintf(buf, "%s:    \t\t %d", title, text);
-		SpecLabel[2]->SetLabel(buf);
-	}
-	if (strstr(label, "SpecLabel4")) {
-		sprintf(buf, "%s:    \t\t %d", title, text);
-		SpecLabel[3]->SetLabel(buf);
-	}
-	if (strstr(label, "SpecLabel5")) {
-		sprintf(buf, "%s:    \t\t %d", title, text);
-		SpecLabel[4]->SetLabel(buf);
-	}
-	if (strstr(label, "SpecLabel6")) {
-		sprintf(buf, "%s:    \t\t %d", title, text);
-		SpecLabel[5]->SetLabel(buf);
-	}
-
+	sprintf(buf, "%s:    \t\t %d", title, text);
+	label->SetLabel(buf);
 }
+
+void GUI_wxWindows::updateLabels(int blockid) {
+	const BlockTable &block = g_scummex->getBlockTable(blockid);
+	char buf[256];
+
+	// Clear out all labels
+	for (int i = 0; i < 6; i++)
+		SpecLabel[i]->SetLabel("");
+
+	sprintf(buf, "Type: \t\t %s", block.blockType);
+	TypeLabel->SetLabel(buf);
+
+	sprintf(buf, "Offset: \t\t %d (0x%08X)", block.offset, block.offset);
+	OffsetLabel->SetLabel(buf);
+
+	sprintf(buf, "Size: \t\t %d (0x%08X)", block.blockSize, block.blockSize);
+	SizeLabel->SetLabel(buf);
+
+	sprintf(buf, "Description: \t %s", block.blockDescription);
+	DescriptionLabel->SetLabel(buf);
+
+	switch(block.blockTypeID) {
+		case MAXS:
+			updateLabel(SpecLabel[0], "Number of variables", block.variables);
+			updateLabel(SpecLabel[1], "Number of bit variables", block.bitVariables);
+			updateLabel(SpecLabel[2], "Number of local objects", block.localObjects);
+			updateLabel(SpecLabel[3], "Number of arrays", block.arrays);
+			updateLabel(SpecLabel[4], "Number of character sets", block.characters);
+			updateLabel(SpecLabel[5], "Number of inventory objects", block.invObjects);
+			break;
+
+		case LB83:
+		case LABN:
+			updateLabel(SpecLabel[0], "Number of files", block.numFiles);
+			break;
+
+		case RMHD:
+		case HD:
+			updateLabel(SpecLabel[0], "Room Width", block.width);
+			updateLabel(SpecLabel[1], "Room Height", block.height);
+			updateLabel(SpecLabel[2], "Number of Objects", block.localObjects);
+			break;
+
+		case TRNS:
+			updateLabel(SpecLabel[0], "Transparent Color", block.trans);
+			break;
+			
+		case DROO:
+		case DSCR:
+		case DSOU:
+		case DCOS:
+		case DCHR:
+		case DOBJ:
+			updateLabel(SpecLabel[0], "Number of items", block.numFiles);
+			break;
+
+		case cus2:
+			SetButton(block.blockTypeID);
+			break;
+			
+		case COMP:
+			updateLabel(SpecLabel[0], "Number of samples", block.numFiles);
+			break;
+
+		case CLUT:
+		case APAL:
+		case PA:
+		case NPAL:
+		case AHDR:
+			SetButton(block.blockTypeID);
+			break;
+
+		case RMIM:
+		case BM:
+		case IMAG:
+			SetButton(block.blockTypeID);
+			break;
+
+		case OBIM:
+			if (g_scummex->getBlockTable(blockid+3).blockTypeID == 35) {
+				SetButton(block.blockTypeID);
+			}
+			break;
+
+		case IMHD:
+			updateLabel(SpecLabel[0], "Room Width", block.width);
+			updateLabel(SpecLabel[1], "Room Height", block.height);
+			updateLabel(SpecLabel[2], "Number of Images", block.numFiles);
+			break;
+			
+		case Crea:
+			updateLabel(SpecLabel[0], "Sample Rate", block.variables);
+			SetButton(block.blockTypeID);
+			break;
+
+		case LSCR:
+		case SCRP:
+		case ENCD:
+		case EXCD:
+		case VERB:
+		case LS:
+		case SC:
+		case EN:
+		case EX:
+		case OC:
+			SetButton(block.blockTypeID);
+			break;
+
+		case FOBJ:
+			updateLabel(SpecLabel[0], "Frame Width", block.width);
+			updateLabel(SpecLabel[1], "Frame Height", block.height);
+			updateLabel(SpecLabel[2], "Codec", block.variables);
+			SetButton(block.blockTypeID);
+			break;
+
+		case BOXD:
+			updateLabel(SpecLabel[0], "No. of Boxes", block.numFiles);
+			SetButton(block.blockTypeID);
+			break;
+	}
+}
+
+void GUI_wxWindows::Descumm() {
+	g_scummex->Descumm();
+}
+void GUI_wxWindows::iMUSEPlay() {
+	g_scummex->iMUSEPlay();
+}
+void GUI_wxWindows::SOUPlay() {
+	g_scummex->SOUPlay();
+}
+void GUI_wxWindows::paletteDraw() {
+	g_scummex->paletteDraw();
+}
+void GUI_wxWindows::bgDraw() {
+	g_scummex->bgDraw();
+}
+void GUI_wxWindows::SmushFrameDraw() {
+	g_scummex->SmushFrameDraw();
+}
+void GUI_wxWindows::objectDraw() {
+	g_scummex->objectDraw();
+}
+void GUI_wxWindows::boxesDraw() {
+	g_scummex->boxesDraw();
+}
+void GUI_wxWindows::boxesDrawOverlay() {
+	g_scummex->boxesDrawOverlay();
+}
+
 
 MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size)
 	: wxFrame((wxFrame*)NULL,-1,title,pos,size)
@@ -741,12 +857,12 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 			0
 			);
 	
-	SpecLabel[0] = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE, "SpecLabel1");
-	SpecLabel[1] = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE, "SpecLabel2");
-	SpecLabel[2] = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE, "SpecLabel3");
-	SpecLabel[3] = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE, "SpecLabel4");
-	SpecLabel[4] = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE, "SpecLabel5");
-	SpecLabel[5] = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE, "SpecLabel6");
+	SpecLabel[0] = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE);
+	SpecLabel[1] = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE);
+	SpecLabel[2] = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE);
+	SpecLabel[3] = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE);
+	SpecLabel[4] = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE);
+	SpecLabel[5] = new wxStaticText(infospanel, -1, "", wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE);
 	
 	for (int i = 0; i < 6; i++) {
 		SpecInfosSizer->Add(SpecLabel[i],
@@ -885,7 +1001,7 @@ void MainWindow::OnOpen(wxCommandEvent& WXUNUSED(event))
 	if (dialog->ShowModal() == wxID_OK) {
 		g_filename = (const char*)dialog->GetPath();
 		tree->DeleteChildren(iter[0]);
-		_scummex->getFileType(g_filename);
+		g_scummex->getFileType(g_filename);
 	}
 }
 
@@ -896,8 +1012,6 @@ void MainWindow::OnSelChanged(wxTreeEvent& event) {
 	itemid = event.GetItem();
 	TreeItemData *item = (TreeItemData *)tree->GetItemData(itemid);
 
-	for (int i = 0; i < 6; i++)
-		SpecLabel[i]->SetLabel("");
 	SpecButton1->Show(FALSE);
 	SpecButton2->Show(FALSE);
 	ToolBar->EnableTool(ID_Dump, TRUE);
@@ -1183,7 +1297,8 @@ void MainWindow::OnSelChanged(wxTreeEvent& event) {
 	}
 		
 	BigIcon->SetBitmap(bigIconBitmap);
-			
-	_scummex->UpdateInfosFromTree(item->_blockId);
+	
+	_gui->updateLabels(item->_blockId);
+	g_scummex->UpdateInfosFromTree(item->_blockId);
 	event.Skip();
 }

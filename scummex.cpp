@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.19 2003/09/23 00:47:23 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/scummex.cpp,v 1.20 2003/09/23 01:28:14 fingolfin Exp $
  *
  */
 
@@ -26,9 +26,15 @@
 #include "descumm.h"
 
 ScummEX::ScummEX() {
-	_image = new Image();	// FIXME - where is this deleted?
+	_image = new Image();
 	_sound = new Sound();
 	_resource = new Resource();
+}
+
+ScummEX::~ScummEX() {
+	delete _resource;
+	delete _sound;
+	delete _image;
 }
 
 void ScummEX::getFileType(const char *filename) {
@@ -257,37 +263,31 @@ void ScummEX::SOUPlay()
 
 void ScummEX::paletteDraw()
 {
-	_image = new Image();	// FIXME - where is this deleted?
 	_image->drawPalette(_blockTable, _blockId, _input);
 }
 
 void ScummEX::bgDraw()
 {
-	_image = new Image();	// FIXME - where is this deleted?
 	_image->drawBG(_input, _blockTable, _blockId);
 }
 
 void ScummEX::SmushFrameDraw()
 {
-	_image = new Image();	// FIXME - where is this deleted?
 	_image->drawSmushFrame(_blockTable, _blockId, _input);
 }
 
 void ScummEX::objectDraw()
 {
-	_image = new Image();	// FIXME - where is this deleted?
 	_image->drawObject(_input, _blockTable, _blockId);
 }
 
 void ScummEX::boxesDraw()
 {
-	_image = new Image();	// FIXME - where is this deleted?
 	_image->drawBoxes(_blockTable, _blockId, _input);
 }
 
 void ScummEX::boxesDrawOverlay()
 {
-	_image = new Image();	// FIXME - where is this deleted?
 	_image->drawBoxes(_blockTable, _blockId, _input, 0);
 }
 
@@ -298,119 +298,8 @@ void ScummEX::FileInfo() {
 }
 	
 void ScummEX::UpdateInfosFromTree(int blockid) {
+	// TODO: This method should eventuall be removed, likewise _blockId.
+	// Instead pass the proper block id, or even the BlockTable struct,
+	// as a paramter to the methods using it.
 	_blockId = blockid;
-
-	_gui->updateLabel("TypeLabel", "Type", (uint32)_blockTable[blockid].blockType);
-	_gui->updateLabel("OffsetLabel", "Offset", _blockTable[blockid].offset);
-	_gui->updateLabel("SizeLabel", "Size", _blockTable[blockid].blockSize);
-	_gui->updateLabel("DescriptionLabel", "Description", (uint32)_blockTable[blockid].blockDescription);
-
-	switch(_blockTable[blockid].blockTypeID) {
-		case MAXS:
-			_gui->updateLabel("SpecLabel1", "Number of variables", _blockTable[blockid].variables);
-			_gui->updateLabel("SpecLabel2", "Number of bit variables", _blockTable[blockid].bitVariables);
-			_gui->updateLabel("SpecLabel3", "Number of local objects", _blockTable[blockid].localObjects);
-			_gui->updateLabel("SpecLabel4", "Number of arrays", _blockTable[blockid].arrays);
-			_gui->updateLabel("SpecLabel5", "Number of character sets", _blockTable[blockid].characters);
-			_gui->updateLabel("SpecLabel6", "Number of inventory objects", _blockTable[blockid].invObjects);
-			break;
-
-		case LB83:
-		case LABN:
-			_gui->updateLabel("SpecLabel1", "Number of files", _blockTable[blockid].numFiles);
-			break;
-
-		case RMHD:
-		case HD:
-			_gui->updateLabel("SpecLabel1", "Room Width", _blockTable[blockid].width);
-			_gui->updateLabel("SpecLabel2", "Room Height", _blockTable[blockid].height);
-			_gui->updateLabel("SpecLabel3", "Number of Objects", _blockTable[blockid].localObjects);
-			break;
-
-		case TRNS:
-			_gui->updateLabel("SpecLabel1", "Transparent Color", _blockTable[blockid].trans);
-			break;
-			
-		case DROO:
-		case DSCR:
-		case DSOU:
-		case DCOS:
-		case DCHR:
-		case DOBJ:
-			_gui->updateLabel("SpecLabel1", "Number of items", _blockTable[blockid].numFiles);
-			break;
-
-		case cus2:
-			_gui->SetButton(_blockTable[blockid].blockTypeID);
-			break;
-			
-		case COMP:
-			_gui->updateLabel("SpecLabel1", "Number of samples", _blockTable[blockid].numFiles);
-			break;
-
-		case CLUT:
-		case APAL:
-		case PA:
-		case NPAL:
-		case AHDR:
-			_gui->SetButton(_blockTable[blockid].blockTypeID);
-			break;
-
-		case RMIM:
-		case BM:
-		case IMAG:
-			_gui->SetButton(_blockTable[blockid].blockTypeID);
-			break;
-
-		case OBIM:
-			if (_blockTable[blockid+3].blockTypeID == 35) {
-				_gui->SetButton(_blockTable[blockid].blockTypeID);
-			}
-			break;
-
-		case IMHD:
-			_gui->updateLabel("SpecLabel1", "Room Width", _blockTable[blockid].width);
-			_gui->updateLabel("SpecLabel2", "Room Height", _blockTable[blockid].height);
-			_gui->updateLabel("SpecLabel3", "Number of Images", _blockTable[blockid].numFiles);
-			break;
-			
-		case Crea:
-			_gui->updateLabel("SpecLabel1", "Sample Rate", _blockTable[blockid].variables);
-			_gui->SetButton(_blockTable[blockid].blockTypeID);
-			break;
-
-		case LSCR:
-		case SCRP:
-		case ENCD:
-		case EXCD:
-		case VERB:
-		case LS:
-		case SC:
-		case EN:
-		case EX:
-		case OC:
-			_gui->SetButton(_blockTable[blockid].blockTypeID);
-			break;
-
-		case FOBJ:
-			_gui->updateLabel("SpecLabel1", "Frame Width", _blockTable[blockid].width);
-			_gui->updateLabel("SpecLabel2", "Frame Height", _blockTable[blockid].height);
-			_gui->updateLabel("SpecLabel3", "Codec", _blockTable[blockid].variables);
-			_gui->SetButton(_blockTable[blockid].blockTypeID);
-			break;
-
-		case BOXD:
-			_gui->updateLabel("SpecLabel1", "No. of Boxes", _blockTable[blockid].numFiles);
-			_gui->SetButton(_blockTable[blockid].blockTypeID);
-			break;
-	}
 }
-
-/*int main(int argc, char *argv[])
-{
-	ScummEX *_scummex;
-	_scummex = new ScummEX();
-
-	return 0;
-
-}*/

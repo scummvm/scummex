@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.h,v 1.6 2003/09/23 00:47:23 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.h,v 1.7 2003/09/23 01:28:15 fingolfin Exp $
  *
  */
 
@@ -85,6 +85,8 @@ private:
 
 public:
 	GUI_wxWindows();
+	~GUI_wxWindows();
+	
 	void BlockDump();
 	void SaveSOU();
 	void SaveiMUSE();
@@ -102,10 +104,24 @@ public:
 	void DisplayImage(char* title, int width, int height, byte flags = FLAG_NONE);
 	void SetButton(int blocktype);
 	void DisplayDialog(char *message, char *title);
-	void updateLabel(char *label, char *title, uint32 text);
 	virtual bool OnInit();
 	void add_tree_elements(char *itemName, int blockid, int level, int type);
 	int getScummVersionDialog();
+	
+	void updateLabels(int blockid);
+
+private:
+	void updateLabel(wxStaticText *label, const char *title, uint32 text);
+
+	void Descumm();
+	void iMUSEPlay();
+	void SOUPlay();
+	void paletteDraw();
+	void bgDraw();
+	void SmushFrameDraw();
+	void objectDraw();
+	void boxesDraw();
+	void boxesDrawOverlay();
 };
 
 class TreeItemData : public wxTreeItemData {
