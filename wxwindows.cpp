@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.18 2003/09/23 11:35:19 yoshizf Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.cpp,v 1.19 2003/09/23 11:55:45 fingolfin Exp $
  *
  */
 
@@ -27,9 +27,6 @@
 
 wxTreeItemId iter[11];
 wxTreeCtrl *tree = 0;
-wxStaticText *TypeLabel, *OffsetLabel, *SizeLabel, *DescriptionLabel;
-wxStaticText *SpecLabel[6];
-wxButton *SpecButton1 = 0, *SpecButton2 = 0;
 ScummEX *g_scummex = 0;
 wxImage *image = 0;
 const char *g_filename = 0;
@@ -53,41 +50,16 @@ GUI_wxWindows::~GUI_wxWindows() {
 
 bool GUI_wxWindows::OnInit()
 {
-printf("GUI_wxWindows::OnInit\n");
 	_mainWindow = new MainWindow("ScummEX", wxPoint(-1,-1),
                 wxSize(640,480));
 
-	_mainWindow->Connect( wxID_EXIT, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction) &MainWindow::OnQuit );
-	_mainWindow->Connect( wxID_ABOUT, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction) &MainWindow::OnAbout );
-	_mainWindow->Connect( wxID_OPEN, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction) &MainWindow::OnOpen );
-	_mainWindow->Connect( ID_Browse, wxEVT_COMMAND_BUTTON_CLICKED,
-		(wxObjectEventFunction) &MainWindow::OnOpen );
-	_mainWindow->Connect( ID_View, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction) &ScummEX::fileView );	// FIXME: This is bogus, it calls a ScummEX method on a MainWindow object
-	_mainWindow->Connect( ID_Dump, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction) &GUI_wxWindows::BlockDump );
-	_mainWindow->Connect( Tree, wxEVT_COMMAND_TREE_SEL_CHANGING,
-		(wxObjectEventFunction) &MainWindow::OnSelChanged );
-	_mainWindow->Connect( wxID_HELP, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction) &MainWindow::OnHelp );
-	_mainWindow->Connect( ID_FileInfo, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction) &ScummEX::FileInfo );	// FIXME: This is bogus, it calls a ScummEX method on a MainWindow object
-		
 	_mainWindow->Show(TRUE);
 	SetTopWindow(_mainWindow);
 	return TRUE;
 }
 
 void GUI_wxWindows::SetTitle(char *title) {
-printf("GUI_wxWindows::SetTitle(%s)\n", title);
 	_mainWindow->SetTitle(title);
-}
-
-void MainWindow::OnHelp(wxCommandEvent& WXUNUSED(event)) {
-	HtmlHelp->DisplayContents();
 }
 
 int GUI_wxWindows::getScummVersionDialog() {
@@ -174,64 +146,12 @@ void GUI_wxWindows::FileInfoDialog(int size, int encbyte) {
 	wxMessageBox(msg, "File Info", wxOK, _mainWindow);
 }
 
-void GUI_wxWindows::BlockDump() {
-	wxFileDialog *dialog = new wxFileDialog(_mainWindow, "Please select an output file.", "", "",
-		"*",
-		wxSAVE);
-	if (dialog->ShowModal() == wxID_OK) {
-		const char *filename = (const char*)dialog->GetPath();
-		g_scummex->FileDump(filename);
-	}
-	
-}
-	
-void GUI_wxWindows::SaveSOU() {
-	wxFileDialog *dialog = new wxFileDialog(_mainWindow, "Please select an output file.", "", "",
-		"*",
-		wxSAVE);
-	if (dialog->ShowModal() == wxID_OK) {
-		const char *filename = (const char*)dialog->GetPath();
-		g_scummex->iMUSEDump(filename);
-	}
-	
-}
-	
-void GUI_wxWindows::SaveiMUSE() {
-	wxFileDialog *dialog = new wxFileDialog(_mainWindow, "Please select an output file.", "", "",
-		"*",
-		wxSAVE);
-	if (dialog->ShowModal() == wxID_OK) {
-		const char *filename = (const char*)dialog->GetPath();
-		g_scummex->iMUSEDump(filename);
-	}
-	
-}
-
 void GUI_wxWindows::PutPixel(int x, int y, int red, int green, int blue) {
 	image->SetRGB(x, y, (unsigned char) red, (unsigned char) green, (unsigned char) blue);
 }
 
-void GUI_wxWindows::SaveImage() {
-	wxFileDialog *dialog = new wxFileDialog(_imageWindow, "Please select an output file.", "", "",
-		"*",
-		wxSAVE);
-	if (dialog->ShowModal() == wxID_OK) {
-		const char *filename = (const char*)dialog->GetPath();
-		image->SaveFile(filename, wxBITMAP_TYPE_BMP);
-	}
-}
-
 void GUI_wxWindows::DisplayImage(char* title, int width, int height, byte flags) {
 	_imageWindow = new ImageWindow(_mainWindow, title, wxPoint(-1,-1), wxSize(width, height), flags);
-
-	_imageWindow->Connect( Viewer_Quit, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction) &ImageWindow::OnQuit );
-	_imageWindow->Connect( ID_BMP, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction) &GUI_wxWindows::SaveImage );
-	_imageWindow->Connect( ID_Boxes, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction) &GUI_wxWindows::boxesDrawOverlay );
-	_imageWindow->Connect( ID_ImageWindow, wxEVT_CLOSE_WINDOW,
-		(wxObjectEventFunction) &ImageWindow::OnQuit );
 }
 
 void GUI_wxWindows::DrawImage() {
@@ -243,6 +163,13 @@ void GUI_wxWindows::UpdateImage() {
 	_imageWindow->_sbmp->SetBitmap(bitmap);
 	_imageWindow->Refresh();
 }
+
+BEGIN_EVENT_TABLE(ImageWindow, wxFrame)
+	EVT_CLOSE(ImageWindow::OnQuit)
+	EVT_MENU(Viewer_Quit, ImageWindow::OnQuit)
+	EVT_MENU(ID_BMP, ImageWindow::SaveImage)
+	EVT_MENU(ID_Boxes, ImageWindow::boxesDrawOverlay)
+END_EVENT_TABLE()
 
 ImageWindow::ImageWindow(MainWindow *parent, const wxString& title, const wxPoint& pos, const wxSize& size, byte flags)
 	: wxFrame(parent,ID_ImageWindow,title,pos,size, wxDEFAULT_FRAME_STYLE & (wxMINIMIZE_BOX | wxSYSTEM_MENU | wxCAPTION))
@@ -289,19 +216,33 @@ void ImageWindow::OnQuit(wxCommandEvent& WXUNUSED(event))
 	Destroy();
 }
 
+void ImageWindow::SaveImage(wxEvent& event) {
+	wxFileDialog *dialog = new wxFileDialog(this, "Please select an output file.", "", "",
+		"*",
+		wxSAVE);
+	if (dialog->ShowModal() == wxID_OK) {
+		const char *filename = (const char*)dialog->GetPath();
+		image->SaveFile(filename, wxBITMAP_TYPE_BMP);
+	}
+}
+
+void ImageWindow::boxesDrawOverlay(wxEvent& event) {
+	g_scummex->boxesDrawOverlay();
+}
 void GUI_wxWindows::DisplayViewer(char *title, int width, int height, char *text) {
 
 	ViewerWindow *viewerFrame = new ViewerWindow(_mainWindow, title, text, wxPoint(50,50), wxSize(width, height));
 
-	viewerFrame->Connect( Viewer_Quit, wxEVT_COMMAND_MENU_SELECTED,
-		(wxObjectEventFunction) &ViewerWindow::OnQuit );
-	viewerFrame->Connect( ID_ViewerWindow, wxEVT_CLOSE_WINDOW,
-		(wxObjectEventFunction) &ViewerWindow::OnQuit );
 }
 
 void GUI_wxWindows::AppendText(char *text) {
 	hexdata->AppendText(text);
 }
+
+BEGIN_EVENT_TABLE(ViewerWindow, wxFrame)
+	EVT_CLOSE(ViewerWindow::OnQuit)
+	EVT_MENU(Viewer_Quit, ViewerWindow::OnQuit)
+END_EVENT_TABLE()
 
 ViewerWindow::ViewerWindow(MainWindow *parent, const wxString& title, const wxString& text, const wxPoint& pos, const wxSize& size)
 	: wxFrame(parent, ID_ViewerWindow, title, pos, size)
@@ -340,7 +281,7 @@ void GUI_wxWindows::DisableToolbarTool(int tool) {
 	ToolBar->EnableTool(tool, FALSE);
 }
 
-void GUI_wxWindows::SetButton(int blocktype) {
+void MainWindow::SetButton(int blocktype) {
 	SpecButton1->Enable(TRUE);
 	SpecButton2->Enable(TRUE);
 	switch(blocktype) {
@@ -350,17 +291,17 @@ void GUI_wxWindows::SetButton(int blocktype) {
 			SpecButton1->Show(TRUE);
 			SpecButton1->Enable(FALSE); // FIXME Mixer not working anymore?
 			SpecButton2->Show(TRUE);
-			SpecButton1->Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
-				(wxObjectEventFunction) &GUI_wxWindows::iMUSEPlay );
-			SpecButton2->Connect( ID_SpecButton2, wxEVT_COMMAND_BUTTON_CLICKED,
-				(wxObjectEventFunction) &GUI_wxWindows::SaveiMUSE );
+			Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
+				(wxObjectEventFunction) &MainWindow::iMUSEPlay );
+			Connect( ID_SpecButton2, wxEVT_COMMAND_BUTTON_CLICKED,
+				(wxObjectEventFunction) &MainWindow::SaveiMUSE );
 			break;
 
 		case OBIM:
 			SpecButton1->SetLabel("View Object");
 			SpecButton1->Show(TRUE);
-			SpecButton1->Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
-				(wxObjectEventFunction) &GUI_wxWindows::objectDraw );
+			Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
+				(wxObjectEventFunction) &MainWindow::objectDraw );
 			break;
 
 		case Crea:
@@ -370,10 +311,10 @@ void GUI_wxWindows::SetButton(int blocktype) {
 			SpecButton1->Enable(FALSE); // FIXME Mixer not working anymore?
 			SpecButton2->Show(TRUE);
 			SpecButton2->Enable(FALSE);
-			SpecButton1->Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
-				(wxObjectEventFunction) &GUI_wxWindows::SOUPlay );
-			SpecButton2->Connect( ID_SpecButton2, wxEVT_COMMAND_BUTTON_CLICKED,
-				(wxObjectEventFunction) &GUI_wxWindows::SaveSOU );
+			Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
+				(wxObjectEventFunction) &MainWindow::SOUPlay );
+			Connect( ID_SpecButton2, wxEVT_COMMAND_BUTTON_CLICKED,
+				(wxObjectEventFunction) &MainWindow::SaveSOU );
 			break;
 			
 
@@ -385,9 +326,8 @@ void GUI_wxWindows::SetButton(int blocktype) {
 		case RGBS:
 			SpecButton1->SetLabel("View Palette");
 			SpecButton1->Show(TRUE);
-printf("Connect: SpecButton1 = %d, this = %d\n", (int)SpecButton1, (int)this);
-			SpecButton1->Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
-				(wxObjectEventFunction) &GUI_wxWindows::paletteDraw );
+			Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
+				(wxObjectEventFunction) &MainWindow::paletteDraw );
 			break;
 		
 		case BM:
@@ -395,15 +335,15 @@ printf("Connect: SpecButton1 = %d, this = %d\n", (int)SpecButton1, (int)this);
 		case IMAG:
 			SpecButton1->SetLabel("View Image");
 			SpecButton1->Show(TRUE);
-			SpecButton1->Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
-				(wxObjectEventFunction) &GUI_wxWindows::bgDraw );
+			Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
+				(wxObjectEventFunction) &MainWindow::bgDraw );
 			break;
 
 		case FOBJ:
 			SpecButton1->SetLabel("View Frame");
 			SpecButton1->Show(TRUE);
-			SpecButton1->Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
-				(wxObjectEventFunction) &GUI_wxWindows::SmushFrameDraw );
+			Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
+				(wxObjectEventFunction) &MainWindow::SmushFrameDraw );
 			break;
 			
 		case LSCR:
@@ -418,15 +358,15 @@ printf("Connect: SpecButton1 = %d, this = %d\n", (int)SpecButton1, (int)this);
 		case OC:
 			SpecButton1->SetLabel("Decompile Script");
 			SpecButton1->Show(TRUE);
-			SpecButton1->Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
-				(wxObjectEventFunction) &GUI_wxWindows::Descumm );
+			Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
+				(wxObjectEventFunction) &MainWindow::Descumm );
 			break;
 
 		case BOXD:
 			SpecButton1->SetLabel("View Boxes...");
 			SpecButton1->Show(TRUE);
-			SpecButton1->Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
-				(wxObjectEventFunction) &GUI_wxWindows::boxesDraw );
+			Connect( ID_SpecButton1, wxEVT_COMMAND_BUTTON_CLICKED,
+				(wxObjectEventFunction) &MainWindow::boxesDraw );
 			break;
 	}
 
@@ -451,13 +391,13 @@ void GUI_wxWindows::add_tree_elements(char *itemName, int blockid, int level, in
 	}
 }
 
-void GUI_wxWindows::updateLabel(wxStaticText *label, const char *title, uint32 text) {
+void MainWindow::updateLabel(wxStaticText *label, const char *title, uint32 text) {
 	char buf[256];
 	sprintf(buf, "%s:    \t\t %d", title, text);
 	label->SetLabel(buf);
 }
 
-void GUI_wxWindows::updateLabels(int blockid) {
+void MainWindow::updateLabels(int blockid) {
 	const BlockTable &block = g_scummex->getBlockTable(blockid);
 	char buf[256];
 
@@ -579,33 +519,16 @@ void GUI_wxWindows::updateLabels(int blockid) {
 	}
 }
 
-void GUI_wxWindows::Descumm() {
-	g_scummex->Descumm();
-}
-void GUI_wxWindows::iMUSEPlay() {
-	g_scummex->iMUSEPlay();
-}
-void GUI_wxWindows::SOUPlay() {
-	g_scummex->SOUPlay();
-}
-void GUI_wxWindows::paletteDraw() {
-	g_scummex->paletteDraw();
-}
-void GUI_wxWindows::bgDraw() {
-	g_scummex->bgDraw();
-}
-void GUI_wxWindows::SmushFrameDraw() {
-	g_scummex->SmushFrameDraw();
-}
-void GUI_wxWindows::objectDraw() {
-	g_scummex->objectDraw();
-}
-void GUI_wxWindows::boxesDraw() {
-	g_scummex->boxesDraw();
-}
-void GUI_wxWindows::boxesDrawOverlay() {
-	g_scummex->boxesDrawOverlay();
-}
+BEGIN_EVENT_TABLE(MainWindow, wxFrame)
+	EVT_MENU(wxID_EXIT, MainWindow::OnQuit)
+	EVT_MENU(wxID_ABOUT, MainWindow::OnAbout)
+	EVT_MENU(wxID_OPEN, MainWindow::OnOpen)
+	EVT_MENU(ID_View, MainWindow::FileView)
+	EVT_MENU(ID_Dump, MainWindow::BlockDump)
+	EVT_MENU(wxID_HELP, MainWindow::OnHelp)
+	EVT_MENU(ID_FileInfo, MainWindow::FileInfo)
+	EVT_CUSTOM(wxEVT_COMMAND_TREE_SEL_CHANGING, ID_Tree, MainWindow::OnSelChanged)
+END_EVENT_TABLE()
 
 
 MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size)
@@ -686,7 +609,7 @@ MainWindow::MainWindow(const wxString& title, const wxPoint& pos, const wxSize& 
 			0
 			);
 
-	tree = new wxTreeCtrl(panel, Tree, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxTR_HAS_BUTTONS|wxTR_HIDE_ROOT, wxDefaultValidator, "listCtrl");
+	tree = new wxTreeCtrl(panel, ID_Tree, wxDefaultPosition, wxDefaultSize, wxSUNKEN_BORDER|wxTR_HAS_BUTTONS|wxTR_HIDE_ROOT, wxDefaultValidator, "listCtrl");
 	
 	wxImageList *ImageList = new wxImageList(16, 16, true, 61);
 
@@ -993,6 +916,10 @@ void MainWindow::OnAbout(wxCommandEvent& WXUNUSED(event))
 {
 	wxMessageDialog *dialog = new wxMessageDialog(this, "\nScummEX 0.1.0cvs (C) 2003 The ScummVM project\n","About", wxOK|wxCENTRE);
 	dialog->ShowModal();
+}
+
+void MainWindow::OnHelp(wxCommandEvent& WXUNUSED(event)) {
+	HtmlHelp->DisplayContents();
 }
 
 void MainWindow::OnOpen(wxCommandEvent& WXUNUSED(event))
@@ -1302,7 +1229,73 @@ void MainWindow::OnSelChanged(wxTreeEvent& event) {
 		
 	BigIcon->SetBitmap(bigIconBitmap);
 	
-	_gui->updateLabels(item->_blockId);
+	updateLabels(item->_blockId);
 	g_scummex->UpdateInfosFromTree(item->_blockId);
 	event.Skip();
+}
+
+void MainWindow::FileView(wxEvent& event) {
+	g_scummex->fileView();
+}
+
+void MainWindow::FileInfo(wxEvent& event) {
+	g_scummex->FileInfo();
+}
+
+void MainWindow::BlockDump(wxEvent& event) {
+	wxFileDialog *dialog = new wxFileDialog(this, "Please select an output file.", "", "",
+		"*",
+		wxSAVE);
+	if (dialog->ShowModal() == wxID_OK) {
+		const char *filename = (const char*)dialog->GetPath();
+		g_scummex->FileDump(filename);
+	}
+	
+}
+	
+void MainWindow::SaveSOU(wxEvent& event) {
+	wxFileDialog *dialog = new wxFileDialog(this, "Please select an output file.", "", "",
+		"*",
+		wxSAVE);
+	if (dialog->ShowModal() == wxID_OK) {
+		const char *filename = (const char*)dialog->GetPath();
+		g_scummex->iMUSEDump(filename);
+	}
+	
+}
+	
+void MainWindow::SaveiMUSE(wxEvent& event) {
+	wxFileDialog *dialog = new wxFileDialog(this, "Please select an output file.", "", "",
+		"*",
+		wxSAVE);
+	if (dialog->ShowModal() == wxID_OK) {
+		const char *filename = (const char*)dialog->GetPath();
+		g_scummex->iMUSEDump(filename);
+	}
+	
+}
+
+void MainWindow::Descumm(wxEvent& event) {
+	g_scummex->Descumm();
+}
+void MainWindow::iMUSEPlay(wxEvent& event) {
+	g_scummex->iMUSEPlay();
+}
+void MainWindow::SOUPlay(wxEvent& event) {
+	g_scummex->SOUPlay();
+}
+void MainWindow::paletteDraw(wxEvent& event) {
+	g_scummex->paletteDraw();
+}
+void MainWindow::bgDraw(wxEvent& event) {
+	g_scummex->bgDraw();
+}
+void MainWindow::SmushFrameDraw(wxEvent& event) {
+	g_scummex->SmushFrameDraw();
+}
+void MainWindow::objectDraw(wxEvent& event) {
+	g_scummex->objectDraw();
+}
+void MainWindow::boxesDraw(wxEvent& event) {
+	g_scummex->boxesDraw();
 }

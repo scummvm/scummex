@@ -16,7 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.h,v 1.7 2003/09/23 01:28:15 fingolfin Exp $
+ * $Header: /Users/sev/projects/sc/s/scummvm/scummex/wxwindows.h,v 1.8 2003/09/23 11:55:45 fingolfin Exp $
  *
  */
 
@@ -54,28 +54,67 @@ private:
 	wxPanel *panel, *infospanel, *htmlpanel, *searchpanel;
 	int htmlflag;
 
+	wxStaticText *TypeLabel, *OffsetLabel, *SizeLabel, *DescriptionLabel;
+	wxStaticText *SpecLabel[6];
+	wxButton *SpecButton1, *SpecButton2;
+
 public:
 	MainWindow(const wxString& title, const wxPoint& pos, const wxSize& size);
+
+	void SetButton(int blocktype);
+
+protected:
 	void OnQuit(wxCommandEvent& event);
 	void OnAbout(wxCommandEvent& event);
 	void OnOpen(wxCommandEvent& event);
 	void OnHelp(wxCommandEvent& event);
 	void OnSelChanged(wxTreeEvent& event);
+
+	void FileView(wxEvent& event);
+	void FileInfo(wxEvent& event);
+	void BlockDump(wxEvent& event);
+	void SaveSOU(wxEvent& event);
+	void SaveiMUSE(wxEvent& event);
+
+	void Descumm(wxEvent& event);
+	void iMUSEPlay(wxEvent& event);
+	void SOUPlay(wxEvent& event);
+	void paletteDraw(wxEvent& event);
+	void bgDraw(wxEvent& event);
+	void SmushFrameDraw(wxEvent& event);
+	void objectDraw(wxEvent& event);
+	void boxesDraw(wxEvent& event);
+
+	void updateLabels(int blockid);
+	void updateLabel(wxStaticText *label, const char *title, uint32 text);
+
+	DECLARE_EVENT_TABLE()
 };
 
 class ImageWindow : public wxFrame {
 public:
 	wxStaticBitmap *_sbmp;
 
-	void DrawImage();
-	void OnQuit(wxCommandEvent& event);
 	ImageWindow(MainWindow *parent, const wxString& title, const wxPoint& pos, const wxSize& size, byte flags);
+	void DrawImage();
+
+protected:
+	void OnQuit(wxCommandEvent& event);
+
+	void SaveImage(wxEvent& event);
+	void boxesDrawOverlay(wxEvent& event);
+
+	DECLARE_EVENT_TABLE()
 };
 
 class ViewerWindow : public wxFrame {
 public:
-	void OnQuit(wxCommandEvent& event);
 	ViewerWindow(MainWindow *parent, const wxString& title, const wxString& text, const wxPoint& pos, const wxSize& size);
+
+protected:
+	void OnQuit(wxCommandEvent& event);
+
+	DECLARE_EVENT_TABLE()
 };
 
 class GUI_wxWindows : public wxApp {
@@ -87,9 +126,6 @@ public:
 	GUI_wxWindows();
 	~GUI_wxWindows();
 	
-	void BlockDump();
-	void SaveSOU();
-	void SaveiMUSE();
 	void EnableToolbarTool(int tool);
 	void DisableToolbarTool(int tool);
 	void AppendText(char *text);
@@ -98,30 +134,13 @@ public:
 	void UpdateImage();
 	void DisplayHelp();
 	void SetTitle(char *title);
-	void SaveImage();
 	void DisplayViewer(char *title, int width, int height, char *text);
 	void PutPixel(int x, int y, int red, int green, int blue);
 	void DisplayImage(char* title, int width, int height, byte flags = FLAG_NONE);
-	void SetButton(int blocktype);
 	void DisplayDialog(char *message, char *title);
 	virtual bool OnInit();
 	void add_tree_elements(char *itemName, int blockid, int level, int type);
 	int getScummVersionDialog();
-	
-	void updateLabels(int blockid);
-
-private:
-	void updateLabel(wxStaticText *label, const char *title, uint32 text);
-
-	void Descumm();
-	void iMUSEPlay();
-	void SOUPlay();
-	void paletteDraw();
-	void bgDraw();
-	void SmushFrameDraw();
-	void objectDraw();
-	void boxesDraw();
-	void boxesDrawOverlay();
 };
 
 class TreeItemData : public wxTreeItemData {
@@ -133,8 +152,7 @@ class TreeItemData : public wxTreeItemData {
 		
 enum
 {
-	ID_Browse = 1,
-	ID_SoundStop,
+	ID_SoundStop = 1,
 	ID_Dump,
 	ID_View,
 	ID_SpecButton1,
@@ -151,7 +169,7 @@ enum
 	ID_ViewerWindow,
 	ID_BMP,
 	ID_Boxes,
-	Tree
+	ID_Tree
 };
 
 extern GUI_wxWindows *_gui;
